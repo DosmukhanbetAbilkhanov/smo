@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Category extends Model
+{
+    /** @use HasFactory<\Database\Factories\CategoryFactory> */
+    use HasFactory;
+
+    protected $fillable = ['name_ru', 'name_kz', 'parent_id', 'icon', 'slug'];
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function specs()
+    {
+        return $this->belongsToMany(Spec::class, 'category_specs')
+            ->withPivot('is_required')
+            ->withTimestamps();
+    }
+
+    public function nomenclatures()
+    {
+        return $this->hasMany(Nomenclature::class);
+    }
+}
