@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Nomenclatures\Schemas;
 
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,25 +18,54 @@ class NomenclatureForm
                     ->schema([
                         TextInput::make('name_ru')
                             ->label('Name (Russian)')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->required()
+                            ->maxLength(255),
 
                         TextInput::make('name_kz')
                             ->label('Name (Kazakh)')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->required()
+                            ->maxLength(255),
 
                         Select::make('unit_id')
                             ->label('Unit')
                             ->relationship('unit', 'name_ru')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+
+                        Select::make('parent_category_id')
+                            ->label('Parent Category')
+                            ->options(\App\Models\Category::whereNull('parent_id')->pluck('name_ru', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn (callable $set) => $set('category_id', null))
+                            ->dehydrated(false)
+                            ->default(function ($record) {
+                                if ($record && $record->category_id) {
+                                    return $record->category?->parent_id;
+                                }
+
+                                return null;
+                            }),
 
                         Select::make('category_id')
-                            ->label('Category')
-                            ->relationship('category', 'name_ru')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->label('Child Category')
+                            ->options(function (callable $get) {
+                                $parentId = $get('parent_category_id');
+                                if (! $parentId) {
+                                    return [];
+                                }
+
+                                return \App\Models\Category::where('parent_id', $parentId)
+                                    ->pluck('name_ru', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->required()
+                            ->disabled(fn (callable $get) => ! $get('parent_category_id'))
+                            ->helperText('Select a parent category first'),
                     ])
                     ->columns(2),
 
@@ -46,14 +74,12 @@ class NomenclatureForm
                         Textarea::make('description_ru')
                             ->label('Description (Russian)')
                             ->rows(3)
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(1000),
 
                         Textarea::make('description_kz')
                             ->label('Description (Kazakh)')
                             ->rows(3)
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(1000),
                     ])
                     ->columns(2),
 
@@ -61,41 +87,44 @@ class NomenclatureForm
                     ->schema([
                         TextInput::make('SKU')
                             ->label('SKU')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(255),
 
                         TextInput::make('GTIN')
                             ->label('GTIN')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(255),
 
                         TextInput::make('NTIN')
                             ->label('NTIN')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(255),
 
                         TextInput::make('brandname')
                             ->label('Brand Name')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->maxLength(255),
                     ])
                     ->columns(2),
 
                 Section::make('Approval Status')
                     ->schema([
-                        Placeholder::make('status')
+                        TextInput::make('status_display')
                             ->label('Current Status')
-                            ->content(fn ($record) => $record?->status?->label() ?? 'Pending Review'),
+                            ->default(fn ($record) => $record?->status?->label() ?? 'Pending Review')
+                            ->disabled()
+                            ->dehydrated(false),
 
-                        Placeholder::make('approved_by')
+                        TextInput::make('approved_by_display')
                             ->label('Approved By')
-                            ->content(fn ($record) => $record?->approvedBy?->name ?? '-'),
+                            ->default(fn ($record) => $record?->approvedBy?->name ?? '-')
+                            ->disabled()
+                            ->dehydrated(false),
 
-                        Placeholder::make('approved_at')
+                        TextInput::make('approved_at_display')
                             ->label('Approved At')
-                            ->content(fn ($record) => $record?->approved_at?->format('M d, Y H:i') ?? '-'),
+                            ->default(fn ($record) => $record?->approved_at?->format('M d, Y H:i') ?? '-')
+                            ->disabled()
+                            ->dehydrated(false),
                     ])
-                    ->columns(3),
+                    ->columns(3)
+                    ->visible(fn ($context) => $context === 'edit'),
             ]);
     }
 }

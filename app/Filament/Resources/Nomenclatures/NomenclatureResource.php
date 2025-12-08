@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Nomenclatures;
 
+use App\Filament\Resources\Nomenclatures\Pages\CreateNomenclature;
 use App\Filament\Resources\Nomenclatures\Pages\EditNomenclature;
 use App\Filament\Resources\Nomenclatures\Pages\ListNomenclatures;
 use App\Filament\Resources\Nomenclatures\Schemas\NomenclatureForm;
@@ -45,6 +46,7 @@ class NomenclatureResource extends Resource
     {
         return [
             'index' => ListNomenclatures::route('/'),
+            'create' => CreateNomenclature::route('/create'),
             'edit' => EditNomenclature::route('/{record}/edit'),
         ];
     }
