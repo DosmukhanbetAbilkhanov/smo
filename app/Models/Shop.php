@@ -10,11 +10,16 @@ class Shop extends Model
     /** @use HasFactory<\Database\Factories\ShopFactory> */
     use HasFactory;
 
-    protected $fillable = ['company_id', 'name', 'address'];
+    protected $fillable = ['company_id', 'city_id', 'name', 'address', 'min_order_amount'];
 
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
     public function products()
