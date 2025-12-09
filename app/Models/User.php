@@ -71,6 +71,11 @@ class User extends Authenticatable implements HasTenants
         return $this->hasOne(Company::class);
     }
 
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
     public function getTenants(Panel $panel): Collection
     {
         return Company::where('user_id', $this->id)->get();
