@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\NomenclatureController;
+use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,10 @@ Route::prefix('v1')->group(function () {
     // Nomenclatures
     Route::get('/nomenclatures', [NomenclatureController::class, 'index']);
     Route::get('/nomenclatures/{id}', [NomenclatureController::class, 'show']);
+
+    // Products
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{id}', [ProductController::class, 'show']);
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
