@@ -18,7 +18,6 @@ class ProductResource extends BaseResource
             'id' => $this->id,
             'name_ru' => $this->name_ru,
             'name_kz' => $this->name_kz,
-            'SKU' => $this->SKU,
             'price' => $this->price,
             'quantity' => $this->quantity,
             'images' => $this->images,

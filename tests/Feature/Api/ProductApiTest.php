@@ -49,7 +49,6 @@ test('can retrieve paginated products', function () {
                         'id',
                         'name_ru',
                         'name_kz',
-                        'SKU',
                         'price',
                         'quantity',
                         'images',
@@ -137,39 +136,6 @@ test('can search products by name_ru', function () {
     $response->assertOk()
         ->assertJsonPath('data.pagination.total', 1)
         ->assertJsonPath('data.data.0.name_ru', 'Cable Copper Wire');
-});
-
-test('can search products by SKU', function () {
-    $unit = Unit::factory()->create();
-    $category = Category::factory()->create();
-    $nomenclature = Nomenclature::factory()->create([
-        'unit_id' => $unit->id,
-        'category_id' => $category->id,
-    ]);
-
-    $city = City::factory()->create();
-    $company = Company::factory()->create(['city_id' => $city->id]);
-    $shop = Shop::factory()->create([
-        'company_id' => $company->id,
-        'city_id' => $city->id,
-    ]);
-
-    $product = Product::factory()->create([
-        'SKU' => 'ABC123',
-        'nomenclature_id' => $nomenclature->id,
-        'shop_id' => $shop->id,
-    ]);
-
-    Product::factory()->count(5)->create([
-        'nomenclature_id' => $nomenclature->id,
-        'shop_id' => $shop->id,
-    ]);
-
-    $response = $this->getJson('/api/v1/products?search=ABC123');
-
-    $response->assertOk()
-        ->assertJsonPath('data.pagination.total', 1)
-        ->assertJsonPath('data.data.0.SKU', 'ABC123');
 });
 
 test('can filter products by price range', function () {
@@ -521,7 +487,6 @@ test('can retrieve product by id', function () {
                 'id',
                 'name_ru',
                 'name_kz',
-                'SKU',
                 'price',
                 'quantity',
                 'images',

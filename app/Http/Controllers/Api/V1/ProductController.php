@@ -18,22 +18,20 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->input('per_page', 15);
-        $page = $request->input('page', 1);
 
         // Build cache key from all query parameters
-        $cacheKey = 'api.products.index.'.md5(json_encode($request->all()));
+        $cacheKey = 'api.products.index.'.md5(\json_encode($request->all()));
 
         $result = Cache::remember($cacheKey, 1800, function () use ($request, $perPage) {
             $query = Product::query()
                 ->with(['nomenclature.category', 'nomenclature.unit', 'shop.city', 'specs']);
 
-            // Search by name or SKU
+            // Search by name
             if ($request->filled('search')) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
                     $q->where('name_ru', 'like', "%{$search}%")
-                        ->orWhere('name_kz', 'like', "%{$search}%")
-                        ->orWhere('SKU', 'like', "%{$search}%");
+                        ->orWhere('name_kz', 'like', "%{$search}%");
                 });
             }
 
