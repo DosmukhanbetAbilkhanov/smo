@@ -46,12 +46,12 @@ const isFlipped = ref(false);
 
 <template>
     <div
-        class="group perspective-1000 h-full"
+        class="perspective-1000 h-[280px]"
         @mouseenter="isFlipped = hasChildren ? true : false"
         @mouseleave="isFlipped = false"
     >
         <div
-            class="relative h-full transition-transform duration-500"
+            class="relative h-full w-full transition-transform duration-500"
             :class="{ 'rotate-y-180': isFlipped }"
             style="transform-style: preserve-3d"
         >
@@ -61,10 +61,10 @@ const isFlipped = ref(false);
                     <Card
                         class="h-full overflow-hidden transition-all hover:shadow-lg"
                     >
-                        <CardContent class="p-0">
+                        <CardContent class="h-full p-0">
                             <!-- Colored Card Block (Image commented out for future use) -->
                             <div
-                                class="relative aspect-video overflow-hidden bg-gradient-to-br"
+                                class="relative flex h-full flex-col justify-end overflow-hidden bg-gradient-to-br"
                                 :class="categoryColor"
                             >
                                 <!-- Future image implementation -->
@@ -77,29 +77,27 @@ const isFlipped = ref(false);
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
                                 />
-                                <div
-                                    class="absolute right-0 bottom-0 left-0 p-4 text-white"
-                                >
+                                <div class="relative z-10 p-6 text-white">
                                     <h3
-                                        class="flex items-center justify-between text-lg font-semibold"
+                                        class="mb-2 flex items-center justify-between text-xl font-bold"
                                     >
                                         {{ categoryName }}
                                         <ChevronRight
-                                            :size="20"
-                                            class="transition-transform group-hover:translate-x-1"
+                                            :size="24"
+                                            class="transition-transform hover:translate-x-1"
                                         />
                                     </h3>
                                     <p
                                         v-if="
                                             showDescription && categoryDescription
                                         "
-                                        class="mt-1 line-clamp-2 text-sm text-white/90"
+                                        class="mb-2 line-clamp-2 text-sm text-white/90"
                                     >
                                         {{ categoryDescription }}
                                     </p>
                                     <p
                                         v-if="hasChildren"
-                                        class="mt-2 text-xs text-white/80"
+                                        class="text-sm text-white/90"
                                     >
                                         {{
                                             category.children?.length
@@ -125,7 +123,7 @@ const isFlipped = ref(false);
                         <div
                             class="mb-3 flex items-center justify-between border-b pb-2"
                         >
-                            <h3 class="text-sm font-semibold">
+                            <h3 class="text-base font-bold">
                                 {{ categoryName }}
                             </h3>
                             <Link
@@ -140,10 +138,12 @@ const isFlipped = ref(false);
                                 v-for="child in category.children"
                                 :key="child.id"
                                 :href="`/categories/${child.slug}`"
-                                class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                             >
-                                <ChevronRight :size="14" />
-                                {{ getLocalizedName(child) }}
+                                <ChevronRight :size="16" />
+                                <span class="flex-1">{{
+                                    getLocalizedName(child)
+                                }}</span>
                             </Link>
                         </div>
                     </CardContent>
