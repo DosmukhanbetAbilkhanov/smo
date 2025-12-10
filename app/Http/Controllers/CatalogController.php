@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\QueryBuilders\ProductQueryBuilder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -64,6 +66,48 @@ class CatalogController extends Controller
         return Inertia::render('Catalog/CategoryShow', [
             'category' => $category,
             'products' => $products,
+        ]);
+    }
+
+    /**
+     * Display all products with filters and sorting.
+     */
+    public function products(Request $request): Response
+    {
+        $queryBuilder = ProductQueryBuilder::make()
+            ->applyFilters($request)
+            ->applySort($request);
+
+        $products = $queryBuilder->paginate(24);
+
+        $filters = ProductQueryBuilder::getFiltersFromRequest($request);
+
+        return Inertia::render('Catalog/Products', [
+            'products' => $products,
+            'filters' => $filters,
+        ]);
+    }
+
+    /**
+     * Search products by query.
+     */
+    public function search(Request $request): Response
+    {
+        $searchQuery = $request->input('q', '');
+
+        $queryBuilder = ProductQueryBuilder::make()
+            ->applySearch($searchQuery)
+            ->applyFilters($request)
+            ->applySort($request);
+
+        $products = $queryBuilder->paginate(24);
+
+        $filters = ProductQueryBuilder::getFiltersFromRequest($request);
+
+        return Inertia::render('Catalog/Search', [
+            'products' => $products,
+            'filters' => $filters,
+            'query' => $searchQuery,
         ]);
     }
 }

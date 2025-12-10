@@ -12,6 +12,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/categories', [CatalogController::class, 'categories'])->name('categories.index');
 Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('categories.show');
 
+// Products & Search
+Route::get('/products', [CatalogController::class, 'products'])->name('products.index');
+Route::get('/search', [CatalogController::class, 'search'])->name('search');
+
 // Dashboard
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
