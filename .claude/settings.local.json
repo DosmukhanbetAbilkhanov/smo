@@ -6,7 +6,9 @@
       "Bash(php artisan:*)",
       "Bash(vendor/bin/pint:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

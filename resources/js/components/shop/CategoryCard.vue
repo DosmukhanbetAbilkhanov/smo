@@ -41,119 +41,129 @@ const hasChildren = computed(
     () => props.category.children && props.category.children.length > 0,
 );
 
-const showChildren = ref(false);
-const cardRef = ref<HTMLElement | null>(null);
-const dropdownStyle = ref({});
-
-const handleMouseEnter = () => {
-    if (hasChildren.value && cardRef.value) {
-        const rect = cardRef.value.getBoundingClientRect();
-        dropdownStyle.value = {
-            top: `${rect.bottom + window.scrollY + 8}px`,
-            left: `${rect.left + window.scrollX}px`,
-            width: `${rect.width}px`,
-        };
-        showChildren.value = true;
-    }
-};
-
-const handleMouseLeave = () => {
-    showChildren.value = false;
-};
+const isFlipped = ref(false);
 </script>
 
 <template>
     <div
-        ref="cardRef"
-        class="group relative"
-        @mouseenter="handleMouseEnter"
-        @mouseleave="handleMouseLeave"
+        class="group perspective-1000 h-full"
+        @mouseenter="isFlipped = hasChildren ? true : false"
+        @mouseleave="isFlipped = false"
     >
-        <Link :href="`/categories/${category.slug}`">
-            <Card
-                class="h-full overflow-hidden transition-all hover:shadow-lg"
-            >
-                <CardContent class="p-0">
-                    <!-- Colored Card Block (Image commented out for future use) -->
-                    <div
-                        class="relative aspect-video overflow-hidden bg-gradient-to-br"
-                        :class="categoryColor"
+        <div
+            class="relative h-full transition-transform duration-500"
+            :class="{ 'rotate-y-180': isFlipped }"
+            style="transform-style: preserve-3d"
+        >
+            <!-- Front Side -->
+            <div class="absolute inset-0 backface-hidden">
+                <Link :href="`/categories/${category.slug}`">
+                    <Card
+                        class="h-full overflow-hidden transition-all hover:shadow-lg"
                     >
-                        <!-- Future image implementation -->
-                        <!-- <img
-                            :src="categoryImage"
-                            :alt="categoryName"
-                            class="h-full w-full object-cover transition-transform group-hover:scale-105"
-                        /> -->
-
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
-                        />
-                        <div
-                            class="absolute right-0 bottom-0 left-0 p-4 text-white"
-                        >
-                            <h3
-                                class="flex items-center justify-between text-lg font-semibold"
+                        <CardContent class="p-0">
+                            <!-- Colored Card Block (Image commented out for future use) -->
+                            <div
+                                class="relative aspect-video overflow-hidden bg-gradient-to-br"
+                                :class="categoryColor"
                             >
-                                {{ categoryName }}
-                                <ChevronRight
-                                    :size="20"
-                                    class="transition-transform group-hover:translate-x-1"
+                                <!-- Future image implementation -->
+                                <!-- <img
+                                    :src="categoryImage"
+                                    :alt="categoryName"
+                                    class="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                /> -->
+
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
                                 />
-                            </h3>
-                            <p
-                                v-if="showDescription && categoryDescription"
-                                class="mt-1 line-clamp-2 text-sm text-white/90"
-                            >
-                                {{ categoryDescription }}
-                            </p>
-                            <p
-                                v-if="hasChildren"
-                                class="mt-2 text-xs text-white/80"
-                            >
-                                {{ category.children?.length }} subcategories
-                            </p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </Link>
+                                <div
+                                    class="absolute right-0 bottom-0 left-0 p-4 text-white"
+                                >
+                                    <h3
+                                        class="flex items-center justify-between text-lg font-semibold"
+                                    >
+                                        {{ categoryName }}
+                                        <ChevronRight
+                                            :size="20"
+                                            class="transition-transform group-hover:translate-x-1"
+                                        />
+                                    </h3>
+                                    <p
+                                        v-if="
+                                            showDescription && categoryDescription
+                                        "
+                                        class="mt-1 line-clamp-2 text-sm text-white/90"
+                                    >
+                                        {{ categoryDescription }}
+                                    </p>
+                                    <p
+                                        v-if="hasChildren"
+                                        class="mt-2 text-xs text-white/80"
+                                    >
+                                        {{
+                                            category.children?.length
+                                        }}
+                                        subcategories
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </Link>
+            </div>
 
-        <!-- Children Categories Dropdown using Teleport -->
-        <Teleport to="body">
-            <Transition
-                enter-active-class="transition duration-200 ease-out"
-                enter-from-class="opacity-0 translate-y-1"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition duration-150 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 translate-y-1"
+            <!-- Back Side (Children List) -->
+            <div
+                v-if="hasChildren"
+                class="absolute inset-0 backface-hidden rotate-y-180"
             >
-                <div
-                    v-if="hasChildren && showChildren"
-                    :style="dropdownStyle"
-                    class="fixed z-[9999] rounded-lg border bg-popover p-3 text-popover-foreground shadow-xl"
-                    @mouseenter="showChildren = true"
-                    @mouseleave="showChildren = false"
+                <Card
+                    class="h-full overflow-hidden transition-all hover:shadow-lg"
                 >
-                    <div
-                        class="mb-2 text-xs font-medium text-muted-foreground"
-                    >
-                        Subcategories:
-                    </div>
-                    <div class="space-y-1">
-                        <Link
-                            v-for="child in category.children"
-                            :key="child.id"
-                            :href="`/categories/${child.slug}`"
-                            class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    <CardContent class="flex h-full flex-col p-4">
+                        <div
+                            class="mb-3 flex items-center justify-between border-b pb-2"
                         >
-                            <ChevronRight :size="14" />
-                            {{ getLocalizedName(child) }}
-                        </Link>
-                    </div>
-                </div>
-            </Transition>
-        </Teleport>
+                            <h3 class="text-sm font-semibold">
+                                {{ categoryName }}
+                            </h3>
+                            <Link
+                                :href="`/categories/${category.slug}`"
+                                class="text-xs text-primary hover:underline"
+                            >
+                                View All
+                            </Link>
+                        </div>
+                        <div class="flex-1 space-y-1 overflow-y-auto">
+                            <Link
+                                v-for="child in category.children"
+                                :key="child.id"
+                                :href="`/categories/${child.slug}`"
+                                class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                            >
+                                <ChevronRight :size="14" />
+                                {{ getLocalizedName(child) }}
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     </div>
 </template>
+
+<style scoped>
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+</style>
