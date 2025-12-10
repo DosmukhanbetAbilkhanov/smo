@@ -63,7 +63,7 @@ it('can have nomenclatures', function () {
 });
 
 it('has proper fillable attributes', function () {
-    $fillable = ['name_ru', 'name_kz', 'parent_id', 'icon', 'slug'];
+    $fillable = ['name_ru', 'name_kz', 'parent_id', 'icon', 'slug', 'is_active'];
 
     expect($this->category->getFillable())->toBe($fillable);
 });

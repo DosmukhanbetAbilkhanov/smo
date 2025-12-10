@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name_ru', 'name_kz', 'nomenclature_id', 'shop_id', 'price', 'quantity', 'images',
+        'name_ru', 'name_kz', 'nomenclature_id', 'shop_id', 'price', 'quantity', 'images', 'is_active',
     ];
 
     protected function casts(): array
