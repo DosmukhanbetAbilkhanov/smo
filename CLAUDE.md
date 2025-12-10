@@ -736,3 +736,4 @@ All technical, framework-specific, or environment-specific rules are located in:
 **`docs/claude/claude-project-guidelines.md`**
 
 Claude MUST read and follow both this file and the referenced guidelines file.
+- Before starting moving to the next phase create new branch for it

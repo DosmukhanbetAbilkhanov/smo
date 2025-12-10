@@ -1,22 +1,31 @@
 import type { Locale } from '@/types/api';
-import { useCookie } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+
+/**
+ * Get locale from cookie
+ */
+function getLocaleCookie(): Locale | null {
+    const match = document.cookie.match(/(?:^|;\s*)locale=([^;]*)/);
+    return match ? (match[1] as Locale) : null;
+}
+
+/**
+ * Set locale cookie
+ */
+function setLocaleCookie(locale: Locale): void {
+    const maxAge = 60 * 60 * 24 * 365; // 1 year
+    document.cookie = `locale=${locale}; path=/; max-age=${maxAge}; SameSite=Lax`;
+}
 
 /**
  * Locale Store
  * Manages application locale/language switching
  */
 export const useLocaleStore = defineStore('locale', () => {
-    // Use VueUse's useCookie for reactive cookie management
-    const localeCookie = useCookie<Locale>('locale', {
-        default: () => 'ru',
-        maxAge: 60 * 60 * 24 * 365, // 1 year
-    });
-
-    // State - initialize from cookie or localStorage
+    // State - initialize from cookie, localStorage, or default to 'ru'
     const currentLocale = ref<Locale>(
-        localeCookie.value ||
+        getLocaleCookie() ||
             (localStorage.getItem('locale') as Locale | null) ||
             'ru',
     );
@@ -29,7 +38,7 @@ export const useLocaleStore = defineStore('locale', () => {
     watch(
         currentLocale,
         (newLocale) => {
-            localeCookie.value = newLocale;
+            setLocaleCookie(newLocale);
             localStorage.setItem('locale', newLocale);
             // Update HTML lang attribute for accessibility
             document.documentElement.lang = newLocale;
