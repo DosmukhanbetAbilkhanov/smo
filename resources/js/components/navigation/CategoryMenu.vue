@@ -4,12 +4,16 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useLocale } from '@/composables/useLocale';
 import { useCatalogStore } from '@/stores/catalog';
+import type { Category } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { ChevronDown, Layers } from 'lucide-vue-next';
+import { ChevronDown, ChevronRight, Layers } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
 const catalogStore = useCatalogStore();
@@ -18,6 +22,10 @@ const { getLocalizedName } = useLocale();
 const topLevelCategories = computed(() =>
     catalogStore.categories.filter((cat) => !cat.parent_id),
 );
+
+const hasChildren = (category: Category) => {
+    return category.children && category.children.length > 0;
+};
 
 onMounted(async () => {
     // Load categories if not already loaded
@@ -62,20 +70,55 @@ onMounted(async () => {
                 </DropdownMenuItem>
             </template>
 
-            <!-- Categories List -->
+            <!-- Categories List with Children Support -->
             <template v-else>
-                <DropdownMenuItem
+                <template
                     v-for="category in topLevelCategories"
                     :key="category.id"
-                    as-child
                 >
-                    <Link
-                        :href="`/categories/${category.slug}`"
-                        class="flex w-full cursor-pointer items-center"
-                    >
-                        {{ getLocalizedName(category) }}
-                    </Link>
-                </DropdownMenuItem>
+                    <!-- Category with Children - Use Submenu -->
+                    <DropdownMenuSub v-if="hasChildren(category)">
+                        <DropdownMenuSubTrigger>
+                            {{ getLocalizedName(category) }}
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent class="w-48">
+                            <!-- Parent Category Link -->
+                            <DropdownMenuItem as-child>
+                                <Link
+                                    :href="`/categories/${category.slug}`"
+                                    class="flex w-full cursor-pointer items-center font-medium"
+                                >
+                                    <Layers :size="14" class="mr-2" />
+                                    View All
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <!-- Children Categories -->
+                            <DropdownMenuItem
+                                v-for="child in category.children"
+                                :key="child.id"
+                                as-child
+                            >
+                                <Link
+                                    :href="`/categories/${child.slug}`"
+                                    class="flex w-full cursor-pointer items-center"
+                                >
+                                    {{ getLocalizedName(child) }}
+                                </Link>
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <!-- Category without Children - Direct Link -->
+                    <DropdownMenuItem v-else as-child>
+                        <Link
+                            :href="`/categories/${category.slug}`"
+                            class="flex w-full cursor-pointer items-center"
+                        >
+                            {{ getLocalizedName(category) }}
+                        </Link>
+                    </DropdownMenuItem>
+                </template>
             </template>
 
             <!-- Empty State -->
