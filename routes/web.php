@@ -1,15 +1,18 @@
 <?php
 
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+// Homepage
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Categories
+Route::get('/categories', [CatalogController::class, 'categories'])->name('categories.index');
+Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('categories.show');
+
+// Dashboard
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

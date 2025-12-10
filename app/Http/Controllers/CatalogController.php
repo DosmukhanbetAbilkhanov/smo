@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class CatalogController extends Controller
+{
+    /**
+     * Display all categories with hierarchy.
+     */
+    public function categories(): Response
+    {
+        // Cache categories for 30 minutes
+        $categories = Cache::remember('catalog.categories', 1800, function () {
+            return Category::where('is_active', true)
+                ->whereNull('parent_id')
+                ->with(['children' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('name_ru');
+                }])
+                ->orderBy('name_ru')
+                ->get();
+        });
+
+        return Inertia::render('Catalog/Categories', [
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Display a specific category and its products.
+     */
+    public function show(string $slug): Response
+    {
+        $category = Category::where('slug', $slug)
+            ->where('is_active', true)
+            ->with(['children' => function ($query) {
+                $query->where('is_active', true)
+                    ->orderBy('name_ru');
+            }])
+            ->firstOrFail();
+
+        // Get products in this category and its children
+        $categoryIds = [$category->id];
+        if ($category->children->isNotEmpty()) {
+            $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->toArray());
+        }
+
+        $products = Product::where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->whereHas('nomenclature', function ($query) use ($categoryIds) {
+                $query->whereIn('category_id', $categoryIds);
+            })
+            ->with(['nomenclature.unit', 'nomenclature.category', 'shop'])
+            ->latest()
+            ->paginate(24)
+            ->withQueryString();
+
+        return Inertia::render('Catalog/CategoryShow', [
+            'category' => $category,
+            'products' => $products,
+        ]);
+    }
+}
