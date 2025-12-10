@@ -737,3 +737,4 @@ All technical, framework-specific, or environment-specific rules are located in:
 
 Claude MUST read and follow both this file and the referenced guidelines file.
 - Before starting moving to the next phase create new branch for it
+- After successfully completing git commit phase, switch to the main branch and merge the completed phase with the main branch.
