@@ -124,4 +124,43 @@ class ProductController extends Controller
             'Product retrieved successfully'
         );
     }
+
+    /**
+     * Search products for autocomplete suggestions.
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = $request->input('q', '');
+        $limit = min($request->input('limit', 8), 20); // Max 20 results
+
+        if (strlen($query) < 2) {
+            return ApiResponse::success(
+                ['data' => []],
+                'Query too short'
+            );
+        }
+
+        $cacheKey = 'api.products.search.'.md5($query.'.'.$limit);
+
+        $products = Cache::remember($cacheKey, 300, function () use ($query, $limit) {
+            return Product::where('is_active', true)
+                ->where('quantity', '>', 0)
+                ->where(function ($q) use ($query) {
+                    $q->where('name_ru', 'like', "%{$query}%")
+                        ->orWhere('name_kz', 'like', "%{$query}%")
+                        ->orWhereHas('nomenclature', function ($nq) use ($query) {
+                            $nq->where('name_ru', 'like', "%{$query}%")
+                                ->orWhere('name_kz', 'like', "%{$query}%");
+                        });
+                })
+                ->with(['shop'])
+                ->limit($limit)
+                ->get();
+        });
+
+        return ApiResponse::success(
+            ['data' => ProductResource::collection($products)],
+            'Search results retrieved successfully'
+        );
+    }
 }

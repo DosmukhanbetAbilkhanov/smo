@@ -2,10 +2,11 @@
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Home, Package, Search, ShoppingBag, User } from 'lucide-vue-next';
+import { Package, ShoppingBag, User } from 'lucide-vue-next';
 import { computed } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
+import SearchBar from './SearchBar.vue';
 
 const cartStore = useCartStore();
 const page = usePage();
@@ -24,41 +25,25 @@ if (isAuthenticated.value) {
 <template>
     <nav class="border-b bg-background">
         <div class="container mx-auto px-4">
-            <div class="flex h-16 items-center justify-between">
+            <div class="flex h-16 items-center gap-4">
                 <!-- Logo -->
-                <Link href="/" class="flex items-center gap-2">
+                <Link href="/" class="flex flex-shrink-0 items-center gap-2">
                     <Package :size="24" class="text-primary" />
                     <span class="text-xl font-bold">SMO</span>
                 </Link>
 
-                <!-- Desktop Navigation -->
-                <div class="hidden items-center gap-1 md:flex">
-                    <Button variant="ghost" size="sm" as-child>
-                        <Link href="/">
-                            <Home :size="16" class="mr-2" />
-                            Home
-                        </Link>
-                    </Button>
-
+                <!-- Catalog Menu -->
+                <div class="hidden md:block">
                     <CategoryMenu />
+                </div>
 
-                    <Button variant="ghost" size="sm" as-child>
-                        <Link href="/products">
-                            <Package :size="16" class="mr-2" />
-                            Products
-                        </Link>
-                    </Button>
-
-                    <Button variant="ghost" size="sm" as-child>
-                        <Link href="/search">
-                            <Search :size="16" class="mr-2" />
-                            Search
-                        </Link>
-                    </Button>
+                <!-- Search Bar (Full Width) -->
+                <div class="hidden flex-1 md:block">
+                    <SearchBar />
                 </div>
 
                 <!-- Right Side Actions -->
-                <div class="flex items-center gap-2">
+                <div class="flex flex-shrink-0 items-center gap-2">
                     <LocaleSwitcher />
 
                     <!-- Cart Button -->
@@ -98,6 +83,11 @@ if (isAuthenticated.value) {
                         </Button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="pb-3 md:hidden">
+                <SearchBar />
             </div>
         </div>
     </nav>

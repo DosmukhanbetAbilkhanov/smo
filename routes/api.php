@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
 
     // Products
     Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/search', [ProductController::class, 'search']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
 
     // Protected routes

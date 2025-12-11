@@ -13,11 +13,11 @@ import { useLocale } from '@/composables/useLocale';
 import { useCatalogStore } from '@/stores/catalog';
 import type { Category } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { ChevronDown, ChevronRight, Layers } from 'lucide-vue-next';
+import { ChevronRight, Menu } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
 const catalogStore = useCatalogStore();
-const { getLocalizedName } = useLocale();
+const { getLocalizedName, t } = useLocale();
 
 const topLevelCategories = computed(() =>
     catalogStore.categories.filter((cat) => !cat.parent_id),
@@ -43,9 +43,8 @@ onMounted(async () => {
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" size="sm" class="gap-2">
-                <Layers :size="16" />
-                Categories
-                <ChevronDown :size="14" />
+                <Menu :size="20" />
+                {{ t({ ru: 'Каталог', kz: 'Каталог' }) }}
             </Button>
         </DropdownMenuTrigger>
 
@@ -56,17 +55,17 @@ onMounted(async () => {
                     href="/categories"
                     class="flex w-full cursor-pointer items-center"
                 >
-                    <Layers :size="16" class="mr-2" />
-                    <span class="font-medium">All Categories</span>
+                    <Menu :size="16" class="mr-2" />
+                    <span class="font-medium">{{ t({ ru: 'Все категории', kz: 'Барлық санаттар' }) }}</span>
                 </Link>
             </DropdownMenuItem>
 
             <!-- Loading State -->
             <template v-if="catalogStore.loading">
                 <DropdownMenuItem disabled>
-                    <span class="text-sm text-muted-foreground"
-                        >Loading...</span
-                    >
+                    <span class="text-sm text-muted-foreground">
+                        {{ t({ ru: 'Загрузка...', kz: 'Жүктелуде...' }) }}
+                    </span>
                 </DropdownMenuItem>
             </template>
 
@@ -88,8 +87,8 @@ onMounted(async () => {
                                     :href="`/categories/${category.slug}`"
                                     class="flex w-full cursor-pointer items-center font-medium"
                                 >
-                                    <Layers :size="14" class="mr-2" />
-                                    View All
+                                    <Menu :size="14" class="mr-2" />
+                                    {{ t({ ru: 'Все', kz: 'Барлығы' }) }}
                                 </Link>
                             </DropdownMenuItem>
 
@@ -126,9 +125,9 @@ onMounted(async () => {
                 v-if="!catalogStore.loading && topLevelCategories.length === 0"
                 disabled
             >
-                <span class="text-sm text-muted-foreground"
-                    >No categories found</span
-                >
+                <span class="text-sm text-muted-foreground">
+                    {{ t({ ru: 'Категории не найдены', kz: 'Санаттар табылмады' }) }}
+                </span>
             </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
