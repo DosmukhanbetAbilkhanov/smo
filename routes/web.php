@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -17,6 +18,9 @@ Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('cate
 Route::get('/products', [CatalogController::class, 'products'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/search', [CatalogController::class, 'search'])->name('search');
+
+// Cart
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 // Dashboard
 Route::get('dashboard', function () {
