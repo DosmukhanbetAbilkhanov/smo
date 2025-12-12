@@ -182,3 +182,65 @@ test('category show is cached', function () {
     $response->assertOk()
         ->assertJsonPath('data.slug', 'test-category');
 });
+
+test('can search categories by Russian name', function () {
+    Category::factory()->create(['name_ru' => 'Цемент', 'parent_id' => null]);
+    Category::factory()->create(['name_ru' => 'Кирпич', 'parent_id' => null]);
+    Category::factory()->create(['name_ru' => 'Бетон', 'parent_id' => null]);
+
+    $response = $this->getJson('/api/v1/categories?search='.urlencode('Цеме'));
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.name_ru', 'Цемент');
+});
+
+test('can search categories by Kazakh name', function () {
+    Category::factory()->create(['name_kz' => 'Цемент', 'parent_id' => null]);
+    Category::factory()->create(['name_kz' => 'Кірпіш', 'parent_id' => null]);
+    Category::factory()->create(['name_kz' => 'Бетон', 'parent_id' => null]);
+
+    $response = $this->getJson('/api/v1/categories?search='.urlencode('Кір'));
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.name_kz', 'Кірпіш');
+});
+
+test('search returns both parent and child categories', function () {
+    $parent = Category::factory()->create(['name_ru' => 'Цемент', 'parent_id' => null]);
+    Category::factory()->create(['name_ru' => 'Цемент М500', 'parent_id' => $parent->id]);
+    Category::factory()->create(['name_ru' => 'Кирпич', 'parent_id' => null]);
+
+    $response = $this->getJson('/api/v1/categories?search='.urlencode('Цемент'));
+
+    $response->assertOk()
+        ->assertJsonCount(2, 'data');
+});
+
+test('search respects limit parameter', function () {
+    Category::factory()->count(5)->create(['name_ru' => 'Цемент', 'parent_id' => null]);
+
+    $response = $this->getJson('/api/v1/categories?search='.urlencode('Цемент').'&limit=3');
+
+    $response->assertOk()
+        ->assertJsonCount(3, 'data');
+});
+
+test('search is not cached', function () {
+    Category::factory()->create(['name_ru' => 'Цемент', 'parent_id' => null]);
+
+    // First search request
+    $this->getJson('/api/v1/categories?search='.urlencode('Цемент'))
+        ->assertOk()
+        ->assertJsonCount(1, 'data');
+
+    // Create another matching category
+    Category::factory()->create(['name_ru' => 'Цемент М400', 'parent_id' => null]);
+
+    // Second search should return updated results (not cached)
+    $response = $this->getJson('/api/v1/categories?search='.urlencode('Цемент'));
+
+    $response->assertOk()
+        ->assertJsonCount(2, 'data');
+});

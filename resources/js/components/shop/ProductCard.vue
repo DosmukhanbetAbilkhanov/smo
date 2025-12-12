@@ -24,7 +24,7 @@ const cartStore = useCartStore();
 
 const productName = computed(() => getLocalizedName(props.product));
 const productImage = computed(
-    () => props.product.images?.[0] || '/images/placeholder-product.jpg',
+    () => props.product.images?.[0] || null,
 );
 const isOutOfStock = computed(() => props.product.quantity === 0);
 
@@ -48,10 +48,17 @@ async function handleAddToCart() {
             <CardHeader class="p-0">
                 <div class="relative aspect-square overflow-hidden bg-muted">
                     <img
+                        v-if="productImage"
                         :src="productImage"
                         :alt="productName"
                         class="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
+                    <div
+                        v-else
+                        class="flex h-full w-full items-center justify-center bg-muted"
+                    >
+                        <span class="text-4xl text-muted-foreground/20">📦</span>
+                    </div>
                     <div
                         v-if="isOutOfStock"
                         class="absolute inset-0 flex items-center justify-center bg-background/80"

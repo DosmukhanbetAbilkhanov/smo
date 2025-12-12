@@ -619,3 +619,129 @@ test('products are cached', function () {
     $response->assertOk()
         ->assertJsonPath('data.name_ru', $originalName);
 });
+
+test('can search products using autocomplete endpoint', function () {
+    Cache::flush();
+
+    $unit = Unit::factory()->create();
+    $category = Category::factory()->create();
+    $nomenclature = Nomenclature::factory()->create([
+        'unit_id' => $unit->id,
+        'category_id' => $category->id,
+    ]);
+
+    $city = City::factory()->create();
+    $company = Company::factory()->create(['city_id' => $city->id]);
+    $shop = Shop::factory()->create([
+        'company_id' => $company->id,
+        'city_id' => $city->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Cable Wire VVG',
+        'name_kz' => 'Cable Wire VVG',
+        'is_active' => true,
+        'quantity' => 10,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Cable Tray Metal',
+        'name_kz' => 'Cable Tray Metal',
+        'is_active' => true,
+        'quantity' => 5,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Socket Outlet',
+        'name_kz' => 'Socket Outlet',
+        'is_active' => true,
+        'quantity' => 0,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    $response = $this->getJson('/api/v1/products/search?q=Cable&limit=5');
+
+    $response->assertOk()
+        ->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                'data' => [
+                    '*' => [
+                        'id',
+                        'name_ru',
+                        'name_kz',
+                        'price',
+                        'quantity',
+                        'images',
+                        'shop',
+                    ],
+                ],
+            ],
+        ])
+        ->assertJson([
+            'success' => true,
+        ])
+        ->assertJsonCount(2, 'data.data');
+});
+
+test('autocomplete search requires minimum 2 characters', function () {
+    $response = $this->getJson('/api/v1/products/search?q=a&limit=5');
+
+    $response->assertOk()
+        ->assertJsonPath('data.data', [])
+        ->assertJsonPath('message', 'Query too short');
+});
+
+test('autocomplete search only returns active products with stock', function () {
+    Cache::flush();
+
+    $unit = Unit::factory()->create();
+    $category = Category::factory()->create();
+    $nomenclature = Nomenclature::factory()->create([
+        'unit_id' => $unit->id,
+        'category_id' => $category->id,
+    ]);
+
+    $city = City::factory()->create();
+    $company = Company::factory()->create(['city_id' => $city->id]);
+    $shop = Shop::factory()->create([
+        'company_id' => $company->id,
+        'city_id' => $city->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Active Product',
+        'is_active' => true,
+        'quantity' => 10,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Inactive Product',
+        'is_active' => false,
+        'quantity' => 10,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    Product::factory()->create([
+        'name_ru' => 'Out of Stock Product',
+        'is_active' => true,
+        'quantity' => 0,
+        'nomenclature_id' => $nomenclature->id,
+        'shop_id' => $shop->id,
+    ]);
+
+    $response = $this->getJson('/api/v1/products/search?q=Product&limit=10');
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data.data')
+        ->assertJsonPath('data.data.0.name_ru', 'Active Product');
+});

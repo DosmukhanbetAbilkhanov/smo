@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { computed, type HTMLAttributes } from 'vue';
 
 interface Props {
-    price: number;
+    price: number | string;
     currency?: string;
     class?: HTMLAttributes['class'];
     showDecimals?: boolean;
@@ -15,9 +15,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const formattedPrice = computed(() => {
+    const numericPrice = typeof props.price === 'string'
+        ? parseFloat(props.price)
+        : props.price;
+
     const price = props.showDecimals
-        ? props.price.toFixed(2)
-        : Math.round(props.price).toString();
+        ? numericPrice.toFixed(2)
+        : Math.round(numericPrice).toString();
 
     // Add thousand separators
     return price.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');

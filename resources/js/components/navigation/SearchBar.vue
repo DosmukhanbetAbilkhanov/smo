@@ -4,23 +4,27 @@ import { useLocale } from '@/composables/useLocale';
 import type { Product } from '@/types/api';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Loader2, Search, X } from 'lucide-vue-next';
+import { Loader2, Search, Tag, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const { t } = useLocale();
 
 const searchQuery = ref('');
-const suggestions = ref<Product[]>([]);
+const productSuggestions = ref<Product[]>([]);
+const categorySuggestions = ref<any[]>([]);
 const isLoading = ref(false);
 const showDropdown = ref(false);
 const searchDebounce = ref<number | null>(null);
 const searchContainer = ref<HTMLElement | null>(null);
 
-const hasSuggestions = computed(() => suggestions.value.length > 0);
+const hasSuggestions = computed(
+    () => productSuggestions.value.length > 0 || categorySuggestions.value.length > 0
+);
 
 async function fetchSuggestions(query: string) {
     if (!query.trim() || query.length < 2) {
-        suggestions.value = [];
+        productSuggestions.value = [];
+        categorySuggestions.value = [];
         showDropdown.value = false;
         return;
     }
@@ -28,18 +32,29 @@ async function fetchSuggestions(query: string) {
     isLoading.value = true;
 
     try {
-        const response = await axios.get('/api/products/search', {
-            params: {
-                q: query,
-                limit: 8,
-            },
-        });
+        // Fetch both products and categories in parallel
+        const [productsResponse, categoriesResponse] = await Promise.all([
+            axios.get('/api/v1/products/search', {
+                params: { q: query, limit: 6 },
+            }),
+            axios.get('/api/v1/categories', {
+                params: { search: query, limit: 4 },
+            }),
+        ]);
 
-        suggestions.value = response.data.data || [];
-        showDropdown.value = suggestions.value.length > 0;
+        productSuggestions.value = productsResponse.data.data?.data || [];
+        categorySuggestions.value = categoriesResponse.data.data || [];
+
+        showDropdown.value = hasSuggestions.value;
+
+        console.log(`Search for "${query}":`, {
+            products: productSuggestions.value.length,
+            categories: categorySuggestions.value.length
+        });
     } catch (error) {
         console.error('Failed to fetch suggestions:', error);
-        suggestions.value = [];
+        productSuggestions.value = [];
+        categorySuggestions.value = [];
     } finally {
         isLoading.value = false;
     }
@@ -62,14 +77,20 @@ function handleSearch() {
     }
 }
 
-function selectSuggestion(product: Product) {
+function selectProduct(product: Product) {
     showDropdown.value = false;
     router.get(`/products/${product.id}`);
 }
 
+function selectCategory(category: any) {
+    showDropdown.value = false;
+    router.get(`/categories/${category.slug}`);
+}
+
 function clearSearch() {
     searchQuery.value = '';
-    suggestions.value = [];
+    productSuggestions.value = [];
+    categorySuggestions.value = [];
     showDropdown.value = false;
 }
 
@@ -141,40 +162,70 @@ onUnmounted(() => {
         >
             <div
                 v-if="showDropdown && hasSuggestions"
-                class="absolute top-full left-0 right-0 z-50 mt-2 max-h-[400px] overflow-y-auto rounded-lg border bg-popover shadow-lg"
+                class="absolute top-full left-0 right-0 z-50 mt-2 max-h-[500px] overflow-y-auto rounded-lg border bg-popover shadow-lg"
             >
                 <div class="p-2">
-                    <div class="mb-2 px-2 text-xs text-muted-foreground">
-                        {{ t({ ru: 'Предложения', kz: 'Ұсыныстар' }) }}
-                    </div>
-                    <button
-                        v-for="product in suggestions"
-                        :key="product.id"
-                        @click="selectSuggestion(product)"
-                        class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-accent"
-                    >
-                        <div
-                            class="h-12 w-12 flex-shrink-0 overflow-hidden rounded border bg-muted"
+                    <!-- Categories Section -->
+                    <div v-if="categorySuggestions.length > 0" class="mb-3">
+                        <div class="mb-2 px-2 text-xs font-medium text-muted-foreground">
+                            {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
+                        </div>
+                        <button
+                            v-for="category in categorySuggestions"
+                            :key="category.id"
+                            @click="selectCategory(category)"
+                            class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-accent"
                         >
-                            <img
-                                v-if="product.images?.[0]"
-                                :src="product.images[0]"
-                                :alt="product.name_ru"
-                                class="h-full w-full object-cover"
-                            />
+                            <div
+                                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10"
+                            >
+                                <Tag :size="18" class="text-primary" />
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="truncate text-sm font-medium">
+                                    {{ category.name_ru }}
+                                </p>
+                                <p class="text-xs text-muted-foreground">
+                                    {{ t({ ru: 'Категория', kz: 'Санат' }) }}
+                                </p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Products Section -->
+                    <div v-if="productSuggestions.length > 0">
+                        <div class="mb-2 px-2 text-xs font-medium text-muted-foreground">
+                            {{ t({ ru: 'Товары', kz: 'Тауарлар' }) }}
                         </div>
-                        <div class="flex-1 overflow-hidden">
-                            <p class="truncate text-sm font-medium">
-                                {{ product.name_ru }}
-                            </p>
-                            <p class="text-xs text-muted-foreground">
-                                {{ product.price }} ₸
-                                <span v-if="product.shop" class="ml-2">
-                                    · {{ product.shop.name }}
-                                </span>
-                            </p>
-                        </div>
-                    </button>
+                        <button
+                            v-for="product in productSuggestions"
+                            :key="product.id"
+                            @click="selectProduct(product)"
+                            class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-accent"
+                        >
+                            <div
+                                class="h-12 w-12 flex-shrink-0 overflow-hidden rounded border bg-muted"
+                            >
+                                <img
+                                    v-if="product.images?.[0]"
+                                    :src="product.images[0]"
+                                    :alt="product.name_ru"
+                                    class="h-full w-full object-cover"
+                                />
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="truncate text-sm font-medium">
+                                    {{ product.name_ru }}
+                                </p>
+                                <p class="text-xs text-muted-foreground">
+                                    {{ product.price }} ₸
+                                    <span v-if="product.shop" class="ml-2">
+                                        · {{ product.shop.name }}
+                                    </span>
+                                </p>
+                            </div>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- View All Results -->

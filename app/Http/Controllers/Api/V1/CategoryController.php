@@ -17,11 +17,30 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $categories = Cache::remember('api.categories.index', 3600, function () {
-            return Category::with(['specs', 'children'])
-                ->whereNull('parent_id')
-                ->get();
-        });
+        $search = request('search');
+        $limit = request('limit', null);
+
+        if ($search) {
+            // Search in both Russian and Kazakh names
+            $query = Category::with(['specs', 'children'])
+                ->where(function ($q) use ($search) {
+                    $q->where('name_ru', 'like', "%{$search}%")
+                        ->orWhere('name_kz', 'like', "%{$search}%");
+                });
+
+            if ($limit) {
+                $query->limit((int) $limit);
+            }
+
+            $categories = $query->get();
+        } else {
+            // Return cached top-level categories
+            $categories = Cache::remember('api.categories.index', 3600, function () {
+                return Category::with(['specs', 'children'])
+                    ->whereNull('parent_id')
+                    ->get();
+            });
+        }
 
         return ApiResponse::success(
             CategoryResource::collection($categories),
