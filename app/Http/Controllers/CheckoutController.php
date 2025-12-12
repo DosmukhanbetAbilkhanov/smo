@@ -12,11 +12,6 @@ use Inertia\Response;
 
 class CheckoutController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'verified']);
-    }
-
     /**
      * Show the checkout page.
      */
