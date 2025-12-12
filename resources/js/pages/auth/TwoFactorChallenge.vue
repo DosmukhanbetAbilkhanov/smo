@@ -8,7 +8,10 @@ import {
     PinInputSlot,
 } from '@/components/ui/pin-input';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { store } from '@/routes/two-factor/login';
+// Dummy store for 2FA login (2FA is disabled)
+const store = {
+    form: () => ({ action: '/two-factor-challenge', method: 'post' }),
+};
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 

@@ -15,7 +15,7 @@ import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
 import type { CartItem } from '@/types/api';
 import { Head, Link } from '@inertiajs/vue3';
-import { Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-vue-next';
+import { Minus, Plus, ShoppingBag, Store, Trash2, X } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
 const cartStore = useCartStore();
@@ -85,7 +85,7 @@ function getItemSubtotal(item: any) {
 
             <!-- Loading State -->
             <div
-                v-if="cartStore.loading && !cartStore.cart"
+                v-if="cartStore.loading && cartStore.carts.length === 0"
                 class="flex items-center justify-center py-12"
             >
                 <div class="text-center">
@@ -119,33 +119,51 @@ function getItemSubtotal(item: any) {
 
             <!-- Cart Content -->
             <div v-else class="grid gap-8 lg:grid-cols-3">
-                <!-- Cart Items -->
-                <div class="lg:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <div
-                                class="flex items-center justify-between"
-                            >
-                                <CardTitle>
-                                    Cart Items ({{ cartStore.itemsCount }})
-                                </CardTitle>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    @click="handleClearCart"
-                                    :disabled="cartStore.loading"
+                <!-- Cart Items Grouped by Shop -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Header with Clear All Button -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold">Your Cart</h2>
+                            <p class="text-sm text-muted-foreground">
+                                {{ cartStore.itemsCount }} {{ cartStore.itemsCount === 1 ? 'item' : 'items' }}
+                                from {{ cartStore.carts.length }} {{ cartStore.carts.length === 1 ? 'shop' : 'shops' }}
+                            </p>
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            @click="handleClearCart"
+                            :disabled="cartStore.loading"
+                        >
+                            <Trash2 :size="16" class="mr-2" />
+                            Clear All
+                        </Button>
+                    </div>
+                    <div
+                        v-for="cart in cartStore.carts"
+                        :key="cart.id"
+                    >
+                        <Card>
+                            <CardHeader>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <Store :size="20" class="text-primary" />
+                                        <div>
+                                            <CardTitle>{{ cart.shop?.name }}</CardTitle>
+                                            <p class="text-sm text-muted-foreground">
+                                                {{ cart.items_count }} {{ cart.items_count === 1 ? 'item' : 'items' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent class="space-y-4">
+                                <div
+                                    v-for="item in cart.items"
+                                    :key="item.id"
+                                    class="flex gap-4 rounded-lg border p-4"
                                 >
-                                    <Trash2 :size="16" class="mr-2" />
-                                    Clear Cart
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent class="space-y-4">
-                            <div
-                                v-for="item in cartStore.items"
-                                :key="item.id"
-                                class="flex gap-4 rounded-lg border p-4"
-                            >
                                 <!-- Product Image -->
                                 <Link
                                     :href="`/products/${item.product_id}`"
@@ -184,12 +202,6 @@ function getItemSubtotal(item: any) {
                                                     {{ getProductName(item) }}
                                                 </h3>
                                             </Link>
-                                            <p
-                                                v-if="item.product?.shop"
-                                                class="mt-1 text-sm text-muted-foreground"
-                                            >
-                                                {{ item.product.shop.name }}
-                                            </p>
                                         </div>
                                         <Button
                                             variant="ghost"
@@ -273,7 +285,14 @@ function getItemSubtotal(item: any) {
                                 </div>
                             </div>
                         </CardContent>
+                        <CardFooter class="border-t bg-muted/50">
+                            <div class="flex w-full items-center justify-between">
+                                <span class="font-medium">Shop Subtotal</span>
+                                <PriceDisplay :price="cart.total" class="text-lg font-semibold" />
+                            </div>
+                        </CardFooter>
                     </Card>
+                    </div>
                 </div>
 
                 <!-- Cart Summary -->
@@ -283,6 +302,29 @@ function getItemSubtotal(item: any) {
                             <CardTitle>Order Summary</CardTitle>
                         </CardHeader>
                         <CardContent class="space-y-4">
+                            <!-- Shop Breakdown -->
+                            <div class="space-y-3">
+                                <div
+                                    v-for="cart in cartStore.carts"
+                                    :key="cart.id"
+                                    class="flex items-start justify-between text-sm"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <Store :size="14" class="text-muted-foreground" />
+                                        <div>
+                                            <div class="font-medium">{{ cart.shop?.name }}</div>
+                                            <div class="text-xs text-muted-foreground">
+                                                {{ cart.items_count }} {{ cart.items_count === 1 ? 'item' : 'items' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <PriceDisplay :price="cart.total" class="font-medium" />
+                                </div>
+                            </div>
+
+                            <Separator />
+
+                            <!-- Total -->
                             <div
                                 class="flex items-center justify-between text-sm"
                             >

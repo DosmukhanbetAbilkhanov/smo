@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Package, ShoppingBag, User } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
 import SearchBar from './SearchBar.vue';
@@ -14,12 +14,21 @@ const page = usePage();
 const isAuthenticated = computed(() => !!page.props.auth?.user);
 const cartItemsCount = computed(() => cartStore.itemsCount);
 
-// Fetch cart on mount if user is authenticated
-if (isAuthenticated.value) {
-    cartStore.fetchCart().catch(() => {
-        // Ignore errors on initial load
-    });
-}
+// Initialize cart when user is authenticated
+onMounted(() => {
+    if (isAuthenticated.value) {
+        cartStore.initialize();
+    }
+});
+
+// Watch for authentication changes
+watch(isAuthenticated, (newValue) => {
+    if (newValue) {
+        cartStore.initialize();
+    } else {
+        cartStore.reset();
+    }
+});
 </script>
 
 <template>

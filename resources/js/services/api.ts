@@ -10,6 +10,7 @@ import type {
     PaginatedResponse,
     Product,
     ProductFilters,
+    UnifiedCart,
     UpdateCartItemData,
 } from '@/types/api';
 import axios, { AxiosError, AxiosInstance } from 'axios';
@@ -26,16 +27,22 @@ const apiClient: AxiosInstance = axios.create({
         'Content-Type': 'application/json',
         Accept: 'application/json',
     },
-    withCredentials: true, // Required for Laravel Sanctum cookie-based auth
-    withXSRFToken: true, // Automatically send XSRF token
+    withCredentials: true, // Required for session-based auth
+    withXSRFToken: true, // Automatically send XSRF token from cookie
 });
 
-// Request interceptor - add locale header
+// Request interceptor - add locale header and CSRF token
 apiClient.interceptors.request.use(
     (config) => {
         // Get locale from localStorage or default to 'ru'
         const locale = localStorage.getItem('locale') || 'ru';
         config.headers['Accept-Language'] = locale;
+
+        // Get CSRF token from meta tag or cookie
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (csrfToken) {
+            config.headers['X-CSRF-TOKEN'] = csrfToken;
+        }
 
         return config;
     },
@@ -47,19 +54,20 @@ apiClient.interceptors.request.use(
 // Response interceptor - handle errors
 apiClient.interceptors.response.use(
     (response) => response,
-    (error: AxiosError<ApiError>) => {
+    async (error: AxiosError<ApiError>) => {
         // Handle common error scenarios
         if (error.response) {
             const { status, data } = error.response;
 
-            // Handle 401 Unauthorized - redirect to login
-            if (status === 401) {
-                window.location.href = '/login';
+            // Handle 419 CSRF token mismatch
+            if (status === 419) {
+                console.error('CSRF token mismatch. Please refresh the page.');
             }
 
-            // Handle 419 CSRF token mismatch - reload page to get fresh token
-            if (status === 419) {
-                window.location.reload();
+            // Handle 401 Unauthorized - let the application handle it gracefully
+            // Don't redirect automatically, as this interferes with Inertia's auth
+            if (status === 401) {
+                console.warn('Unauthorized API request:', error.config?.url);
             }
 
             // Return error data
@@ -123,21 +131,23 @@ export const productApi = {
  */
 export const cartApi = {
     getCart: () =>
-        apiClient.get<ApiResponse<Cart>>('/cart').then((r) => r.data),
+        apiClient
+            .get<ApiResponse<UnifiedCart>>('/cart')
+            .then((r) => r.data),
 
     addItem: (data: AddToCartData) =>
         apiClient
-            .post<ApiResponse<CartItem>>('/cart/items', data)
+            .post<ApiResponse<Cart>>('/cart/items', data)
             .then((r) => r.data),
 
     updateItem: (itemId: number, data: UpdateCartItemData) =>
         apiClient
-            .patch<ApiResponse<CartItem>>(`/cart/items/${itemId}`, data)
+            .patch<ApiResponse<Cart>>(`/cart/items/${itemId}`, data)
             .then((r) => r.data),
 
     removeItem: (itemId: number) =>
         apiClient
-            .delete<ApiResponse<void>>(`/cart/items/${itemId}`)
+            .delete<ApiResponse<Cart>>(`/cart/items/${itemId}`)
             .then((r) => r.data),
 
     clearCart: () =>

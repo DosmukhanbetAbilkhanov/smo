@@ -50,7 +50,7 @@ onMounted(async () => {
 
         <DropdownMenuContent align="start" class="w-56">
             <!-- All Categories Link -->
-            <DropdownMenuItem as-child>
+            <!-- <DropdownMenuItem as-child>
                 <Link
                     href="/categories"
                     class="flex w-full cursor-pointer items-center"
@@ -58,7 +58,7 @@ onMounted(async () => {
                     <Menu :size="16" class="mr-2" />
                     <span class="font-medium">{{ t({ ru: 'Все категории', kz: 'Барлық санаттар' }) }}</span>
                 </Link>
-            </DropdownMenuItem>
+            </DropdownMenuItem> -->
 
             <!-- Loading State -->
             <template v-if="catalogStore.loading">
@@ -82,7 +82,7 @@ onMounted(async () => {
                         </DropdownMenuSubTrigger>
                         <DropdownMenuSubContent class="w-48">
                             <!-- Parent Category Link -->
-                            <DropdownMenuItem as-child>
+                            <!-- <DropdownMenuItem as-child>
                                 <Link
                                     :href="`/categories/${category.slug}`"
                                     class="flex w-full cursor-pointer items-center font-medium"
@@ -90,7 +90,7 @@ onMounted(async () => {
                                     <Menu :size="14" class="mr-2" />
                                     {{ t({ ru: 'Все', kz: 'Барлығы' }) }}
                                 </Link>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> -->
 
                             <!-- Children Categories -->
                             <DropdownMenuItem

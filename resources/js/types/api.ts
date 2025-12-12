@@ -154,6 +154,12 @@ export interface Cart {
     updated_at: string;
 }
 
+export interface UnifiedCart {
+    carts: Cart[];
+    total_items: number;
+    total_amount: number;
+}
+
 // Order interfaces
 export interface OrderItem {
     id: number;

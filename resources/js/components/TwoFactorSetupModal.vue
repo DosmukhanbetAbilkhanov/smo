@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/pin-input';
 import { Spinner } from '@/components/ui/spinner';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
@@ -33,6 +32,14 @@ const isOpen = defineModel<boolean>('isOpen');
 const { copy, copied } = useClipboard();
 const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
     useTwoFactorAuth();
+
+// Fortify route for confirming two-factor authentication
+const confirm = {
+    form: () => ({
+        action: '/user/confirmed-two-factor-authentication',
+        method: 'post' as const,
+    }),
+};
 
 const showVerificationStep = ref(false);
 const code = ref<number[]>([]);

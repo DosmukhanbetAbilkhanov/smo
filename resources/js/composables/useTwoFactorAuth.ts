@@ -1,9 +1,9 @@
-import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 import { computed, ref } from 'vue';
 
 const fetchJson = async <T>(url: string): Promise<T> => {
     const response = await fetch(url, {
         headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
     });
 
     if (!response.ok) {
@@ -11,6 +11,13 @@ const fetchJson = async <T>(url: string): Promise<T> => {
     }
 
     return response.json();
+};
+
+// Fortify routes (these are provided by Laravel Fortify, not Wayfinder)
+const routes = {
+    qrCode: '/user/two-factor-qr-code',
+    secretKey: '/user/two-factor-secret-key',
+    recoveryCodes: '/user/two-factor-recovery-codes',
 };
 
 const errors = ref<string[]>([]);
@@ -26,7 +33,7 @@ export const useTwoFactorAuth = () => {
     const fetchQrCode = async (): Promise<void> => {
         try {
             const { svg } = await fetchJson<{ svg: string; url: string }>(
-                qrCode.url(),
+                routes.qrCode,
             );
 
             qrCodeSvg.value = svg;
@@ -39,7 +46,7 @@ export const useTwoFactorAuth = () => {
     const fetchSetupKey = async (): Promise<void> => {
         try {
             const { secretKey: key } = await fetchJson<{ secretKey: string }>(
-                secretKey.url(),
+                routes.secretKey,
             );
 
             manualSetupKey.value = key;
@@ -69,7 +76,7 @@ export const useTwoFactorAuth = () => {
         try {
             clearErrors();
             recoveryCodesList.value = await fetchJson<string[]>(
-                recoveryCodes.url(),
+                routes.recoveryCodes,
             );
         } catch {
             errors.value.push('Failed to fetch recovery codes');

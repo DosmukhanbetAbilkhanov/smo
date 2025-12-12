@@ -28,17 +28,19 @@ Route::prefix('v1')->group(function () {
     Route::get('/products/search', [ProductController::class, 'search']);
     Route::get('/products/{id}', [ProductController::class, 'show']);
 
-    // Protected routes
-    Route::middleware('auth:sanctum')->group(function () {
+    // Protected routes - using web auth with session for SPA
+    Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
 
         // Cart routes
+        Route::get('/cart', [CartController::class, 'getCurrent']); // Unified cart view
+        Route::delete('/cart', [CartController::class, 'clearAll']); // Clear all carts
         Route::get('/carts', [CartController::class, 'index']);
         Route::get('/carts/{shopId}', [CartController::class, 'show']);
-        Route::post('/cart/add', [CartController::class, 'add']);
-        Route::put('/cart/items/{itemId}', [CartController::class, 'update']);
+        Route::post('/cart/items', [CartController::class, 'add']);
+        Route::patch('/cart/items/{itemId}', [CartController::class, 'update']);
         Route::delete('/cart/items/{itemId}', [CartController::class, 'remove']);
         Route::delete('/carts/{shopId}', [CartController::class, 'clear']);
 

@@ -31,6 +31,23 @@ class CartController extends Controller
     }
 
     /**
+     * Get unified cart view (all carts combined).
+     */
+    public function getCurrent(Request $request): JsonResponse
+    {
+        $carts = Cart::where('user_id', $request->user()->id)
+            ->with(['shop', 'items.product.nomenclature.unit', 'items.product.shop'])
+            ->get();
+
+        // Return unified cart data
+        return ApiResponse::success([
+            'carts' => CartResource::collection($carts),
+            'total_items' => $carts->sum('items_count'),
+            'total_amount' => $carts->sum('total'),
+        ], 'Cart retrieved successfully');
+    }
+
+    /**
      * Get cart for a specific shop.
      */
     public function show(Request $request, int $shopId): JsonResponse
@@ -184,6 +201,20 @@ class CartController extends Controller
             new CartResource($cart),
             'Cart cleared successfully'
         );
+    }
+
+    /**
+     * Clear all carts for the authenticated user.
+     */
+    public function clearAll(Request $request): JsonResponse
+    {
+        $carts = Cart::where('user_id', $request->user()->id)->get();
+
+        foreach ($carts as $cart) {
+            $cart->items()->delete();
+        }
+
+        return ApiResponse::success(null, 'All carts cleared successfully');
     }
 
     /**

@@ -38,6 +38,8 @@ const cartStore = useCartStore();
 
 const quantity = ref(1);
 const selectedImageIndex = ref(0);
+const adding = ref(false);
+const showSuccess = ref(false);
 
 const productName = computed(() => getLocalizedName(props.product));
 const productImages = computed(() => props.product.images || []);
@@ -77,15 +79,27 @@ function selectImage(index: number) {
 }
 
 async function handleAddToCart() {
-    if (isOutOfStock.value) return;
+    if (isOutOfStock.value || adding.value) return;
+
+    adding.value = true;
+    showSuccess.value = false;
 
     try {
         await cartStore.addItem({
             product_id: props.product.id,
             quantity: quantity.value,
         });
+
+        // Show success feedback
+        showSuccess.value = true;
+        setTimeout(() => {
+            showSuccess.value = false;
+        }, 2000);
     } catch (error) {
         console.error('Failed to add to cart:', error);
+        alert('Failed to add item to cart. Please try again.');
+    } finally {
+        adding.value = false;
     }
 }
 </script>
@@ -271,12 +285,15 @@ async function handleAddToCart() {
 
                         <Button
                             @click="handleAddToCart"
-                            :disabled="isOutOfStock || cartStore.loading"
+                            :disabled="isOutOfStock || adding"
                             size="lg"
                             class="w-full gap-2"
                         >
                             <ShoppingCart :size="20" />
-                            <span v-if="cartStore.loading">
+                            <span v-if="showSuccess">
+                                {{ t({ ru: '✓ Добавлено!', kz: '✓ Қосылды!' }) }}
+                            </span>
+                            <span v-else-if="adding">
                                 {{ t({ ru: 'Добавление...', kz: 'Қосылуда...' }) }}
                             </span>
                             <span v-else-if="isOutOfStock">

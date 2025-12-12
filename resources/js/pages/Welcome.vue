@@ -23,9 +23,9 @@ defineProps<Props>();
         <section
             class="border-b bg-gradient-to-br from-primary/5 to-primary/10"
         >
-            <div class="container mx-auto px-4 py-16 lg:py-24">
+            <div class="container mx-auto px-4 py-4 lg:py-24">
                 <div class="mx-auto max-w-3xl text-center">
-                    <h1 class="text-4xl font-bold tracking-tight lg:text-6xl">
+                    <h1 class="text-2xl font-bold tracking-tight lg:text-4xl">
                         Building Materials Marketplace
                     </h1>
                     <p class="mt-6 text-lg text-muted-foreground lg:text-xl">
@@ -33,7 +33,7 @@ defineProps<Props>();
                         across Kazakhstan. Fast delivery, competitive prices,
                         and reliable service.
                     </p>
-                    <div
+                    <!-- <div
                         class="mt-10 flex flex-wrap items-center justify-center gap-4"
                     >
                         <Button size="lg" as-child>
@@ -45,11 +45,11 @@ defineProps<Props>();
                         <Button size="lg" variant="outline" as-child>
                             <Link href="/products"> View All Products </Link>
                         </Button>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Features -->
-                <div class="mt-16 grid gap-8 md:grid-cols-3">
+                <!-- <div class="mt-16 grid gap-8 md:grid-cols-3">
                     <div class="flex flex-col items-center text-center">
                         <div
                             class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10"
@@ -83,7 +83,7 @@ defineProps<Props>();
                             Simple checkout process with secure payments
                         </p>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
 

@@ -10,8 +10,8 @@ import { useLocale } from '@/composables/useLocale';
 import { useCartStore } from '@/stores/cart';
 import type { Product } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { ShoppingCart } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { Check, ShoppingCart } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import PriceDisplay from './PriceDisplay.vue';
 
 interface Props {
@@ -27,17 +27,31 @@ const productImage = computed(
     () => props.product.images?.[0] || null,
 );
 const isOutOfStock = computed(() => props.product.quantity === 0);
+const adding = ref(false);
+const showSuccess = ref(false);
 
 async function handleAddToCart() {
-    if (isOutOfStock.value) return;
+    if (isOutOfStock.value || adding.value) return;
+
+    adding.value = true;
+    showSuccess.value = false;
 
     try {
         await cartStore.addItem({
             product_id: props.product.id,
             quantity: 1,
         });
+
+        // Show success feedback
+        showSuccess.value = true;
+        setTimeout(() => {
+            showSuccess.value = false;
+        }, 2000);
     } catch (error) {
         console.error('Failed to add to cart:', error);
+        alert('Failed to add item to cart. Please try again.');
+    } finally {
+        adding.value = false;
     }
 }
 </script>
@@ -91,12 +105,15 @@ async function handleAddToCart() {
         <CardFooter class="p-4 pt-0">
             <Button
                 @click="handleAddToCart"
-                :disabled="isOutOfStock || cartStore.loading"
+                :disabled="isOutOfStock || adding"
+                :variant="showSuccess ? 'default' : 'default'"
                 class="w-full gap-2"
                 size="sm"
             >
-                <ShoppingCart :size="16" />
-                <span v-if="cartStore.loading">Adding...</span>
+                <Check v-if="showSuccess" :size="16" />
+                <ShoppingCart v-else :size="16" />
+                <span v-if="showSuccess">Added!</span>
+                <span v-else-if="adding">Adding...</span>
                 <span v-else-if="isOutOfStock">Out of Stock</span>
                 <span v-else>Add to Cart</span>
             </Button>

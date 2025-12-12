@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { disable, enable, show } from '@/routes/two-factor';
+import { show } from '@/routes/two-factor';
 import { BreadcrumbItem } from '@/types';
 import { Form, Head } from '@inertiajs/vue3';
 import { ShieldBan, ShieldCheck } from 'lucide-vue-next';
@@ -22,6 +22,21 @@ withDefaults(defineProps<Props>(), {
     requiresConfirmation: false,
     twoFactorEnabled: false,
 });
+
+// Fortify routes for enabling/disabling 2FA
+const enable = {
+    form: () => ({
+        action: '/user/two-factor-authentication',
+        method: 'post' as const,
+    }),
+};
+
+const disable = {
+    form: () => ({
+        action: '/user/two-factor-authentication',
+        method: 'delete' as const,
+    }),
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
