@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,6 +15,7 @@ Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('cate
 
 // Products & Search
 Route::get('/products', [CatalogController::class, 'products'])->name('products.index');
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/search', [CatalogController::class, 'search'])->name('search');
 
 // Dashboard
