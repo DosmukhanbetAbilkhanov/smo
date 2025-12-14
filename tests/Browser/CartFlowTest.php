@@ -106,7 +106,7 @@ it('allows removing items from cart', function () {
         ->assertNoJavascriptErrors();
 });
 
-it('displays cart summary with correct total', function () {
+it('displays cart with shop subtotal and proceed button', function () {
     actingAs($this->user);
 
     // Add multiple products to cart
@@ -118,9 +118,7 @@ it('displays cart summary with correct total', function () {
     // Visit cart page
     $page = visit('/cart');
 
-    $page->assertSee('Order Summary')
-        ->assertSee('Subtotal')
-        ->assertSee('Total')
+    $page->assertSee('Shop Subtotal')
         ->assertSee('Proceed to Checkout')
         ->assertNoJavascriptErrors();
 });
@@ -150,7 +148,7 @@ it('allows clearing the entire cart', function () {
         ->assertNoJavascriptErrors();
 });
 
-it('navigates to checkout when checkout button is clicked', function () {
+it('navigates to checkout with shop_id when checkout button is clicked', function () {
     actingAs($this->user);
 
     // Add a product to cart
@@ -165,8 +163,9 @@ it('navigates to checkout when checkout button is clicked', function () {
     // Wait for cart to load
     $page->pause(1000);
 
-    // Click checkout button
-    $page->click('a[href="/checkout"]')
+    // Click checkout button - the link should contain shop_id as a query parameter
+    $page->click('a[href*="/checkout?shop_id="]')
+        ->pause(500)
         ->assertNoJavascriptErrors();
 });
 
@@ -177,4 +176,26 @@ it('displays loading state while fetching cart', function () {
 
     // The loading state should appear briefly before showing content
     $page->assertNoJavascriptErrors();
+});
+
+it('displays order summary on checkout page for selected shop', function () {
+    actingAs($this->user);
+
+    // Add a product to cart
+    $this->postJson('/api/cart/items', [
+        'product_id' => $this->products->first()->id,
+        'quantity' => 2,
+    ])->assertSuccessful();
+
+    // Visit checkout page with shop_id
+    $page = visit('/checkout?shop_id='.$this->shop->id);
+
+    // Wait for page to load
+    $page->pause(1000);
+
+    // Should see Order Summary on checkout page
+    $page->assertSee('Order Summary')
+        ->assertSee('Subtotal')
+        ->assertSee('Total')
+        ->assertNoJavascriptErrors();
 });

@@ -19,11 +19,18 @@ class CheckoutController extends Controller
     public function index(Request $request): Response|RedirectResponse
     {
         $user = $request->user();
+        $shopId = $request->query('shop_id');
 
-        // Get all user's carts with items
-        $carts = Cart::where('user_id', $user->id)
-            ->with(['shop', 'items.product'])
-            ->get();
+        // Build query for user's carts
+        $query = Cart::where('user_id', $user->id)
+            ->with(['shop', 'items.product']);
+
+        // If shop_id is provided, filter by that shop
+        if ($shopId) {
+            $query->where('shop_id', $shopId);
+        }
+
+        $carts = $query->get();
 
         // If no carts or all carts are empty, redirect to cart page
         if ($carts->isEmpty() || $carts->every(fn ($cart) => $cart->items->isEmpty())) {
@@ -32,7 +39,7 @@ class CheckoutController extends Controller
         }
 
         // Get all cities for delivery selection
-        $cities = City::orderBy('name')->get(['id', 'name']);
+        $cities = City::orderBy('name_'.app()->getLocale())->get(['id', 'name_ru', 'name_kz']);
 
         return Inertia::render('Cart/Checkout', [
             'carts' => CartResource::collection($carts)->resolve(),

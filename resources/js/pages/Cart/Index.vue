@@ -9,7 +9,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
@@ -118,9 +117,9 @@ function getItemSubtotal(item: any) {
             </div>
 
             <!-- Cart Content -->
-            <div v-else class="grid gap-8 lg:grid-cols-3">
+            <div v-else>
                 <!-- Cart Items Grouped by Shop -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="space-y-6">
                     <!-- Header with Clear All Button -->
                     <div class="flex items-center justify-between">
                         <div>
@@ -285,98 +284,19 @@ function getItemSubtotal(item: any) {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter class="border-t bg-muted/50">
-                            <div class="flex w-full items-center justify-between">
-                                <span class="font-medium">Shop Subtotal</span>
+                        <CardFooter class="border-t bg-muted/50 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium">Shop Subtotal:</span>
                                 <PriceDisplay :price="cart.total" class="text-lg font-semibold" />
                             </div>
-                        </CardFooter>
-                    </Card>
-                    </div>
-                </div>
-
-                <!-- Cart Summary -->
-                <div class="lg:col-span-1">
-                    <Card class="sticky top-4">
-                        <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
-                        </CardHeader>
-                        <CardContent class="space-y-4">
-                            <!-- Shop Breakdown -->
-                            <div class="space-y-3">
-                                <div
-                                    v-for="cart in cartStore.carts"
-                                    :key="cart.id"
-                                    class="flex items-start justify-between text-sm"
-                                >
-                                    <div class="flex items-center gap-2">
-                                        <Store :size="14" class="text-muted-foreground" />
-                                        <div>
-                                            <div class="font-medium">{{ cart.shop?.name }}</div>
-                                            <div class="text-xs text-muted-foreground">
-                                                {{ cart.items_count }} {{ cart.items_count === 1 ? 'item' : 'items' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <PriceDisplay :price="cart.total" class="font-medium" />
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            <!-- Total -->
-                            <div
-                                class="flex items-center justify-between text-sm"
-                            >
-                                <span class="text-muted-foreground">
-                                    Subtotal
-                                </span>
-                                <PriceDisplay :price="cartStore.total" />
-                            </div>
-                            <div
-                                class="flex items-center justify-between text-sm"
-                            >
-                                <span class="text-muted-foreground">
-                                    Shipping
-                                </span>
-                                <span class="text-sm">
-                                    Calculated at checkout
-                                </span>
-                            </div>
-                            <Separator />
-                            <div
-                                class="flex items-center justify-between"
-                            >
-                                <span class="text-lg font-semibold">
-                                    Total
-                                </span>
-                                <PriceDisplay
-                                    :price="cartStore.total"
-                                    class="text-xl"
-                                />
-                            </div>
-                        </CardContent>
-                        <CardFooter class="flex-col gap-2">
-                            <Button
-                                class="w-full"
-                                size="lg"
-                                as-child
-                            >
-                                <Link href="/checkout">
+                            <Button as-child>
+                                <Link :href="`/checkout?shop_id=${cart.shop_id}`">
                                     Proceed to Checkout
                                 </Link>
                             </Button>
-                            <Button
-                                variant="outline"
-                                class="w-full"
-                                as-child
-                            >
-                                <Link href="/products">
-                                    Continue Shopping
-                                </Link>
-                            </Button>
                         </CardFooter>
                     </Card>
+                    </div>
                 </div>
             </div>
         </div>
