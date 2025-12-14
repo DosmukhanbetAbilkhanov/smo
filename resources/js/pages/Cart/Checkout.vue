@@ -93,7 +93,7 @@ function getItemSubtotal(item: any) {
 
             <div class="grid gap-8 lg:grid-cols-3">
                 <!-- Delivery Form -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="lg:col-span-2 space-y-6 order-2 lg:order-1">
                     <!-- Shop Selection (if multiple shops) -->
                     <Card v-if="carts.length > 1">
                         <CardHeader>
@@ -158,7 +158,7 @@ function getItemSubtotal(item: any) {
                             :value="selectedShopId"
                         />
 
-                        <Card>
+                        <Card class="mb-4">
                             <CardHeader>
                                 <div class="flex items-center gap-2">
                                     <MapPin :size="20" class="text-primary" />
@@ -336,7 +336,7 @@ function getItemSubtotal(item: any) {
                 </div>
 
                 <!-- Order Summary -->
-                <div class="lg:col-span-1">
+                <div class="lg:col-span-1 order-1 lg:order-2">
                     <Card class="sticky top-4" v-if="selectedCart">
                         <CardHeader>
                             <div class="flex items-center gap-2">
