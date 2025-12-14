@@ -19,10 +19,10 @@ class ShopResource extends BaseResource
             'name' => $this->name,
             'address' => $this->address,
             'min_order_amount' => $this->min_order_amount,
-            'city' => [
-                'id' => $this->city?->id,
-                'name' => $this->city?->name,
-            ],
+            'city' => $this->whenLoaded('city', fn () => [
+                'id' => $this->city->id,
+                'name' => $this->city->name,
+            ]),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

@@ -58,6 +58,8 @@ export interface Company {
 export interface Shop {
     id: number;
     name: string;
+    address?: string;
+    min_order_amount?: number;
     description?: string;
     logo?: string;
     company_id: number;
@@ -249,7 +251,6 @@ export interface CreateOrderData {
     delivery_floor?: string;
     delivery_apartment?: string;
     delivery_intercom?: string;
-    delivery_city_id: number;
     contact_phone: string;
     delivery_notes?: string;
 }

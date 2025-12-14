@@ -14,14 +14,13 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
-import type { Cart, City } from '@/types/api';
+import type { Cart } from '@/types/api';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { MapPin, Package, Phone, ShoppingBag, Store } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
     carts: Cart[];
-    cities: City[];
     defaultPhone?: string;
 }
 
@@ -33,6 +32,42 @@ const selectedShopId = ref<number>(props.carts[0]?.shop_id || 0);
 const selectedCart = computed(() =>
     props.carts.find((cart) => cart.shop_id === selectedShopId.value),
 );
+
+// Delivery form fields
+const deliveryAddress = ref('');
+const deliveryEntry = ref('');
+const deliveryFloor = ref('');
+const deliveryApartment = ref('');
+const deliveryIntercom = ref('');
+
+// Computed formatted address
+const formattedDeliveryAddress = computed(() => {
+    const parts: string[] = [];
+
+    if (deliveryAddress.value) {
+        parts.push(deliveryAddress.value);
+    }
+
+    const details: string[] = [];
+    if (deliveryEntry.value) {
+        details.push(`Entry ${deliveryEntry.value}`);
+    }
+    if (deliveryFloor.value) {
+        details.push(`Floor ${deliveryFloor.value}`);
+    }
+    if (deliveryApartment.value) {
+        details.push(`Apt ${deliveryApartment.value}`);
+    }
+    if (deliveryIntercom.value) {
+        details.push(`Intercom ${deliveryIntercom.value}`);
+    }
+
+    if (details.length > 0) {
+        parts.push(details.join(', '));
+    }
+
+    return parts.join(' • ');
+});
 
 function getProductName(item: any) {
     return item.product ? getLocalizedName(item.product) : 'Product';
@@ -131,34 +166,6 @@ function getItemSubtotal(item: any) {
                                 </div>
                             </CardHeader>
                             <CardContent class="space-y-4">
-                                <!-- City Selection -->
-                                <div class="space-y-2">
-                                    <Label for="delivery_city_id"
-                                        >City *</Label
-                                    >
-                                    <select
-                                        id="delivery_city_id"
-                                        name="delivery_city_id"
-                                        required
-                                        class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        <option value="">Select a city</option>
-                                        <option
-                                            v-for="city in cities"
-                                            :key="city.id"
-                                            :value="city.id"
-                                        >
-                                            {{ city.name }}
-                                        </option>
-                                    </select>
-                                    <p
-                                        v-if="errors.delivery_city_id"
-                                        class="text-sm text-destructive"
-                                    >
-                                        {{ errors.delivery_city_id }}
-                                    </p>
-                                </div>
-
                                 <!-- Address -->
                                 <div class="space-y-2">
                                     <Label for="delivery_address"
@@ -169,6 +176,7 @@ function getItemSubtotal(item: any) {
                                         name="delivery_address"
                                         type="text"
                                         required
+                                        v-model="deliveryAddress"
                                         placeholder="Street name, house number"
                                     />
                                     <p
@@ -187,6 +195,7 @@ function getItemSubtotal(item: any) {
                                             id="delivery_entry"
                                             name="delivery_entry"
                                             type="text"
+                                            v-model="deliveryEntry"
                                             placeholder="e.g., 2"
                                         />
                                         <p
@@ -203,6 +212,7 @@ function getItemSubtotal(item: any) {
                                             id="delivery_floor"
                                             name="delivery_floor"
                                             type="text"
+                                            v-model="deliveryFloor"
                                             placeholder="e.g., 5"
                                         />
                                         <p
@@ -221,6 +231,7 @@ function getItemSubtotal(item: any) {
                                             id="delivery_apartment"
                                             name="delivery_apartment"
                                             type="text"
+                                            v-model="deliveryApartment"
                                             placeholder="e.g., 23"
                                         />
                                         <p
@@ -239,6 +250,7 @@ function getItemSubtotal(item: any) {
                                             id="delivery_intercom"
                                             name="delivery_intercom"
                                             type="text"
+                                            v-model="deliveryIntercom"
                                             placeholder="e.g., 123"
                                         />
                                         <p
@@ -334,24 +346,60 @@ function getItemSubtotal(item: any) {
                         </CardHeader>
                         <CardContent class="space-y-4">
                             <!-- Shop Info -->
-                            <div class="rounded-lg bg-muted p-3">
-                                <div class="flex items-center gap-2">
+                            <div class="rounded-lg bg-muted p-4 space-y-2">
+                                <div class="flex items-start gap-3">
                                     <Store
-                                        :size="16"
-                                        class="text-muted-foreground"
+                                        :size="20"
+                                        class="text-primary mt-0.5 shrink-0"
                                     />
-                                    <div class="font-medium">
-                                        {{ selectedCart.shop?.name }}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-semibold text-base">
+                                            {{ selectedCart.shop?.name }}
+                                        </div>
+                                        <div class="mt-1 text-sm text-muted-foreground">
+                                            {{ selectedCart.items_count }}
+                                            {{
+                                                selectedCart.items_count === 1
+                                                    ? 'item'
+                                                    : 'items'
+                                            }}
+                                        </div>
                                     </div>
                                 </div>
-                                <p class="mt-1 text-sm text-muted-foreground">
-                                    {{ selectedCart.items_count }}
-                                    {{
-                                        selectedCart.items_count === 1
-                                            ? 'item'
-                                            : 'items'
-                                    }}
-                                </p>
+
+                                <!-- Shop Location -->
+                                <div v-if="selectedCart.shop?.city || selectedCart.shop?.address" class="flex items-start gap-3 pt-2 border-t border-border/50">
+                                    <MapPin
+                                        :size="16"
+                                        class="text-muted-foreground mt-0.5 shrink-0"
+                                    />
+                                    <div class="flex-1 min-w-0">
+                                        <div v-if="selectedCart.shop?.city" class="text-sm font-medium">
+                                            {{ selectedCart.shop.city.name }}
+                                        </div>
+                                        <div v-if="selectedCart.shop?.address" class="text-sm text-muted-foreground">
+                                            {{ selectedCart.shop.address }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Address -->
+                            <div v-if="formattedDeliveryAddress" class="rounded-lg bg-lime-100 p-4">
+                                <div class="flex items-start gap-3">
+                                    <MapPin
+                                        :size="20"
+                                        class="text-primary mt-0.5 shrink-0"
+                                    />
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-semibold text-sm mb-1">
+                                            Delivery Address
+                                        </div>
+                                        <div class="text-sm text-muted-foreground break-words">
+                                            {{ formattedDeliveryAddress }}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Items List -->
