@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\City;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -38,6 +40,24 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Get selected city ID
+        $selectedCityId = $request->user()?->city_id
+            ?? $request->session()->get('selected_city_id');
+
+        $selectedCity = null;
+        if ($selectedCityId) {
+            $selectedCity = Cache::remember(
+                "city.{$selectedCityId}",
+                3600,
+                fn () => City::find($selectedCityId)
+            );
+        }
+
+        // Load all cities for city selector
+        $availableCities = Cache::remember('cities.all', 3600, function () {
+            return City::orderBy('name_ru')->get();
+        });
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -46,6 +66,10 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'city' => [
+                'selected' => $selectedCity,
+                'available' => $availableCities,
+            ],
         ];
     }
 }

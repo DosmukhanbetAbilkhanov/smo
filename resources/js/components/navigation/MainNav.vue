@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CitySelector from '@/components/CitySelector.vue';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -53,6 +54,7 @@ watch(isAuthenticated, (newValue) => {
 
                 <!-- Right Side Actions -->
                 <div class="flex flex-shrink-0 items-center gap-2">
+                    <CitySelector />
                     <LocaleSwitcher />
 
                     <!-- Cart Button -->

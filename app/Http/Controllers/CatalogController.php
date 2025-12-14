@@ -37,7 +37,7 @@ class CatalogController extends Controller
     /**
      * Display a specific category and its products.
      */
-    public function show(string $slug): Response
+    public function show(Request $request, string $slug): Response
     {
         $category = Category::where('slug', $slug)
             ->where('is_active', true)
@@ -53,13 +53,24 @@ class CatalogController extends Controller
             $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->toArray());
         }
 
-        $products = Product::where('is_active', true)
+        // Get selected city ID
+        $cityId = $this->getSelectedCityId($request);
+
+        $query = Product::where('is_active', true)
             ->where('quantity', '>', 0)
             ->whereHas('nomenclature', function ($query) use ($categoryIds) {
                 $query->whereIn('category_id', $categoryIds);
             })
-            ->with(['nomenclature.unit', 'nomenclature.category', 'shop'])
-            ->latest()
+            ->with(['nomenclature.unit', 'nomenclature.category', 'shop.city']);
+
+        // Filter by city if selected
+        if ($cityId) {
+            $query->whereHas('shop', function ($q) use ($cityId) {
+                $q->where('city_id', $cityId);
+            });
+        }
+
+        $products = $query->latest()
             ->paginate(24)
             ->withQueryString();
 
@@ -74,6 +85,11 @@ class CatalogController extends Controller
      */
     public function products(Request $request): Response
     {
+        // Inject city_id if not present
+        if (! $request->has('city_id')) {
+            $request->merge(['city_id' => $this->getSelectedCityId($request)]);
+        }
+
         $queryBuilder = ProductQueryBuilder::make()
             ->applyFilters($request)
             ->applySort($request);
@@ -95,6 +111,11 @@ class CatalogController extends Controller
     {
         $searchQuery = $request->input('q', '');
 
+        // Inject city_id if not present
+        if (! $request->has('city_id')) {
+            $request->merge(['city_id' => $this->getSelectedCityId($request)]);
+        }
+
         $queryBuilder = ProductQueryBuilder::make()
             ->applySearch($searchQuery)
             ->applyFilters($request)
@@ -109,5 +130,14 @@ class CatalogController extends Controller
             'filters' => $filters,
             'query' => $searchQuery,
         ]);
+    }
+
+    /**
+     * Get the selected city ID from the request
+     */
+    protected function getSelectedCityId(Request $request): ?int
+    {
+        return $request->user()?->city_id
+            ?? $request->session()->get('selected_city_id');
     }
 }

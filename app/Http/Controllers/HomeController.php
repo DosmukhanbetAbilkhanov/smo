@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,12 +14,14 @@ class HomeController extends Controller
     /**
      * Display the homepage with featured categories and products.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        // Cache featured data for 1 hour
-        $featuredData = Cache::remember('homepage.featured', 3600, function () {
-            // Get top-level active categories with children (max 8)
-            $categories = Category::where('is_active', true)
+        // Get selected city ID
+        $cityId = $this->getSelectedCityId($request);
+
+        // Cache categories for 1 hour (city-independent)
+        $categories = Cache::remember('homepage.categories', 3600, function () {
+            return Category::where('is_active', true)
                 ->whereNull('parent_id')
                 ->with(['children' => function ($query) {
                     $query->where('is_active', true)
@@ -27,24 +30,36 @@ class HomeController extends Controller
                 ->orderBy('name_ru')
                 ->limit(8)
                 ->get();
-
-            // Get popular/recent products (max 12)
-            $products = Product::where('is_active', true)
-                ->where('quantity', '>', 0)
-                ->with(['nomenclature.unit', 'shop'])
-                ->latest()
-                ->limit(12)
-                ->get();
-
-            return [
-                'categories' => $categories,
-                'products' => $products,
-            ];
         });
 
+        // Get popular/recent products for selected city (max 12)
+        $productsQuery = Product::where('is_active', true)
+            ->where('quantity', '>', 0)
+            ->with(['nomenclature.unit', 'shop.city']);
+
+        // Filter by city if selected
+        if ($cityId) {
+            $productsQuery->whereHas('shop', function ($q) use ($cityId) {
+                $q->where('city_id', $cityId);
+            });
+        }
+
+        $products = $productsQuery->latest()
+            ->limit(12)
+            ->get();
+
         return Inertia::render('Welcome', [
-            'featuredCategories' => $featuredData['categories'],
-            'popularProducts' => $featuredData['products'],
+            'featuredCategories' => $categories,
+            'popularProducts' => $products,
         ]);
+    }
+
+    /**
+     * Get the selected city ID from the request
+     */
+    protected function getSelectedCityId(Request $request): ?int
+    {
+        return $request->user()?->city_id
+            ?? $request->session()->get('selected_city_id');
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -11,6 +12,19 @@ use Inertia\Inertia;
 
 // Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// City selection routes
+Route::post('/select-city', [CityController::class, 'store'])->name('city.store');
+Route::post('/change-city', [CityController::class, 'change'])->name('city.change');
+
+// Temporary route for testing - remove after testing
+Route::get('/clear-city', function () {
+    session()->forget('selected_city_id');
+    if ($user = auth()->user()) {
+        $user->update(['city_id' => null]);
+    }
+    return redirect('/')->with('success', 'City cleared - modal should appear');
+});
 
 // Categories
 Route::get('/categories', [CatalogController::class, 'categories'])->name('categories.index');

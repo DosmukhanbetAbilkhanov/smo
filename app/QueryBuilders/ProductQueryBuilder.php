@@ -14,7 +14,7 @@ class ProductQueryBuilder
     {
         $this->query = Product::query()
             ->where('is_active', true)
-            ->with(['nomenclature.unit', 'nomenclature.category', 'shop']);
+            ->with(['nomenclature.unit', 'nomenclature.category', 'shop.city']);
     }
 
     public static function make(): self
@@ -27,6 +27,13 @@ class ProductQueryBuilder
      */
     public function applyFilters(Request $request): self
     {
+        // Filter by city (most restrictive filter - apply first)
+        if ($cityId = $request->input('city_id')) {
+            $this->query->whereHas('shop', function ($q) use ($cityId) {
+                $q->where('city_id', $cityId);
+            });
+        }
+
         // Search by product name
         if ($search = $request->input('search')) {
             $this->query->where(function ($q) use ($search) {
@@ -143,6 +150,7 @@ class ProductQueryBuilder
     public static function getFiltersFromRequest(Request $request): array
     {
         return [
+            'city_id' => $request->input('city_id') ? (int) $request->input('city_id') : null,
             'search' => $request->input('search'),
             'category_id' => $request->input('category_id'),
             'nomenclature_id' => $request->input('nomenclature_id'),

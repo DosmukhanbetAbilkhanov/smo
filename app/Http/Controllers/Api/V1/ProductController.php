@@ -19,12 +19,22 @@ class ProductController extends Controller
     {
         $perPage = $request->input('per_page', 15);
 
-        // Build cache key from all query parameters
-        $cacheKey = 'api.products.index.'.md5(\json_encode($request->all()));
+        // Get selected city ID
+        $cityId = $this->getSelectedCityId($request);
 
-        $result = Cache::remember($cacheKey, 1800, function () use ($request, $perPage) {
+        // Build cache key from all query parameters including city
+        $cacheKey = 'api.products.index.'.md5(\json_encode($request->all()).'.'.$cityId);
+
+        $result = Cache::remember($cacheKey, 1800, function () use ($request, $perPage, $cityId) {
             $query = Product::query()
                 ->with(['nomenclature.category', 'nomenclature.unit', 'shop.city', 'specs']);
+
+            // Filter by city if selected
+            if ($cityId) {
+                $query->whereHas('shop', function ($q) use ($cityId) {
+                    $q->where('city_id', $cityId);
+                });
+            }
 
             // Search by name
             if ($request->filled('search')) {
@@ -140,10 +150,13 @@ class ProductController extends Controller
             );
         }
 
-        $cacheKey = 'api.products.search.'.md5($query.'.'.$limit);
+        // Get selected city ID
+        $cityId = $this->getSelectedCityId($request);
 
-        $products = Cache::remember($cacheKey, 300, function () use ($query, $limit) {
-            return Product::where('is_active', true)
+        $cacheKey = 'api.products.search.'.md5($query.'.'.$limit.'.'.$cityId);
+
+        $products = Cache::remember($cacheKey, 300, function () use ($query, $limit, $cityId) {
+            $productsQuery = Product::where('is_active', true)
                 ->where('quantity', '>', 0)
                 ->where(function ($q) use ($query) {
                     $q->where('name_ru', 'like', "%{$query}%")
@@ -153,14 +166,30 @@ class ProductController extends Controller
                                 ->orWhere('name_kz', 'like', "%{$query}%");
                         });
                 })
-                ->with(['shop'])
-                ->limit($limit)
-                ->get();
+                ->with(['shop.city']);
+
+            // Filter by city if selected
+            if ($cityId) {
+                $productsQuery->whereHas('shop', function ($q) use ($cityId) {
+                    $q->where('city_id', $cityId);
+                });
+            }
+
+            return $productsQuery->limit($limit)->get();
         });
 
         return ApiResponse::success(
             ['data' => ProductResource::collection($products)],
             'Search results retrieved successfully'
         );
+    }
+
+    /**
+     * Get the selected city ID from the request
+     */
+    protected function getSelectedCityId(Request $request): ?int
+    {
+        return $request->user()?->city_id
+            ?? $request->session()->get('selected_city_id');
     }
 }

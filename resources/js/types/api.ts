@@ -11,6 +11,7 @@ export interface City {
     id: number;
     name_ru: string;
     name_kz: string;
+    name: string; // Computed accessor from backend
 }
 
 export interface Unit {
@@ -61,6 +62,8 @@ export interface Shop {
     logo?: string;
     company_id: number;
     company?: Company;
+    city_id: number;
+    city?: City;
     is_active: boolean;
     created_at: string;
     updated_at: string;
@@ -253,6 +256,7 @@ export interface CreateOrderData {
 
 // Filter and search interfaces
 export interface ProductFilters {
+    city_id?: number;
     category_id?: number;
     shop_id?: number;
     min_price?: number;
@@ -266,4 +270,9 @@ export interface ProductFilters {
 export interface CategoryFilters {
     parent_id?: number | null;
     is_active?: boolean;
+}
+
+export interface CityData {
+    selected: City | null;
+    available: City[];
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CitySelectionModal from '@/components/CitySelectionModal.vue';
 import MainNav from '@/components/navigation/MainNav.vue';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -23,6 +24,9 @@ const currentYear = new Date().getFullYear();
 
 <template>
     <div class="flex min-h-screen flex-col">
+        <!-- City Selection Modal -->
+        <CitySelectionModal />
+
         <!-- Header -->
         <header>
             <MainNav />
