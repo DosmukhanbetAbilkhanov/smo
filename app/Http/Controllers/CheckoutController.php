@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Order\CreateOrderFromCartAction;
+use App\Http\Resources\Api\V1\CartResource;
 use App\Models\Cart;
 use App\Models\City;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +35,7 @@ class CheckoutController extends Controller
         $cities = City::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Cart/Checkout', [
-            'carts' => $carts,
+            'carts' => CartResource::collection($carts)->resolve(),
             'cities' => $cities,
             'defaultPhone' => $user->phone,
         ]);
