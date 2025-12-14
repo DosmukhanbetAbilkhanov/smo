@@ -57,7 +57,7 @@ async function handleAddToCart() {
 </script>
 
 <template>
-    <Card class="group overflow-hidden transition-shadow hover:shadow-lg">
+    <Card class="group overflow-hidden transition-shadow hover:shadow-lg card-modern">
         <Link :href="`/products/${product.id}`" class="block">
             <CardHeader class="p-0">
                 <div class="relative aspect-square overflow-hidden bg-muted">
@@ -107,7 +107,7 @@ async function handleAddToCart() {
                 @click="handleAddToCart"
                 :disabled="isOutOfStock || adding"
                 :variant="showSuccess ? 'default' : 'default'"
-                class="w-full gap-2"
+                class="w-full gap-2 btn-primary-modern"
                 size="sm"
             >
                 <Check v-if="showSuccess" :size="16" />
