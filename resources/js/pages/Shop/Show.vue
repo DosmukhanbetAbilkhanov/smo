@@ -16,7 +16,7 @@ import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Category, PaginatedProducts, Shop } from '@/types/api';
 import { router } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight, Grid, MapPin, Package, Search, Store, X } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 interface Props {
     shop: Shop;
@@ -31,11 +31,41 @@ const { t, getLocalizedName } = useLocale();
 
 const isLoading = ref(false);
 const localSearchQuery = ref(props.searchQuery || '');
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const currentPage = computed(() => props.products.current_page);
 const totalPages = computed(() => props.products.last_page);
 const hasNextPage = computed(() => currentPage.value < totalPages.value);
 const hasPrevPage = computed(() => currentPage.value > 1);
+
+// Live search with debounce
+watch(localSearchQuery, (newValue, oldValue) => {
+    if (newValue === props.searchQuery) return;
+
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+
+    searchTimeout = setTimeout(() => {
+        isLoading.value = true;
+
+        router.get(
+            `/shops/${props.shop.id}`,
+            {
+                search: newValue || undefined,
+                category_id: props.selectedCategoryId,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                only: ['products', 'searchQuery'],
+                onFinish: () => {
+                    isLoading.value = false;
+                },
+            },
+        );
+    }, 500);
+});
 
 function goToPage(page: number) {
     if (page < 1 || page > totalPages.value) return;
@@ -61,49 +91,9 @@ function goToPage(page: number) {
     );
 }
 
-function handleSearch() {
-    if (localSearchQuery.value === props.searchQuery) return;
-
-    isLoading.value = true;
-
-    router.get(
-        `/shops/${props.shop.id}`,
-        {
-            search: localSearchQuery.value || undefined,
-            category_id: props.selectedCategoryId,
-        },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['products', 'searchQuery'],
-            onFinish: () => {
-                isLoading.value = false;
-            },
-        },
-    );
-}
-
 function clearSearch() {
     localSearchQuery.value = '';
-
-    if (!props.searchQuery) return;
-
-    isLoading.value = true;
-
-    router.get(
-        `/shops/${props.shop.id}`,
-        {
-            category_id: props.selectedCategoryId,
-        },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['products', 'searchQuery'],
-            onFinish: () => {
-                isLoading.value = false;
-            },
-        },
-    );
+    // The watch will handle the search automatically
 }
 
 function filterByCategory(categoryId: number | null) {
@@ -174,28 +164,20 @@ function filterByCategory(categoryId: number | null) {
                 <!-- Search Section -->
                 <div class="search-section animate-fadeInUp" style="animation-delay: 100ms">
                     <div class="search-input-wrapper">
-                        <Search :size="20" class="search-icon" />
+                        <Search :size="16" class="search-icon" />
                         <Input
                             v-model="localSearchQuery"
                             type="text"
-                            :placeholder="t({ ru: 'Поиск товаров в магазине...', kz: 'Дүкеннен тауарларды іздеу...' })"
+                            :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
                             class="search-input"
-                            @keyup.enter="handleSearch"
                         />
                         <button
                             v-if="localSearchQuery"
                             @click="clearSearch"
                             class="search-clear-btn"
                         >
-                            <X :size="18" />
+                            <X :size="16" />
                         </button>
-                        <Button
-                            @click="handleSearch"
-                            class="search-btn"
-                            :disabled="isLoading"
-                        >
-                            {{ t({ ru: 'Искать', kz: 'Іздеу' }) }}
-                        </Button>
                     </div>
                 </div>
 
@@ -433,25 +415,25 @@ function filterByCategory(categoryId: number | null) {
 
 /* Search Section */
 .search-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .search-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
     background: var(--smo-surface);
-    border-radius: var(--radius-lg);
-    border: 2px solid var(--smo-border);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--smo-border);
+    box-shadow: var(--shadow-sm);
     transition: all var(--transition-base);
 }
 
 .search-input-wrapper:focus-within {
     border-color: var(--smo-primary);
-    box-shadow: 0 0 0 3px rgba(44, 95, 93, 0.1);
+    box-shadow: 0 0 0 2px rgba(44, 95, 93, 0.1);
 }
 
 .search-icon {
@@ -464,7 +446,7 @@ function filterByCategory(categoryId: number | null) {
     border: none;
     background: transparent;
     font-family: var(--font-body);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--smo-text-primary);
     outline: none;
     padding: 0;
@@ -478,8 +460,8 @@ function filterByCategory(categoryId: number | null) {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: var(--radius-sm);
     border: none;
     background: var(--smo-bg);
@@ -492,10 +474,6 @@ function filterByCategory(categoryId: number | null) {
 .search-clear-btn:hover {
     background: var(--smo-border);
     color: var(--smo-text-primary);
-}
-
-.search-btn {
-    flex-shrink: 0;
 }
 
 /* Categories Section */
@@ -794,28 +772,6 @@ function filterByCategory(categoryId: number | null) {
 
     .results-badge {
         justify-content: center;
-    }
-
-    .search-input-wrapper {
-        flex-wrap: wrap;
-    }
-
-    .search-input {
-        order: 1;
-        width: 100%;
-    }
-
-    .search-icon {
-        order: 0;
-    }
-
-    .search-clear-btn {
-        order: 2;
-    }
-
-    .search-btn {
-        order: 3;
-        width: 100%;
     }
 
     .categories-section {
