@@ -49,20 +49,39 @@ class ShopController extends Controller
             ->paginate(24)
             ->withQueryString();
 
-        // Get all categories that have products in this shop
-        $categories = Category::whereHas('nomenclatures.products', function ($q) use ($shop) {
-            $q->where('shop_id', $shop->id)
-                ->where('is_active', true)
-                ->where('quantity', '>', 0);
-        })
-            ->whereNull('parent_id')
+        // Get all categories from products in this shop
+        $categoryIds = $shop->products()
             ->where('is_active', true)
-            ->with(['children' => function ($query) use ($shop) {
-                $query->whereHas('nomenclatures.products', function ($q) use ($shop) {
-                    $q->where('shop_id', $shop->id)
-                        ->where('is_active', true)
-                        ->where('quantity', '>', 0);
-                })
+            ->where('quantity', '>', 0)
+            ->with('nomenclature')
+            ->get()
+            ->pluck('nomenclature.category_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        // Get parent categories and their children
+        $allCategoryIds = Category::whereIn('id', $categoryIds)
+            ->orWhereIn('parent_id', $categoryIds)
+            ->pluck('id')
+            ->unique();
+
+        // Get unique parent IDs
+        $parentIds = Category::whereIn('id', $allCategoryIds)
+            ->whereNotNull('parent_id')
+            ->pluck('parent_id')
+            ->unique()
+            ->merge(
+                Category::whereIn('id', $allCategoryIds)
+                    ->whereNull('parent_id')
+                    ->pluck('id')
+            )
+            ->unique();
+
+        $categories = Category::whereIn('id', $parentIds)
+            ->where('is_active', true)
+            ->with(['children' => function ($query) use ($allCategoryIds) {
+                $query->whereIn('id', $allCategoryIds)
                     ->where('is_active', true)
                     ->orderBy('name_ru');
             }])
