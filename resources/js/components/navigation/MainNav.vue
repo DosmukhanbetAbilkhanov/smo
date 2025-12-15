@@ -3,7 +3,7 @@ import CitySelector from '@/components/CitySelector.vue';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Package, ShoppingBag, User } from 'lucide-vue-next';
+import { Package, ShoppingCart, User } from 'lucide-vue-next';
 import { computed, onMounted, watch } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
@@ -68,7 +68,7 @@ watch(isAuthenticated, (newValue) => {
                         href="/cart"
                         class="cart-button"
                     >
-                        <ShoppingBag :size="20" :stroke-width="2" />
+                        <ShoppingCart :size="20" :stroke-width="2" />
                         <span
                             v-if="cartItemsCount > 0"
                             class="cart-badge"
@@ -81,7 +81,7 @@ watch(isAuthenticated, (newValue) => {
                     <div v-if="isAuthenticated" class="auth-section">
                         <Link href="/dashboard" class="profile-button">
                             <User :size="18" :stroke-width="2" />
-                            <span class="hidden sm:inline">Profile</span>
+                            <!-- <span class="hidden sm:inline">Profile</span> -->
                         </Link>
                     </div>
                     <div v-else class="auth-section">
@@ -136,6 +136,7 @@ watch(isAuthenticated, (newValue) => {
 .nav-content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
     height: 70px;
 }
