@@ -9,7 +9,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,7 +21,7 @@ import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { PaginatedProducts, ProductFilters } from '@/types/api';
 import { router } from '@inertiajs/vue3';
-import { ChevronLeft, ChevronRight, Search as SearchIcon, X } from 'lucide-vue-next';
+import { ArrowUpDown, ChevronLeft, ChevronRight, Home, Search as SearchIcon, SlidersHorizontal, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 interface Props {
@@ -141,207 +140,595 @@ function goToPage(page: number) {
 
 <template>
     <ShopLayout>
-        <div class="container py-6">
-            <!-- Breadcrumbs -->
-            <Breadcrumb class="mb-6">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/">
-                            {{ t({ ru: 'Главная', kz: 'Басты бет' }) }}
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>
-                            {{ t({ ru: 'Поиск', kz: 'Іздеу' }) }}
-                        </BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            <!-- Search Header -->
-            <div class="mb-6">
-                <h1 class="mb-4 text-3xl font-bold">
-                    {{ t({ ru: 'Поиск товаров', kz: 'Тауарларды іздеу' }) }}
-                </h1>
-
-                <!-- Search Input -->
-                <div class="relative max-w-2xl">
-                    <SearchIcon
-                        :size="20"
-                        class="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <Input
-                        v-model="searchQuery"
-                        type="search"
-                        :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
-                        class="h-12 pl-10 pr-10"
-                    />
-                    <Button
-                        v-if="searchQuery"
-                        @click="clearSearch"
-                        variant="ghost"
-                        size="sm"
-                        class="absolute top-1/2 right-2 -translate-y-1/2"
-                    >
-                        <X :size="16" />
-                    </Button>
-                </div>
-
-                <p v-if="query" class="mt-3 text-muted-foreground">
-                    {{ t({
-                        ru: `Результаты поиска для "${query}": ${products.total} товаров`,
-                        kz: `"${query}" іздеу нәтижелері: ${products.total} тауар`,
-                    }) }}
-                </p>
+        <!-- Breadcrumb Bar -->
+        <div class="breadcrumb-bar">
+            <div class="container mx-auto px-4 py-4">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/">
+                                <Home :size="16" />
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>
+                                {{ t({ ru: 'Поиск', kz: 'Іздеу' }) }}
+                            </BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
             </div>
+        </div>
 
-            <div class="grid gap-6 lg:grid-cols-4">
-                <!-- Filter Sidebar -->
-                <aside class="lg:col-span-1">
-                    <FilterSidebar
-                        :filters="filters"
-                        @update:filters="updateFilters"
-                        @clear="clearFilters"
-                    />
-                </aside>
+        <!-- Search Page -->
+        <div class="search-page bg-pattern">
+            <div class="page-container">
+                <!-- Search Header -->
+                <div class="search-header animate-fadeInUp">
+                    <h1 class="page-title">
+                        {{ t({ ru: 'Поиск товаров', kz: 'Тауарларды іздеу' }) }}
+                    </h1>
 
-                <!-- Results Grid -->
-                <main class="lg:col-span-3">
-                    <!-- Sorting and Results Count -->
-                    <div v-if="query && products.total > 0" class="mb-6 flex items-center justify-between">
-                        <span class="text-sm text-muted-foreground">
+                    <!-- Search Input -->
+                    <div class="search-input-wrapper">
+                        <SearchIcon :size="20" class="search-icon" />
+                        <Input
+                            v-model="searchQuery"
+                            type="search"
+                            :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
+                            class="search-input"
+                        />
+                        <button
+                            v-if="searchQuery"
+                            @click="clearSearch"
+                            class="clear-btn"
+                        >
+                            <X :size="20" />
+                        </button>
+                    </div>
+
+                    <div v-if="query" class="search-info">
+                        <span class="search-query">"{{ query }}"</span>
+                        <span class="search-results">
                             {{ t({
-                                ru: `Показано ${products.from || 0}-${products.to || 0} из ${products.total}`,
-                                kz: `Көрсетілген ${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
+                                ru: `${products.total} товаров найдено`,
+                                kz: `${products.total} тауар табылды`,
                             }) }}
                         </span>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger as-child>
-                                <Button variant="outline" size="sm" class="gap-2">
-                                    {{ t({
-                                        ru: 'Сортировка',
-                                        kz: 'Сұрыптау',
-                                    }) }}:
-                                    {{ t(sortOptions.find(o => o.value === currentSort)?.label || sortOptions[0].label) }}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                    v-for="option in sortOptions"
-                                    :key="option.value"
-                                    @click="updateSort(option.value)"
-                                    :class="{ 'bg-accent': currentSort === option.value }"
-                                >
-                                    {{ t(option.label) }}
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
                     </div>
+                </div>
 
-                    <!-- Loading State -->
-                    <div v-if="isLoading" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        <div v-for="i in 9" :key="i" class="space-y-3">
-                            <Skeleton class="aspect-square w-full" />
-                            <Skeleton class="h-4 w-3/4" />
-                            <Skeleton class="h-4 w-1/2" />
+                <!-- Content Grid -->
+                <div class="catalog-grid">
+                    <!-- Filter Sidebar -->
+                    <aside class="filter-sidebar animate-fadeInUp" style="animation-delay: 100ms">
+                        <div class="filter-header">
+                            <SlidersHorizontal :size="20" class="filter-icon" />
+                            <h2 class="filter-title">
+                                {{ t({ ru: 'Фильтры', kz: 'Сүзгілер' }) }}
+                            </h2>
                         </div>
-                    </div>
-
-                    <!-- Products Grid -->
-                    <div
-                        v-else-if="query && products.data.length > 0"
-                        class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-                    >
-                        <ProductCard
-                            v-for="product in products.data"
-                            :key="product.id"
-                            :product="product"
+                        <FilterSidebar
+                            :filters="filters"
+                            @update:filters="updateFilters"
+                            @clear="clearFilters"
                         />
-                    </div>
+                    </aside>
 
-                    <!-- Empty State - No Query -->
-                    <div
-                        v-else-if="!query"
-                        class="flex min-h-[400px] flex-col items-center justify-center text-center"
-                    >
-                        <div class="mb-4 text-6xl">🔍</div>
-                        <h3 class="mb-2 text-xl font-semibold">
-                            {{ t({ ru: 'Начните поиск', kz: 'Іздеуді бастаңыз' }) }}
-                        </h3>
-                        <p class="text-muted-foreground">
-                            {{ t({
-                                ru: 'Введите запрос в поисковую строку выше',
-                                kz: 'Жоғарыдағы іздеу жолына сұрау енгізіңіз',
-                            }) }}
-                        </p>
-                    </div>
+                    <!-- Results Section -->
+                    <main class="products-main">
+                        <!-- Toolbar -->
+                        <div v-if="query && products.total > 0" class="products-toolbar animate-fadeInUp" style="animation-delay: 200ms">
+                            <div class="toolbar-info">
+                                <span class="results-count">
+                                    {{ t({
+                                        ru: `${products.from || 0}-${products.to || 0} из ${products.total}`,
+                                        kz: `${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
+                                    }) }}
+                                </span>
+                            </div>
 
-                    <!-- Empty State - No Results -->
-                    <div
-                        v-else
-                        class="flex min-h-[400px] flex-col items-center justify-center text-center"
-                    >
-                        <div class="mb-4 text-6xl">😕</div>
-                        <h3 class="mb-2 text-xl font-semibold">
-                            {{ t({ ru: 'Ничего не найдено', kz: 'Ештеңе табылмады' }) }}
-                        </h3>
-                        <p class="mb-4 text-muted-foreground">
-                            {{ t({
-                                ru: 'Попробуйте изменить запрос или фильтры',
-                                kz: 'Сұрауды немесе сүзгілерді өзгертіп көріңіз',
-                            }) }}
-                        </p>
-                        <div class="flex gap-2">
-                            <Button @click="clearSearch" variant="outline">
-                                {{ t({ ru: 'Очистить поиск', kz: 'Іздеуді тазалау' }) }}
-                            </Button>
-                            <Button @click="clearFilters" variant="outline">
-                                {{ t({ ru: 'Сбросить фильтры', kz: 'Сүзгілерді тазалау' }) }}
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <button class="sort-button">
+                                        <ArrowUpDown :size="18" />
+                                        <span>{{ t(sortOptions.find(o => o.value === currentSort)?.label || sortOptions[0].label) }}</span>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                        v-for="option in sortOptions"
+                                        :key="option.value"
+                                        @click="updateSort(option.value)"
+                                        :class="{ 'bg-accent': currentSort === option.value }"
+                                    >
+                                        {{ t(option.label) }}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
-                    </div>
 
-                    <!-- Pagination -->
-                    <div
-                        v-if="query && products.data.length > 0 && totalPages > 1"
-                        class="mt-8 flex items-center justify-center gap-2"
-                    >
-                        <Button
-                            @click="goToPage(currentPage - 1)"
-                            :disabled="!hasPrevPage || isLoading"
-                            variant="outline"
-                            size="sm"
+                        <!-- Loading State -->
+                        <div v-if="isLoading" class="products-grid">
+                            <div v-for="i in 9" :key="i" class="loading-card">
+                                <Skeleton class="skeleton-image" />
+                                <Skeleton class="skeleton-title" />
+                                <Skeleton class="skeleton-price" />
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div
+                            v-else-if="query && products.data.length > 0"
+                            class="products-grid"
                         >
-                            <ChevronLeft :size="16" />
-                        </Button>
-
-                        <div class="flex gap-1">
-                            <Button
-                                v-for="page in totalPages"
-                                :key="page"
-                                @click="goToPage(page)"
-                                :variant="page === currentPage ? 'default' : 'outline'"
-                                :disabled="isLoading"
-                                size="sm"
-                                class="min-w-[40px]"
+                            <div
+                                v-for="(product, index) in products.data"
+                                :key="product.id"
+                                class="animate-fadeInUp"
+                                :style="{ animationDelay: `${index * 50}ms` }"
                             >
-                                {{ page }}
-                            </Button>
+                                <ProductCard :product="product" />
+                            </div>
                         </div>
 
-                        <Button
-                            @click="goToPage(currentPage + 1)"
-                            :disabled="!hasNextPage || isLoading"
-                            variant="outline"
-                            size="sm"
+                        <!-- Empty State - No Query -->
+                        <div v-else-if="!query" class="empty-state animate-fadeInUp">
+                            <div class="empty-icon">
+                                <SearchIcon :size="64" />
+                            </div>
+                            <h3 class="empty-title">
+                                {{ t({ ru: 'Начните поиск', kz: 'Іздеуді бастаңыз' }) }}
+                            </h3>
+                            <p class="empty-text">
+                                {{ t({
+                                    ru: 'Введите запрос в поисковую строку выше',
+                                    kz: 'Жоғарыдағы іздеу жолына сұрау енгізіңіз',
+                                }) }}
+                            </p>
+                        </div>
+
+                        <!-- Empty State - No Results -->
+                        <div v-else class="empty-state animate-fadeInUp">
+                            <div class="empty-icon empty-icon-warning">
+                                <SearchIcon :size="64" />
+                            </div>
+                            <h3 class="empty-title">
+                                {{ t({ ru: 'Ничего не найдено', kz: 'Ештеңе табылмады' }) }}
+                            </h3>
+                            <p class="empty-text">
+                                {{ t({
+                                    ru: 'Попробуйте изменить запрос или фильтры',
+                                    kz: 'Сұрауды немесе сүзгілерді өзгертіп көріңіз',
+                                }) }}
+                            </p>
+                            <div class="empty-actions">
+                                <button @click="clearSearch" class="btn-secondary-modern">
+                                    {{ t({ ru: 'Очистить поиск', kz: 'Іздеуді тазалау' }) }}
+                                </button>
+                                <button @click="clearFilters" class="btn-secondary-modern">
+                                    {{ t({ ru: 'Сбросить фильтры', kz: 'Сүзгілерді тазалау' }) }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div
+                            v-if="query && products.data.length > 0 && totalPages > 1"
+                            class="pagination animate-fadeInUp"
                         >
-                            <ChevronRight :size="16" />
-                        </Button>
-                    </div>
-                </main>
+                            <button
+                                @click="goToPage(currentPage - 1)"
+                                :disabled="!hasPrevPage || isLoading"
+                                class="pagination-btn"
+                            >
+                                <ChevronLeft :size="20" />
+                            </button>
+
+                            <div class="pagination-pages">
+                                <button
+                                    v-for="page in totalPages"
+                                    :key="page"
+                                    @click="goToPage(page)"
+                                    :disabled="isLoading"
+                                    :class="['pagination-page', { active: page === currentPage }]"
+                                >
+                                    {{ page }}
+                                </button>
+                            </div>
+
+                            <button
+                                @click="goToPage(currentPage + 1)"
+                                :disabled="!hasNextPage || isLoading"
+                                class="pagination-btn"
+                            >
+                                <ChevronRight :size="20" />
+                            </button>
+                        </div>
+                    </main>
+                </div>
             </div>
         </div>
     </ShopLayout>
 </template>
+
+<style scoped>
+/* Breadcrumb Bar */
+.breadcrumb-bar {
+    background: var(--smo-surface);
+    border-bottom: 1px solid var(--smo-border);
+}
+
+/* Search Page */
+.search-page {
+    min-height: 100vh;
+    background: var(--smo-bg);
+}
+
+/* Search Header */
+.search-header {
+    margin-bottom: 2rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 1.5rem 0;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--smo-text-muted);
+    pointer-events: none;
+}
+
+.search-input {
+    height: 56px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    border: 2px solid var(--smo-border);
+    border-radius: var(--radius-lg);
+    background: var(--smo-surface);
+    transition: all var(--transition-base);
+}
+
+.search-input:hover {
+    border-color: var(--smo-primary-light);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--smo-primary);
+    box-shadow: 0 0 0 3px rgba(44, 95, 93, 0.1);
+}
+
+.clear-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--smo-text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.clear-btn:hover {
+    background: var(--smo-bg);
+    color: var(--smo-text-primary);
+}
+
+.search-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-query {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--smo-primary);
+}
+
+.search-results {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--smo-text-secondary);
+}
+
+/* Catalog Grid */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .catalog-grid {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
+/* Filter Sidebar */
+.filter-sidebar {
+    background: var(--smo-surface);
+    border: 1px solid var(--smo-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--smo-border);
+}
+
+.filter-icon {
+    color: var(--smo-primary);
+}
+
+.filter-title {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--smo-text-primary);
+}
+
+/* Products Main */
+.products-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Products Toolbar */
+.products-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: var(--smo-surface);
+    border: 1px solid var(--smo-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.toolbar-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.results-count {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--smo-text-secondary);
+}
+
+.sort-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--smo-surface);
+    border: 2px solid var(--smo-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--smo-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.sort-button:hover {
+    border-color: var(--smo-primary);
+    color: var(--smo-text-primary);
+}
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Loading Card */
+.loading-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.skeleton-image {
+    aspect-ratio: 1;
+    width: 100%;
+    border-radius: var(--radius-md);
+}
+
+.skeleton-title {
+    height: 1rem;
+    width: 75%;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-price {
+    height: 1rem;
+    width: 50%;
+    border-radius: var(--radius-sm);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 3rem 1.5rem;
+    background: var(--smo-surface);
+    border: 2px dashed var(--smo-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, rgba(44, 95, 93, 0.1) 0%, rgba(44, 95, 93, 0.05) 100%);
+    border-radius: 50%;
+    color: var(--smo-primary);
+}
+
+.empty-icon-warning {
+    background: linear-gradient(135deg, rgba(217, 119, 87, 0.1) 0%, rgba(217, 119, 87, 0.05) 100%);
+    color: var(--smo-accent);
+}
+
+.empty-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--smo-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--smo-text-secondary);
+    max-width: 400px;
+    margin-bottom: 1.5rem;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--smo-surface);
+    border: 2px solid var(--smo-border);
+    border-radius: var(--radius-sm);
+    color: var(--smo-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--smo-primary);
+    color: var(--smo-text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-pages {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 0.75rem;
+    background: var(--smo-surface);
+    border: 2px solid var(--smo-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--smo-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.pagination-page:hover:not(:disabled) {
+    border-color: var(--smo-primary);
+    color: var(--smo-text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination-page.active {
+    background: var(--smo-primary);
+    border-color: var(--smo-primary);
+    color: white;
+}
+
+.pagination-page:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .products-toolbar {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .sort-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
