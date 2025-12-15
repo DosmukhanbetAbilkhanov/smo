@@ -295,7 +295,7 @@ function getRemainingAmount(cart: any) {
     background: var(--smo-bg);
     min-height: 100vh;
     font-family: var(--font-body);
-    padding-bottom: 4rem;
+    padding-bottom: 2rem;
 }
 
 /* Loading State */
@@ -304,7 +304,7 @@ function getRemainingAmount(cart: any) {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem 0;
+    padding: 2rem 0;
 }
 
 .loading-spinner {
@@ -335,7 +335,7 @@ function getRemainingAmount(cart: any) {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4rem 0;
+    padding: 2rem 0;
     text-align: center;
 }
 
@@ -343,8 +343,8 @@ function getRemainingAmount(cart: any) {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 96px;
-    height: 96px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: linear-gradient(135deg,
         rgba(44, 95, 93, 0.1) 0%,
@@ -354,24 +354,24 @@ function getRemainingAmount(cart: any) {
 
 .empty-title {
     font-family: var(--font-display);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--smo-text-primary);
-    margin-top: 1.5rem;
+    margin-top: 1rem;
 }
 
 .empty-subtitle {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 0.9375rem;
     color: var(--smo-text-secondary);
-    margin-top: 0.5rem;
+    margin-top: 0.375rem;
 }
 
 /* Cart Content */
 .cart-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.25rem;
 }
 
 /* Cart Header */
@@ -385,28 +385,28 @@ function getRemainingAmount(cart: any) {
 
 .cart-title {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--smo-text-primary);
 }
 
 .cart-subtitle {
     font-family: var(--font-body);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     color: var(--smo-text-secondary);
-    margin-top: 0.25rem;
+    margin-top: 0.125rem;
 }
 
 .btn-clear-all {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
     background: var(--smo-surface);
     border: 2px solid var(--smo-border);
     border-radius: var(--radius-md);
     font-family: var(--font-display);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--smo-text-secondary);
     cursor: pointer;
@@ -428,7 +428,7 @@ function getRemainingAmount(cart: any) {
 .shops-list {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.25rem;
 }
 
 /* Shop Card */
@@ -447,7 +447,7 @@ function getRemainingAmount(cart: any) {
 
 /* Shop Header */
 .shop-header {
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.25rem;
     border-bottom: 2px solid var(--smo-border);
     background: linear-gradient(135deg,
         rgba(44, 95, 93, 0.03) 0%,
@@ -457,7 +457,7 @@ function getRemainingAmount(cart: any) {
 .shop-info {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.625rem;
 }
 
 .shop-icon {
@@ -466,31 +466,31 @@ function getRemainingAmount(cart: any) {
 
 .shop-name {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.0625rem;
     font-weight: 700;
     color: var(--smo-text-primary);
 }
 
 .shop-items {
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--smo-text-secondary);
-    margin-top: 0.125rem;
+    margin-top: 0.0625rem;
 }
 
 /* Shop Items List */
 .shop-items-list {
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.875rem;
 }
 
 /* Cart Item */
 .cart-item {
     display: flex;
-    gap: 1.5rem;
-    padding: 1.25rem;
+    gap: 1rem;
+    padding: 0.875rem;
     background: var(--smo-bg);
     border: 1px solid var(--smo-border);
     border-radius: var(--radius-md);
@@ -508,8 +508,8 @@ function getRemainingAmount(cart: any) {
 }
 
 .item-image {
-    width: 96px;
-    height: 96px;
+    width: 72px;
+    height: 72px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     background: white;
@@ -541,19 +541,19 @@ function getRemainingAmount(cart: any) {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.625rem;
 }
 
 .item-header {
     display: flex;
     align-items: start;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .item-name {
     font-family: var(--font-display);
-    font-size: 1.0625rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: var(--smo-text-primary);
     transition: color var(--transition-base);
@@ -567,8 +567,8 @@ function getRemainingAmount(cart: any) {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--smo-border);
     background: var(--smo-surface);
@@ -594,7 +594,7 @@ function getRemainingAmount(cart: any) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-top: auto;
     flex-wrap: wrap;
 }
@@ -603,15 +603,15 @@ function getRemainingAmount(cart: any) {
 .quantity-controls {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.375rem;
 }
 
 .qty-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: var(--radius-sm);
     border: 2px solid var(--smo-border);
     background: var(--smo-surface);
@@ -631,13 +631,14 @@ function getRemainingAmount(cart: any) {
 }
 
 .qty-input {
-    width: 64px;
-    height: 32px;
+    width: 56px;
+    height: 28px;
     text-align: center;
     border: 2px solid var(--smo-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-display);
     font-weight: 600;
+    font-size: 0.875rem;
     padding: 0;
 }
 
@@ -646,17 +647,17 @@ function getRemainingAmount(cart: any) {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.25rem;
+    gap: 0.125rem;
 }
 
 .item-unit-price {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--smo-text-muted);
 }
 
 .item-subtotal {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: 1.0625rem;
     font-weight: 700;
     color: var(--smo-text-primary);
 }
@@ -666,8 +667,8 @@ function getRemainingAmount(cart: any) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.5rem 2rem;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     background: linear-gradient(135deg,
         rgba(44, 95, 93, 0.05) 0%,
         rgba(44, 95, 93, 0.02) 100%);
@@ -678,34 +679,34 @@ function getRemainingAmount(cart: any) {
 .shop-total-section {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.375rem;
 }
 
 .shop-total {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.625rem;
 }
 
 .shop-total-label {
     font-family: var(--font-display);
-    font-size: 1.0625rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: var(--smo-text-secondary);
 }
 
 .shop-total-value {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--smo-primary);
 }
 
 .min-order-warning {
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: #DC2626;
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.625rem;
     background: rgba(220, 38, 38, 0.05);
     border: 1px solid rgba(220, 38, 38, 0.2);
     border-radius: var(--radius-sm);
@@ -725,12 +726,12 @@ function getRemainingAmount(cart: any) {
 @media (max-width: 768px) {
     .cart-item {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .item-image {
         width: 100%;
-        height: 200px;
+        height: 160px;
     }
 
     .item-footer {
@@ -758,7 +759,7 @@ function getRemainingAmount(cart: any) {
     }
 
     .min-order-warning {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
     }
 }
 
