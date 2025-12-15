@@ -58,7 +58,7 @@ watch(localSearchQuery, (newValue, oldValue) => {
             {
                 preserveState: true,
                 preserveScroll: true,
-                only: ['products', 'searchQuery'],
+                only: ['products', 'searchQuery', 'categories'],
                 onFinish: () => {
                     isLoading.value = false;
                 },
@@ -82,7 +82,7 @@ function goToPage(page: number) {
         {
             preserveState: true,
             preserveScroll: false,
-            only: ['products'],
+            only: ['products', 'categories'],
             onFinish: () => {
                 isLoading.value = false;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -110,7 +110,7 @@ function filterByCategory(categoryId: number | null) {
         {
             preserveState: true,
             preserveScroll: true,
-            only: ['products', 'selectedCategoryId'],
+            only: ['products', 'selectedCategoryId', 'categories'],
             onFinish: () => {
                 isLoading.value = false;
             },
@@ -479,20 +479,19 @@ function filterByCategory(categoryId: number | null) {
 /* Categories Section */
 .categories-section {
     background: var(--smo-surface);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-md);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .categories-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--smo-border);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--smo-border);
 }
 
 .categories-icon {
@@ -501,7 +500,7 @@ function filterByCategory(categoryId: number | null) {
 
 .categories-title {
     font-family: var(--font-display);
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--smo-text-primary);
 }
@@ -509,45 +508,44 @@ function filterByCategory(categoryId: number | null) {
 .categories-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.625rem;
+    gap: 0.5rem;
 }
 
 .category-btn {
     display: inline-flex;
     align-items: center;
-    padding: 0.625rem 1rem;
+    padding: 0.5rem 0.875rem;
     background: var(--smo-bg);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
+    border: 1px solid var(--smo-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--smo-text-primary);
     cursor: pointer;
     transition: all var(--transition-base);
 }
 
 .category-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary-light);
+    border-color: var(--smo-primary);
     color: var(--smo-primary);
     background: rgba(44, 95, 93, 0.05);
 }
 
 .category-btn.active {
-    background: linear-gradient(135deg, var(--smo-primary) 0%, var(--smo-primary-light) 100%);
+    background: var(--smo-primary);
     border-color: var(--smo-primary);
     color: white;
-    box-shadow: 0 4px 12px rgba(44, 95, 93, 0.3);
 }
 
 .category-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
 .category-btn-child {
-    padding-left: 1.5rem;
-    font-weight: 500;
+    padding-left: 1.25rem;
+    font-weight: 400;
     font-size: 0.8125rem;
 }
 
@@ -781,11 +779,13 @@ function filterByCategory(categoryId: number | null) {
     .category-btn {
         font-size: 0.8125rem;
         padding: 0.5rem 0.75rem;
+        font-weight: 700;
     }
 
     .category-btn-child {
         padding-left: 1rem;
         font-size: 0.75rem;
+        font-weight: 400;
     }
 }
 </style>
