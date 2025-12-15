@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/composables/useLocale';
-import { Globe } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const { currentLocale, oppositeLocaleDisplayName, toggleLocale } = useLocale();
+
+const flagEmoji = computed(() => {
+    return currentLocale.value === 'ru' ? '🇷🇺' : '🇰🇿';
+});
 </script>
 
 <template>
@@ -14,7 +18,7 @@ const { currentLocale, oppositeLocaleDisplayName, toggleLocale } = useLocale();
         :title="`Switch to ${oppositeLocaleDisplayName}`"
         class="gap-2"
     >
-        <Globe :size="16" />
+        <span class="text-xl leading-none">{{ flagEmoji }}</span>
         <span class="hidden sm:inline">{{ currentLocale.toUpperCase() }}</span>
     </Button>
 </template>
