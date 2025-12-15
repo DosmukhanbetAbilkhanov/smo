@@ -8,12 +8,16 @@ import { useCartStore } from '@/stores/cart';
 import type { CartItem } from '@/types/api';
 import { Head, Link } from '@inertiajs/vue3';
 import { Minus, Plus, ShoppingBag, ShoppingCart, Store, Trash2, X } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const cartStore = useCartStore();
 const { getLocalizedName } = useLocale();
 const removing = ref<number | null>(null);
 const updating = ref<number | null>(null);
+
+const cartsWithItems = computed(() => {
+    return cartStore.carts.filter(cart => cart.items && cart.items.length > 0);
+});
 
 function getProductName(item: CartItem) {
     return item.product ? getLocalizedName(item.product) : 'Product';
@@ -59,6 +63,16 @@ async function handleClearCart() {
 
 function getItemSubtotal(item: any) {
     return item.price * item.quantity;
+}
+
+function canCheckout(cart: any) {
+    if (!cart.shop?.min_order_amount) return true;
+    return cart.total >= cart.shop.min_order_amount;
+}
+
+function getRemainingAmount(cart: any) {
+    if (!cart.shop?.min_order_amount) return 0;
+    return Math.max(0, cart.shop.min_order_amount - cart.total);
 }
 </script>
 
@@ -110,7 +124,7 @@ function getItemSubtotal(item: any) {
                             <h2 class="cart-title">Your Cart</h2>
                             <p class="cart-subtitle">
                                 {{ cartStore.itemsCount }} {{ cartStore.itemsCount === 1 ? 'item' : 'items' }}
-                                from {{ cartStore.carts.length }} {{ cartStore.carts.length === 1 ? 'shop' : 'shops' }}
+                                from {{ cartsWithItems.length }} {{ cartsWithItems.length === 1 ? 'shop' : 'shops' }}
                             </p>
                         </div>
                         <button
@@ -126,7 +140,7 @@ function getItemSubtotal(item: any) {
                     <!-- Cart Items Grouped by Shop -->
                     <div class="shops-list">
                         <div
-                            v-for="(cart, index) in cartStore.carts"
+                            v-for="(cart, index) in cartsWithItems"
                             :key="cart.id"
                             class="shop-card animate-fadeInUp"
                             :style="{ animationDelay: `${index * 100}ms` }"
@@ -237,15 +251,34 @@ function getItemSubtotal(item: any) {
 
                             <!-- Shop Footer -->
                             <div class="shop-footer">
-                                <div class="shop-total">
-                                    <span class="shop-total-label">Shop Subtotal:</span>
-                                    <PriceDisplay :price="cart.total" class="shop-total-value" />
+                                <div class="shop-total-section">
+                                    <div class="shop-total">
+                                        <span class="shop-total-label">Shop Subtotal:</span>
+                                        <PriceDisplay :price="cart.total" class="shop-total-value" />
+                                    </div>
+                                    <div v-if="!canCheckout(cart)" class="min-order-warning">
+                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
+                                        more to reach the minimum order amount of
+                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
+                                    </div>
                                 </div>
-                                <Button class="btn-primary-modern" as-child>
+                                <Button
+                                    v-if="canCheckout(cart)"
+                                    class="btn-primary-modern"
+                                    as-child
+                                >
                                     <Link :href="`/checkout?shop_id=${cart.shop_id}`">
                                         <ShoppingCart :size="20" />
                                         Proceed to Checkout
                                     </Link>
+                                </Button>
+                                <Button
+                                    v-else
+                                    class="btn-primary-modern"
+                                    disabled
+                                >
+                                    <ShoppingCart :size="20" />
+                                    Proceed to Checkout
                                 </Button>
                             </div>
                         </div>
@@ -642,6 +675,12 @@ function getItemSubtotal(item: any) {
     flex-wrap: wrap;
 }
 
+.shop-total-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .shop-total {
     display: flex;
     align-items: center;
@@ -660,6 +699,26 @@ function getItemSubtotal(item: any) {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--smo-primary);
+}
+
+.min-order-warning {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: #DC2626;
+    padding: 0.5rem 0.75rem;
+    background: rgba(220, 38, 38, 0.05);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.min-order-warning .remaining-amount,
+.min-order-warning .min-amount {
+    font-weight: 600;
+    color: #DC2626;
 }
 
 /* Responsive */
@@ -690,8 +749,16 @@ function getItemSubtotal(item: any) {
         align-items: stretch;
     }
 
+    .shop-total-section {
+        width: 100%;
+    }
+
     .shop-total {
         justify-content: space-between;
+    }
+
+    .min-order-warning {
+        font-size: 0.8125rem;
     }
 }
 
