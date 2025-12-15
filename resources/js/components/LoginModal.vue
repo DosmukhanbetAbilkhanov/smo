@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
-import { Form } from '@inertiajs/vue3'
-import { store } from '@/actions/App/Http/Controllers/Auth/LoginController'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -42,7 +39,7 @@ const inputType = computed(() => {
 })
 
 const inputPlaceholder = computed(() => {
-  return 'Email or phone number'
+  return 'Enter email or phone'
 })
 
 const inputIcon = computed(() => {
@@ -118,32 +115,35 @@ const handleRegisterClick = () => {
 <template>
   <Dialog :open="open" @update:open="handleClose">
     <DialogContent class="sm:max-w-md">
-      <DialogHeader>
-        <DialogTitle class="flex items-center gap-2">
-          <LogIn class="h-5 w-5" />
-          Login to Continue
+      <DialogHeader class="text-center space-y-3">
+        <!-- <div class="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-2xl"
+          style="background: linear-gradient(135deg, rgba(44, 95, 93, 0.1) 0%, rgba(44, 95, 93, 0.05) 100%); border: 1px solid rgba(44, 95, 93, 0.2);">
+          <LogIn class="h-7 w-7" style="color: var(--smo-primary)" />
+        </div> -->
+        <DialogTitle class="text-2xl font-bold" style="font-family: var(--font-display); color: var(--smo-text-primary); letter-spacing: -0.02em;">
+          Login
         </DialogTitle>
-        <DialogDescription>
-          Please login to add items to your cart and make purchases.
-        </DialogDescription>
       </DialogHeader>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form @submit.prevent="handleSubmit" class="space-y-5 mt-2">
         <AlertError v-if="errors.length > 0" :errors="errors" />
 
         <div class="space-y-2">
-          <Label for="identifier">Email or Phone Number</Label>
+          <Label for="identifier" class="text-sm font-medium" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
+            Email or Phone
+          </Label>
           <div class="relative">
             <component
               :is="inputIcon"
-              class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+              style="color: var(--smo-text-muted)"
             />
             <Input
               id="identifier"
               v-model="identifier"
               :type="inputType === 'email' ? 'email' : 'text'"
               :placeholder="inputPlaceholder"
-              class="pl-10"
+              class="pl-10 input-modern"
               required
               :disabled="processing"
             />
@@ -151,49 +151,53 @@ const handleRegisterClick = () => {
         </div>
 
         <div class="space-y-2">
-          <Label for="password">Password</Label>
+          <Label for="password" class="text-sm font-medium" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
+            Password
+          </Label>
           <Input
             id="password"
             v-model="password"
             type="password"
-            placeholder="Enter your password"
+            placeholder="Enter password"
+            class="input-modern"
             required
             :disabled="processing"
           />
         </div>
 
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
             <Checkbox id="remember" v-model:checked="remember" :disabled="processing" />
-            <Label for="remember" class="text-sm font-normal cursor-pointer">
+            <Label for="remember" class="font-normal cursor-pointer" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
               Remember me
             </Label>
           </div>
 
           <a
             href="/forgot-password"
-            class="text-sm text-primary hover:underline"
+            class="font-medium hover:underline transition-colors"
+            style="color: var(--smo-primary); font-family: var(--font-body);"
             @click.prevent="router.visit('/forgot-password')"
           >
             Forgot password?
           </a>
         </div>
 
-        <div class="flex flex-col gap-3">
-          <Button type="submit" class="w-full" :disabled="processing">
-            <span v-if="processing">Logging in...</span>
-            <span v-else>Login</span>
+        <div class="flex flex-col gap-4 pt-2">
+          <Button type="submit" class="w-full btn-primary-modern" :disabled="processing">
+            {{ processing ? 'Please wait...' : 'Continue' }}
           </Button>
 
-          <div class="text-center text-sm text-muted-foreground">
+          <div class="text-center text-sm" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
             Don't have an account?
             <button
               type="button"
-              class="text-primary hover:underline font-medium"
+              class="font-semibold hover:underline transition-colors ml-1"
+              style="color: var(--smo-primary)"
               @click="handleRegisterClick"
               :disabled="processing"
             >
-              Register here
+              Register
             </button>
           </div>
         </div>
