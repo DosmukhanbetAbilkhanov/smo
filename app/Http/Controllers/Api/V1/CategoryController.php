@@ -19,6 +19,7 @@ class CategoryController extends Controller
     {
         $search = request('search');
         $limit = request('limit', null);
+        cache()->flush('api.categories.index');
 
         if ($search) {
             // Search in both Russian and Kazakh names
