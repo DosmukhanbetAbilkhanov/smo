@@ -10,7 +10,7 @@ import { useLocale } from '@/composables/useLocale';
 import { useCartStore } from '@/stores/cart';
 import type { Product } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { Check, ShoppingCart } from 'lucide-vue-next';
+import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import PriceDisplay from './PriceDisplay.vue';
 import LoginModal from '@/components/LoginModal.vue';
@@ -29,26 +29,26 @@ const productImage = computed(
 );
 const isOutOfStock = computed(() => props.product.quantity === 0);
 const adding = ref(false);
-const showSuccess = ref(false);
 const showLoginModal = ref(false);
+
+// Find cart item for this product
+const cartItem = computed(() => {
+    return cartStore.items.find((item) => item.product_id === props.product.id);
+});
+
+const isInCart = computed(() => !!cartItem.value);
+const cartQuantity = computed(() => cartItem.value?.quantity || 0);
 
 async function handleAddToCart() {
     if (isOutOfStock.value || adding.value) return;
 
     adding.value = true;
-    showSuccess.value = false;
 
     try {
         await cartStore.addItem({
             product_id: props.product.id,
             quantity: 1,
         });
-
-        // Show success feedback
-        showSuccess.value = true;
-        setTimeout(() => {
-            showSuccess.value = false;
-        }, 2000);
     } catch (error: any) {
         console.error('Failed to add to cart:', error);
 
@@ -59,6 +59,54 @@ async function handleAddToCart() {
         } else {
             alert('Failed to add item to cart. Please try again.');
         }
+    } finally {
+        adding.value = false;
+    }
+}
+
+async function handleIncreaseQuantity() {
+    if (!cartItem.value || adding.value) return;
+
+    adding.value = true;
+    try {
+        await cartStore.updateQuantity(cartItem.value.id, {
+            quantity: cartItem.value.quantity + 1,
+        });
+    } catch (error: any) {
+        console.error('Failed to update quantity:', error);
+        alert('Failed to update quantity. Please try again.');
+    } finally {
+        adding.value = false;
+    }
+}
+
+async function handleDecreaseQuantity() {
+    if (!cartItem.value || adding.value) return;
+
+    adding.value = true;
+    try {
+        if (cartItem.value.quantity > 1) {
+            await cartStore.updateQuantity(cartItem.value.id, {
+                quantity: cartItem.value.quantity - 1,
+            });
+        }
+    } catch (error: any) {
+        console.error('Failed to update quantity:', error);
+        alert('Failed to update quantity. Please try again.');
+    } finally {
+        adding.value = false;
+    }
+}
+
+async function handleRemoveFromCart() {
+    if (!cartItem.value || adding.value) return;
+
+    adding.value = true;
+    try {
+        await cartStore.removeItem(cartItem.value.id);
+    } catch (error: any) {
+        console.error('Failed to remove from cart:', error);
+        alert('Failed to remove item from cart. Please try again.');
     } finally {
         adding.value = false;
     }
@@ -112,17 +160,53 @@ async function handleAddToCart() {
         </CardContent>
 
         <CardFooter class="p-4 pt-0">
+            <!-- Show quantity controls when product is in cart -->
+            <div v-if="isInCart" class="flex w-full gap-2">
+                <Button
+                    @click="handleDecreaseQuantity"
+                    :disabled="adding || cartQuantity <= 1"
+                    variant="outline"
+                    size="sm"
+                    class="flex-shrink-0"
+                >
+                    <Minus :size="16" />
+                </Button>
+
+                <div class="flex flex-1 items-center justify-center rounded-md border bg-muted px-3 text-sm font-medium">
+                    {{ cartQuantity }}
+                </div>
+
+                <Button
+                    @click="handleIncreaseQuantity"
+                    :disabled="adding"
+                    variant="outline"
+                    size="sm"
+                    class="flex-shrink-0"
+                >
+                    <Plus :size="16" />
+                </Button>
+
+                <Button
+                    @click="handleRemoveFromCart"
+                    :disabled="adding"
+                    variant="destructive"
+                    size="sm"
+                    class="flex-shrink-0"
+                >
+                    <Trash2 :size="16" />
+                </Button>
+            </div>
+
+            <!-- Show add to cart button when product is not in cart -->
             <Button
+                v-else
                 @click="handleAddToCart"
                 :disabled="isOutOfStock || adding"
-                :variant="showSuccess ? 'default' : 'default'"
                 class="w-full gap-2 btn-primary-modern"
                 size="sm"
             >
-                <Check v-if="showSuccess" :size="16" />
-                <ShoppingCart v-else :size="16" />
-                <span v-if="showSuccess">Added!</span>
-                <span v-else-if="adding">Adding...</span>
+                <ShoppingCart :size="16" />
+                <span v-if="adding">Adding...</span>
                 <span v-else-if="isOutOfStock">Out of Stock</span>
                 <span v-else>Add to Cart</span>
             </Button>
