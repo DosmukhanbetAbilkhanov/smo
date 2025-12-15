@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('web')->group(function () {
     // Public routes
     Route::get('/health', function () {
         return response()->json(['status' => 'ok']);
@@ -29,7 +29,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/products/{id}', [ProductController::class, 'show']);
 
     // Protected routes - using web auth with session for SPA
-    Route::middleware(['web', 'auth'])->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
