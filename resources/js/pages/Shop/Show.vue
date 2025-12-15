@@ -193,33 +193,37 @@ function filterByCategory(categoryId: number | null) {
                             {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                         </h2>
                     </div>
-                    <div class="categories-nav">
-                        <button
-                            @click="filterByCategory(null)"
-                            :class="['category-btn', { active: !selectedCategoryId }]"
-                            :disabled="isLoading"
-                        >
-                            {{ t({ ru: 'Все товары', kz: 'Барлық тауарлар' }) }}
-                        </button>
-                        <template v-for="category in categories" :key="category.id">
-                            <button
-                                @click="filterByCategory(category.id)"
-                                :class="['category-btn', { active: selectedCategoryId === category.id }]"
-                                :disabled="isLoading"
+                    <ul class="categories-list">
+                        <li>
+                            <a
+                                @click.prevent="filterByCategory(null)"
+                                :class="['category-link', 'category-all', { active: !selectedCategoryId }]"
+                                href="#"
+                            >
+                                {{ t({ ru: 'Все товары', kz: 'Барлық тауарлар' }) }}
+                            </a>
+                        </li>
+                        <li v-for="category in categories" :key="category.id">
+                            <a
+                                @click.prevent="filterByCategory(category.id)"
+                                :class="['category-link', 'category-parent', { active: selectedCategoryId === category.id }]"
+                                href="#"
                             >
                                 {{ getLocalizedName(category) }}
-                            </button>
-                            <button
-                                v-for="child in category.children"
-                                :key="child.id"
-                                @click="filterByCategory(child.id)"
-                                :class="['category-btn', 'category-btn-child', { active: selectedCategoryId === child.id }]"
-                                :disabled="isLoading"
-                            >
-                                {{ getLocalizedName(child) }}
-                            </button>
-                        </template>
-                    </div>
+                            </a>
+                            <ul v-if="category.children && category.children.length > 0" class="category-children">
+                                <li v-for="child in category.children" :key="child.id">
+                                    <a
+                                        @click.prevent="filterByCategory(child.id)"
+                                        :class="['category-link', 'category-child', { active: selectedCategoryId === child.id }]"
+                                        href="#"
+                                    >
+                                        {{ getLocalizedName(child) }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
 
                 <!-- Products Section -->
@@ -505,48 +509,68 @@ function filterByCategory(categoryId: number | null) {
     color: var(--smo-text-primary);
 }
 
-.categories-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+.categories-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.category-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 0.875rem;
-    background: var(--smo-bg);
-    border: 1px solid var(--smo-border);
-    border-radius: var(--radius-sm);
+.categories-list > li {
+    margin-bottom: 0.5rem;
+}
+
+.category-link {
     font-family: var(--font-body);
     font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: opacity var(--transition-base);
+    text-decoration: none;
 }
 
-.category-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-primary);
-    background: rgba(44, 95, 93, 0.05);
+.category-link:hover {
+    opacity: 0.7;
 }
 
-.category-btn.active {
-    background: var(--smo-primary);
-    border-color: var(--smo-primary);
-    color: white;
+/* All products link */
+.category-all {
+    color: #000;
+    font-weight: 700;
 }
 
-.category-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.category-all.active {
+    text-decoration: underline;
 }
 
-.category-btn-child {
-    padding-left: 1.25rem;
+/* Parent categories - black bold */
+.category-parent {
+    color: #000;
+    font-weight: 700;
+}
+
+.category-parent.active {
+    text-decoration: underline;
+}
+
+/* Children list */
+.category-children {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.category-children > li {
+    margin-bottom: 0.25rem;
+}
+
+/* Children categories - blue normal underlined */
+.category-child {
+    color: #2563eb;
     font-weight: 400;
-    font-size: 0.8125rem;
+    text-decoration: underline;
+}
+
+.category-child.active {
+    font-weight: 700;
 }
 
 /* Products Section */
