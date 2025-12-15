@@ -193,8 +193,8 @@ function filterByCategory(categoryId: number | null) {
                             {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                         </h2>
                     </div>
-                    <ul class="categories-list">
-                        <li>
+                    <div class="categories-list">
+                        <div class="category-group">
                             <a
                                 @click.prevent="filterByCategory(null)"
                                 :class="['category-link', 'category-all', { active: !selectedCategoryId }]"
@@ -202,8 +202,8 @@ function filterByCategory(categoryId: number | null) {
                             >
                                 {{ t({ ru: 'Все товары', kz: 'Барлық тауарлар' }) }}
                             </a>
-                        </li>
-                        <li v-for="category in categories" :key="category.id">
+                        </div>
+                        <div v-for="category in categories" :key="category.id" class="category-group">
                             <a
                                 @click.prevent="filterByCategory(category.id)"
                                 :class="['category-link', 'category-parent', { active: selectedCategoryId === category.id }]"
@@ -211,19 +211,19 @@ function filterByCategory(categoryId: number | null) {
                             >
                                 {{ getLocalizedName(category) }}
                             </a>
-                            <ul v-if="category.children && category.children.length > 0" class="category-children">
-                                <li v-for="child in category.children" :key="child.id">
-                                    <a
-                                        @click.prevent="filterByCategory(child.id)"
-                                        :class="['category-link', 'category-child', { active: selectedCategoryId === child.id }]"
-                                        href="#"
-                                    >
-                                        {{ getLocalizedName(child) }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                            <div v-if="category.children && category.children.length > 0" class="category-children">
+                                <a
+                                    v-for="child in category.children"
+                                    :key="child.id"
+                                    @click.prevent="filterByCategory(child.id)"
+                                    :class="['category-link', 'category-child', { active: selectedCategoryId === child.id }]"
+                                    href="#"
+                                >
+                                    {{ getLocalizedName(child) }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Products Section -->
@@ -510,13 +510,15 @@ function filterByCategory(categoryId: number | null) {
 }
 
 .categories-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
 }
 
-.categories-list > li {
-    margin-bottom: 0.5rem;
+.category-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .category-link {
@@ -525,6 +527,7 @@ function filterByCategory(categoryId: number | null) {
     cursor: pointer;
     transition: opacity var(--transition-base);
     text-decoration: none;
+    display: block;
 }
 
 .category-link:hover {
@@ -545,21 +548,18 @@ function filterByCategory(categoryId: number | null) {
 .category-parent {
     color: #000;
     font-weight: 700;
+    margin-bottom: 0.25rem;
 }
 
 .category-parent.active {
     text-decoration: underline;
 }
 
-/* Children list */
+/* Children container */
 .category-children {
-    list-style: none;
-    padding-left: 1.5rem;
-    margin: 0.25rem 0 0 0;
-}
-
-.category-children > li {
-    margin-bottom: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 /* Children categories - blue normal underlined */
