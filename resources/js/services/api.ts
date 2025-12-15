@@ -70,8 +70,11 @@ apiClient.interceptors.response.use(
                 console.warn('Unauthorized API request:', error.config?.url);
             }
 
-            // Return error data
-            return Promise.reject(data);
+            // Return error data with status code preserved
+            return Promise.reject({
+                ...data,
+                status,
+            });
         }
 
         // Network error or other error

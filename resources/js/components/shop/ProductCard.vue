@@ -13,6 +13,7 @@ import { Link } from '@inertiajs/vue3';
 import { Check, ShoppingCart } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import PriceDisplay from './PriceDisplay.vue';
+import LoginModal from '@/components/LoginModal.vue';
 
 interface Props {
     product: Product;
@@ -29,6 +30,7 @@ const productImage = computed(
 const isOutOfStock = computed(() => props.product.quantity === 0);
 const adding = ref(false);
 const showSuccess = ref(false);
+const showLoginModal = ref(false);
 
 async function handleAddToCart() {
     if (isOutOfStock.value || adding.value) return;
@@ -47,9 +49,16 @@ async function handleAddToCart() {
         setTimeout(() => {
             showSuccess.value = false;
         }, 2000);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to add to cart:', error);
-        alert('Failed to add item to cart. Please try again.');
+
+        // Check if error is due to authentication (401 Unauthorized or 419 Session Expired)
+        const status = error?.status;
+        if (status === 401 || status === 419) {
+            showLoginModal.value = true;
+        } else {
+            alert('Failed to add item to cart. Please try again.');
+        }
     } finally {
         adding.value = false;
     }
@@ -119,4 +128,6 @@ async function handleAddToCart() {
             </Button>
         </CardFooter>
     </Card>
+
+    <LoginModal v-model:open="showLoginModal" />
 </template>
