@@ -228,6 +228,9 @@ export interface PaginatedResponse<T> {
     to: number;
 }
 
+// Type aliases for common paginated responses
+export type PaginatedProducts = PaginatedResponse<Product>;
+
 export interface ApiError {
     success: false;
     message: string;

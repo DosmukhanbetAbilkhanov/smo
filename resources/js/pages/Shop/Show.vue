@@ -8,23 +8,29 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
-import type { PaginatedProducts, Shop } from '@/types/api';
+import type { Category, PaginatedProducts, Shop } from '@/types/api';
 import { router } from '@inertiajs/vue3';
-import { ChevronLeft, ChevronRight, MapPin, Package, Store } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight, Grid, MapPin, Package, Search, Store, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
     shop: Shop;
     products: PaginatedProducts;
+    categories: Category[];
+    searchQuery?: string;
+    selectedCategoryId?: number;
 }
 
 const props = defineProps<Props>();
-const { t } = useLocale();
+const { t, getLocalizedName } = useLocale();
 
 const isLoading = ref(false);
+const localSearchQuery = ref(props.searchQuery || '');
 
 const currentPage = computed(() => props.products.current_page);
 const totalPages = computed(() => props.products.last_page);
@@ -38,7 +44,11 @@ function goToPage(page: number) {
 
     router.get(
         `/shops/${props.shop.id}`,
-        { page },
+        {
+            page,
+            search: props.searchQuery,
+            category_id: props.selectedCategoryId,
+        },
         {
             preserveState: true,
             preserveScroll: false,
@@ -46,6 +56,73 @@ function goToPage(page: number) {
             onFinish: () => {
                 isLoading.value = false;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+        },
+    );
+}
+
+function handleSearch() {
+    if (localSearchQuery.value === props.searchQuery) return;
+
+    isLoading.value = true;
+
+    router.get(
+        `/shops/${props.shop.id}`,
+        {
+            search: localSearchQuery.value || undefined,
+            category_id: props.selectedCategoryId,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['products', 'searchQuery'],
+            onFinish: () => {
+                isLoading.value = false;
+            },
+        },
+    );
+}
+
+function clearSearch() {
+    localSearchQuery.value = '';
+
+    if (!props.searchQuery) return;
+
+    isLoading.value = true;
+
+    router.get(
+        `/shops/${props.shop.id}`,
+        {
+            category_id: props.selectedCategoryId,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['products', 'searchQuery'],
+            onFinish: () => {
+                isLoading.value = false;
+            },
+        },
+    );
+}
+
+function filterByCategory(categoryId: number | null) {
+    if (categoryId === props.selectedCategoryId) return;
+
+    isLoading.value = true;
+
+    router.get(
+        `/shops/${props.shop.id}`,
+        {
+            search: props.searchQuery,
+            category_id: categoryId || undefined,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['products', 'selectedCategoryId'],
+            onFinish: () => {
+                isLoading.value = false;
             },
         },
     );
@@ -94,9 +171,78 @@ function goToPage(page: number) {
                     </div>
                 </div>
 
+                <!-- Search Section -->
+                <div class="search-section animate-fadeInUp" style="animation-delay: 100ms">
+                    <div class="search-input-wrapper">
+                        <Search :size="20" class="search-icon" />
+                        <Input
+                            v-model="localSearchQuery"
+                            type="text"
+                            :placeholder="t({ ru: 'Поиск товаров в магазине...', kz: 'Дүкеннен тауарларды іздеу...' })"
+                            class="search-input"
+                            @keyup.enter="handleSearch"
+                        />
+                        <button
+                            v-if="localSearchQuery"
+                            @click="clearSearch"
+                            class="search-clear-btn"
+                        >
+                            <X :size="18" />
+                        </button>
+                        <Button
+                            @click="handleSearch"
+                            class="search-btn"
+                            :disabled="isLoading"
+                        >
+                            {{ t({ ru: 'Искать', kz: 'Іздеу' }) }}
+                        </Button>
+                    </div>
+                </div>
+
+                <!-- Categories Navigation -->
+                <div
+                    v-if="categories.length > 0"
+                    class="categories-section animate-fadeInUp"
+                    style="animation-delay: 200ms"
+                >
+                    <div class="categories-header">
+                        <Grid :size="20" class="categories-icon" />
+                        <h2 class="categories-title">
+                            {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
+                        </h2>
+                    </div>
+                    <div class="categories-nav">
+                        <button
+                            @click="filterByCategory(null)"
+                            :class="['category-btn', { active: !selectedCategoryId }]"
+                            :disabled="isLoading"
+                        >
+                            {{ t({ ru: 'Все товары', kz: 'Барлық тауарлар' }) }}
+                        </button>
+                        <template v-for="category in categories" :key="category.id">
+                            <button
+                                @click="filterByCategory(category.id)"
+                                :class="['category-btn', { active: selectedCategoryId === category.id }]"
+                                :disabled="isLoading"
+                            >
+                                {{ getLocalizedName(category) }}
+                            </button>
+                            <button
+                                v-for="child in category.children"
+                                :key="child.id"
+                                @click="filterByCategory(child.id)"
+                                :class="['category-btn', 'category-btn-child', { active: selectedCategoryId === child.id }]"
+                                :disabled="isLoading"
+                            >
+                                {{ getLocalizedName(child) }}
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
                 <!-- Products Section -->
                 <div class="products-section">
-                    <div class="section-header animate-fadeInUp" style="animation-delay: 100ms">
+                    <div class="section-header animate-fadeInUp" style="animation-delay: 300ms">
                         <h2 class="section-title">
                             {{ t({ ru: 'Товары магазина', kz: 'Дүкен тауарлары' }) }}
                         </h2>
@@ -119,7 +265,7 @@ function goToPage(page: number) {
                     <div
                         v-else-if="products.data.length > 0"
                         class="products-grid animate-fadeInUp"
-                        style="animation-delay: 200ms"
+                        style="animation-delay: 400ms"
                     >
                         <div
                             v-for="(product, index) in products.data"
@@ -283,6 +429,148 @@ function goToPage(page: number) {
     font-family: var(--font-body);
     font-size: 0.9375rem;
     color: var(--smo-text-secondary);
+}
+
+/* Search Section */
+.search-section {
+    margin-bottom: 2rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--smo-surface);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--smo-border);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--smo-primary);
+    box-shadow: 0 0 0 3px rgba(44, 95, 93, 0.1);
+}
+
+.search-icon {
+    color: var(--smo-text-secondary);
+    flex-shrink: 0;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    color: var(--smo-text-primary);
+    outline: none;
+    padding: 0;
+}
+
+.search-input::placeholder {
+    color: var(--smo-text-muted);
+}
+
+.search-clear-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--smo-bg);
+    color: var(--smo-text-muted);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    flex-shrink: 0;
+}
+
+.search-clear-btn:hover {
+    background: var(--smo-border);
+    color: var(--smo-text-primary);
+}
+
+.search-btn {
+    flex-shrink: 0;
+}
+
+/* Categories Section */
+.categories-section {
+    background: var(--smo-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--smo-border);
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.categories-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--smo-border);
+}
+
+.categories-icon {
+    color: var(--smo-primary);
+}
+
+.categories-title {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--smo-text-primary);
+}
+
+.categories-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+}
+
+.category-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1rem;
+    background: var(--smo-bg);
+    border: 2px solid var(--smo-border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--smo-text-primary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.category-btn:hover:not(:disabled) {
+    border-color: var(--smo-primary-light);
+    color: var(--smo-primary);
+    background: rgba(44, 95, 93, 0.05);
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg, var(--smo-primary) 0%, var(--smo-primary-light) 100%);
+    border-color: var(--smo-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(44, 95, 93, 0.3);
+}
+
+.category-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.category-btn-child {
+    padding-left: 1.5rem;
+    font-weight: 500;
+    font-size: 0.8125rem;
 }
 
 /* Products Section */
@@ -506,6 +794,42 @@ function goToPage(page: number) {
 
     .results-badge {
         justify-content: center;
+    }
+
+    .search-input-wrapper {
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        order: 1;
+        width: 100%;
+    }
+
+    .search-icon {
+        order: 0;
+    }
+
+    .search-clear-btn {
+        order: 2;
+    }
+
+    .search-btn {
+        order: 3;
+        width: 100%;
+    }
+
+    .categories-section {
+        padding: 1rem;
+    }
+
+    .category-btn {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .category-btn-child {
+        padding-left: 1rem;
+        font-size: 0.75rem;
     }
 }
 </style>
