@@ -7,6 +7,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +24,7 @@ Route::get('/clear-city', function () {
     if ($user = auth()->user()) {
         $user->update(['city_id' => null]);
     }
+
     return redirect('/')->with('success', 'City cleared - modal should appear');
 });
 
@@ -34,6 +36,9 @@ Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('cate
 Route::get('/products', [CatalogController::class, 'products'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/search', [CatalogController::class, 'search'])->name('search');
+
+// Shops
+Route::get('/shops/{id}', [ShopController::class, 'show'])->name('shops.show');
 
 // Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');

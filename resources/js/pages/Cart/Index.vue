@@ -256,10 +256,21 @@ function getRemainingAmount(cart: any) {
                                         <span class="shop-total-label">Shop Subtotal:</span>
                                         <PriceDisplay :price="cart.total" class="shop-total-value" />
                                     </div>
-                                    <div v-if="!canCheckout(cart)" class="min-order-warning">
-                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
-                                        more to reach the minimum order amount of
-                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
+                                    <div v-if="!canCheckout(cart)" class="min-order-warning-container">
+                                        <div class="min-order-warning">
+                                            Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
+                                            more to reach the minimum order amount of
+                                            <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
+                                        </div>
+                                        <Button
+                                            class="btn-secondary-modern"
+                                            as-child
+                                        >
+                                            <Link :href="`/shops/${cart.shop_id}`">
+                                                <Store :size="16" />
+                                                Continue Shopping
+                                            </Link>
+                                        </Button>
                                     </div>
                                 </div>
                                 <Button
@@ -700,6 +711,12 @@ function getRemainingAmount(cart: any) {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--smo-primary);
+}
+
+.min-order-warning-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .min-order-warning {
