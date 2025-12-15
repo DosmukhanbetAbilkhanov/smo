@@ -204,13 +204,9 @@ function filterByCategory(categoryId: number | null) {
                             </a>
                         </div>
                         <div v-for="category in categories" :key="category.id" class="category-group">
-                            <a
-                                @click.prevent="filterByCategory(category.id)"
-                                :class="['category-link', 'category-parent', { active: selectedCategoryId === category.id }]"
-                                href="#"
-                            >
+                            <span class="category-parent">
                                 {{ getLocalizedName(category) }}
-                            </a>
+                            </span>
                             <div v-if="category.children && category.children.length > 0" class="category-children">
                                 <a
                                     v-for="child in category.children"
@@ -544,15 +540,13 @@ function filterByCategory(categoryId: number | null) {
     text-decoration: underline;
 }
 
-/* Parent categories - black bold */
+/* Parent categories - black bold text (non-clickable) */
 .category-parent {
     color: #000;
     font-weight: 700;
     margin-bottom: 0.25rem;
-}
-
-.category-parent.active {
-    text-decoration: underline;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
 }
 
 /* Children container */
