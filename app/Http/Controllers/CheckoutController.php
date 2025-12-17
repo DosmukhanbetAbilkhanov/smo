@@ -39,7 +39,6 @@ class CheckoutController extends Controller
 
         return Inertia::render('Cart/Checkout', [
             'carts' => CartResource::collection($carts)->resolve(),
-            'defaultPhone' => $user->phone,
         ]);
     }
 
@@ -55,7 +54,6 @@ class CheckoutController extends Controller
             'delivery_floor' => 'nullable|string|max:50',
             'delivery_apartment' => 'nullable|string|max:50',
             'delivery_intercom' => 'nullable|string|max:50',
-            'contact_phone' => 'required|string|max:20',
             'delivery_notes' => 'nullable|string|max:1000',
         ]);
 
@@ -69,7 +67,7 @@ class CheckoutController extends Controller
                 $cart,
                 $validated['delivery_address'],
                 $cart->shop->city_id,
-                $validated['contact_phone'],
+                $request->user()->phone,
                 $validated['delivery_entry'] ?? null,
                 $validated['delivery_floor'] ?? null,
                 $validated['delivery_apartment'] ?? null,

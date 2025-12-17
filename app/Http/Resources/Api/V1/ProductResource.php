@@ -21,9 +21,9 @@ class ProductResource extends BaseResource
             'price' => $this->price,
             'quantity' => $this->quantity,
             'images' => $this->images,
-            'nomenclature' => new NomenclatureResource($this->whenLoaded('nomenclature')),
-            'shop' => new ShopResource($this->whenLoaded('shop')),
-            'specs' => ProductSpecResource::collection($this->whenLoaded('specs')),
+            'nomenclature' => $this->whenLoaded('nomenclature', fn () => (new NomenclatureResource($this->nomenclature))->resolve()),
+            'shop' => $this->whenLoaded('shop', fn () => (new ShopResource($this->shop))->resolve()),
+            'specs' => $this->whenLoaded('specs', fn () => ProductSpecResource::collection($this->specs)->resolve()),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

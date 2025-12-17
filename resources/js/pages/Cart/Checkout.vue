@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import CheckoutProgress from '@/components/checkout/CheckoutProgress.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Cart } from '@/types/api';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { CheckCircle2, MapPin, Package, Phone, ShoppingBag, Store, Truck } from 'lucide-vue-next';
+import { ChevronDown, MapPin, Package, ShoppingBag, Store } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
     carts: Cart[];
-    defaultPhone?: string;
 }
 
 const props = defineProps<Props>();
@@ -23,6 +24,9 @@ const selectedShopId = ref<number>(props.carts[0]?.shop_id || 0);
 const selectedCart = computed(() =>
     props.carts.find((cart) => cart.shop_id === selectedShopId.value),
 );
+
+// Collapsible state for items list
+const isItemsOpen = ref(true);
 
 // Delivery form fields
 const deliveryAddress = ref('');
@@ -75,32 +79,7 @@ function getItemSubtotal(item: any) {
     <ShopLayout>
         <div class="checkout-page">
             <!-- Progress Indicator -->
-            <div class="checkout-progress">
-                <div class="container mx-auto px-4">
-                    <div class="progress-steps">
-                        <div class="step completed">
-                            <div class="step-icon">
-                                <CheckCircle2 :size="20" />
-                            </div>
-                            <span class="step-label">Cart</span>
-                        </div>
-                        <div class="step-line completed"></div>
-                        <div class="step active">
-                            <div class="step-icon">
-                                <Truck :size="20" />
-                            </div>
-                            <span class="step-label">Delivery</span>
-                        </div>
-                        <div class="step-line"></div>
-                        <div class="step">
-                            <div class="step-icon">
-                                <Package :size="20" />
-                            </div>
-                            <span class="step-label">Confirmation</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <CheckoutProgress :current-step="2" />
 
             <div class="container mx-auto px-4 py-12">
                 <!-- Page Header -->
@@ -160,23 +139,44 @@ function getItemSubtotal(item: any) {
 
                             <div class="summary-divider"></div>
 
-                            <!-- Items List -->
-                            <div class="items-list">
-                                <div
-                                    v-for="item in selectedCart.items"
-                                    :key="item.id"
-                                    class="item-row"
-                                >
-                                    <div class="item-details">
-                                        <div class="item-name">{{ getProductName(item) }}</div>
-                                        <div class="item-quantity">Qty: {{ item.quantity }}</div>
+                            <!-- Items List - Collapsible -->
+                            <Collapsible v-model:open="isItemsOpen">
+                                <CollapsibleTrigger as-child>
+                                    <button type="button" class="items-toggle">
+                                        <div class="items-toggle-content">
+                                            <Package :size="18" class="items-toggle-icon" />
+                                            <span class="items-toggle-text">
+                                                {{ selectedCart.items_count }}
+                                                {{ selectedCart.items_count === 1 ? 'Item' : 'Items' }}
+                                            </span>
+                                        </div>
+                                        <ChevronDown
+                                            :size="20"
+                                            class="items-toggle-chevron"
+                                            :class="{ 'rotate-180': isItemsOpen }"
+                                        />
+                                    </button>
+                                </CollapsibleTrigger>
+
+                                <CollapsibleContent>
+                                    <div class="items-list">
+                                        <div
+                                            v-for="item in selectedCart.items"
+                                            :key="item.id"
+                                            class="item-row"
+                                        >
+                                            <div class="item-details">
+                                                <div class="item-name">{{ getProductName(item) }}</div>
+                                                <div class="item-quantity">Qty: {{ item.quantity }}</div>
+                                            </div>
+                                            <PriceDisplay
+                                                :price="getItemSubtotal(item)"
+                                                class="item-price"
+                                            />
+                                        </div>
                                     </div>
-                                    <PriceDisplay
-                                        :price="getItemSubtotal(item)"
-                                        class="item-price"
-                                    />
-                                </div>
-                            </div>
+                                </CollapsibleContent>
+                            </Collapsible>
 
                             <div class="summary-divider"></div>
 
@@ -337,28 +337,6 @@ function getItemSubtotal(item: any) {
                                         </div>
                                     </div>
 
-                                    <!-- Contact Phone -->
-                                    <div class="form-group">
-                                        <Label for="contact_phone" class="form-label">
-                                            Contact Phone *
-                                        </Label>
-                                        <div class="phone-input-wrapper">
-                                            <Phone :size="18" class="phone-icon" />
-                                            <Input
-                                                id="contact_phone"
-                                                name="contact_phone"
-                                                type="tel"
-                                                required
-                                                :defaultValue="defaultPhone"
-                                                placeholder="+7 (XXX) XXX-XX-XX"
-                                                class="form-input phone-input"
-                                            />
-                                        </div>
-                                        <p v-if="errors.contact_phone" class="form-error">
-                                            {{ errors.contact_phone }}
-                                        </p>
-                                    </div>
-
                                     <!-- Delivery Notes -->
                                     <div class="form-group">
                                         <Label for="delivery_notes" class="form-label">
@@ -470,111 +448,6 @@ function getItemSubtotal(item: any) {
 .checkout-page > * {
     position: relative;
     z-index: 1;
-}
-
-/* Progress Indicator */
-.checkout-progress {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: 1.5rem 0;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.progress-steps {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all var(--transition-base);
-}
-
-.step-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-bg);
-    border: 2px solid var(--color-border);
-    color: var(--color-text-muted);
-    transition: all var(--transition-base);
-}
-
-.step.completed .step-icon {
-    background: var(--color-success);
-    border-color: var(--color-success);
-    color: white;
-}
-
-.step.active .step-icon {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: white;
-    box-shadow: 0 0 0 4px rgba(44, 95, 93, 0.1);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 4px rgba(44, 95, 93, 0.1);
-    }
-    50% {
-        box-shadow: 0 0 0 8px rgba(44, 95, 93, 0.05);
-    }
-}
-
-.step-label {
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    transition: color var(--transition-base);
-}
-
-.step.completed .step-label,
-.step.active .step-label {
-    color: var(--color-text-primary);
-}
-
-.step-line {
-    width: 80px;
-    height: 2px;
-    background: var(--color-border);
-    margin: 0 1rem;
-    position: relative;
-    top: -1.25rem;
-    transition: background var(--transition-slow);
-}
-
-.step-line.completed {
-    background: var(--color-success);
-}
-
-@media (max-width: 640px) {
-    .step-label {
-        font-size: 0.75rem;
-    }
-
-    .step-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .step-line {
-        width: 40px;
-        top: -1rem;
-    }
 }
 
 /* Page Header */
@@ -830,11 +703,65 @@ function getItemSubtotal(item: any) {
     margin: 1.5rem 0;
 }
 
+/* Items Toggle Button */
+.items-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg,
+        rgba(44, 95, 93, 0.06) 0%,
+        rgba(44, 95, 93, 0.03) 100%);
+    border: 1px solid rgba(44, 95, 93, 0.15);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-family: var(--font-body);
+    margin-bottom: 1rem;
+}
+
+.items-toggle:hover {
+    background: linear-gradient(135deg,
+        rgba(44, 95, 93, 0.1) 0%,
+        rgba(44, 95, 93, 0.05) 100%);
+    border-color: var(--color-primary-light);
+    transform: translateY(-1px);
+}
+
+.items-toggle-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.items-toggle-icon {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.items-toggle-text {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.items-toggle-chevron {
+    color: var(--color-text-secondary);
+    transition: transform var(--transition-base);
+    flex-shrink: 0;
+}
+
+.items-toggle-chevron.rotate-180 {
+    transform: rotate(180deg);
+}
+
 /* Items List */
 .items-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding-top: 0.5rem;
 }
 
 .item-row {
@@ -1091,23 +1018,6 @@ function getItemSubtotal(item: any) {
     .form-grid {
         grid-template-columns: 1fr;
     }
-}
-
-.phone-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.phone-icon {
-    position: absolute;
-    left: 1rem;
-    color: var(--color-text-muted);
-    pointer-events: none;
-}
-
-.phone-input {
-    padding-left: 3rem;
 }
 
 .form-textarea {

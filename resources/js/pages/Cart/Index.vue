@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CheckoutProgress from '@/components/checkout/CheckoutProgress.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,9 @@ function getRemainingAmount(cart: any) {
 
     <ShopLayout>
         <div class="cart-page bg-pattern">
+            <!-- Progress Indicator -->
+            <CheckoutProgress :current-step="1" />
+
             <div class="page-container">
                 <!-- Page Header -->
                 <div class="page-header animate-fadeInUp">
@@ -256,41 +260,42 @@ function getRemainingAmount(cart: any) {
                                         <span class="shop-total-label">Shop Subtotal:</span>
                                         <PriceDisplay :price="cart.total" class="shop-total-value" />
                                     </div>
-                                    <div v-if="!canCheckout(cart)" class="min-order-warning-container">
-                                        <div class="min-order-warning">
-                                            Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
-                                            more to reach the minimum order amount of
-                                            <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
-                                        </div>
+                                    <div v-if="!canCheckout(cart)" class="min-order-warning">
+                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
+                                        more to reach the minimum order amount of
+                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
+                                    </div>
+                                </div>
+                                <div class="shop-footer-actions">
+                                    <Button
+                                        v-if="canCheckout(cart)"
+                                        class="btn-primary-modern"
+                                        as-child
+                                    >
+                                        <Link :href="`/checkout?shop_id=${cart.shop_id}`">
+                                            <ShoppingCart :size="20" />
+                                            Proceed to Checkout
+                                        </Link>
+                                    </Button>
+                                    <template v-else>
                                         <Button
-                                            class="btn-secondary-modern"
+                                            class="btn-continue-shopping"
                                             as-child
                                         >
                                             <Link :href="`/shops/${cart.shop_id}`">
-                                                <Store :size="16" />
+                                                <Store :size="18" />
                                                 Continue Shopping
                                             </Link>
                                         </Button>
-                                    </div>
+                                        <Button
+                                            class="btn-primary-modern"
+                                            disabled
+                                        >
+                                            <ShoppingCart :size="20" />
+                                            Proceed to Checkout
+                                        </Button>
+                                    </template>
                                 </div>
-                                <Button
-                                    v-if="canCheckout(cart)"
-                                    class="btn-primary-modern"
-                                    as-child
-                                >
-                                    <Link :href="`/checkout?shop_id=${cart.shop_id}`">
-                                        <ShoppingCart :size="20" />
-                                        Proceed to Checkout
-                                    </Link>
-                                </Button>
-                                <Button
-                                    v-else
-                                    class="btn-primary-modern"
-                                    disabled
-                                >
-                                    <ShoppingCart :size="20" />
-                                    Proceed to Checkout
-                                </Button>
                             </div>
                         </div>
                     </div>
@@ -713,12 +718,6 @@ function getRemainingAmount(cart: any) {
     color: var(--smo-primary);
 }
 
-.min-order-warning-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
 .min-order-warning {
     font-family: var(--font-body);
     font-size: 0.8125rem;
@@ -737,6 +736,41 @@ function getRemainingAmount(cart: any) {
 .min-order-warning .min-amount {
     font-weight: 600;
     color: #DC2626;
+}
+
+.shop-footer-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-continue-shopping {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: linear-gradient(135deg, #6EAA4B 0%, #7AB85D 100%);
+    border: 2px solid #5D9440;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 2px 8px rgba(110, 170, 75, 0.2);
+}
+
+.btn-continue-shopping:hover {
+    background: linear-gradient(135deg, #7AB85D 0%, #88C56B 100%);
+    border-color: #6EAA4B;
+    box-shadow: 0 4px 12px rgba(110, 170, 75, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-continue-shopping:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(110, 170, 75, 0.2);
 }
 
 /* Responsive */
@@ -777,6 +811,16 @@ function getRemainingAmount(cart: any) {
 
     .min-order-warning {
         font-size: 0.75rem;
+    }
+
+    .shop-footer-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-continue-shopping {
+        width: 100%;
+        justify-content: center;
     }
 }
 
