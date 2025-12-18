@@ -88,29 +88,32 @@ defineProps<Props>();
         </section>
 
         <!-- Featured Categories -->
-        <section class="py-16">
+        <section class="py-8">
             <div class="container mx-auto px-4">
-                <div class="mb-8 flex items-center justify-between">
+                <!-- <div class="mb-8 flex items-center justify-between">
                     <div>
                         <h2 class="text-3xl font-bold">Browse by Category</h2>
                         <p class="mt-2 text-muted-foreground">
                             Explore our wide range of building materials
                         </p>
                     </div>
-                    <Button variant="ghost" as-child>
-                        <Link href="/categories">
-                            View All
-                            <ArrowRight :size="16" class="ml-2" />
-                        </Link>
-                    </Button>
-                </div>
+                
+                </div> -->
 
-                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-8">
                     <CategoryCard
                         v-for="category in featuredCategories"
                         :key="category.id"
                         :category="category"
                     />
+                </div>
+                <div class="flex justify-end">
+                     <Button variant="ghost" as-child class="mt-2">
+                        <Link href="/categories">
+                            View All
+                            <ArrowRight :size="16" class="ml-2" />
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </section>
