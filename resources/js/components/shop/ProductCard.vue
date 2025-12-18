@@ -10,7 +10,7 @@ import { useLocale } from '@/composables/useLocale';
 import { useCartStore } from '@/stores/cart';
 import type { Product } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-vue-next';
+import { ShoppingCart, Minus, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import PriceDisplay from './PriceDisplay.vue';
 import LoginModal from '@/components/LoginModal.vue';
@@ -68,12 +68,13 @@ async function handleIncreaseQuantity() {
     if (!cartItem.value || adding.value) return;
 
     adding.value = true;
+
     try {
         await cartStore.updateQuantity(cartItem.value.id, {
             quantity: cartItem.value.quantity + 1,
         });
     } catch (error: any) {
-        console.error('Failed to update quantity:', error);
+        console.error('Failed to increase quantity:', error);
         alert('Failed to update quantity. Please try again.');
     } finally {
         adding.value = false;
@@ -84,14 +85,17 @@ async function handleDecreaseQuantity() {
     if (!cartItem.value || adding.value) return;
 
     adding.value = true;
+
     try {
-        if (cartItem.value.quantity > 1) {
+        if (cartItem.value.quantity === 1) {
+            await cartStore.removeItem(cartItem.value.id);
+        } else {
             await cartStore.updateQuantity(cartItem.value.id, {
                 quantity: cartItem.value.quantity - 1,
             });
         }
     } catch (error: any) {
-        console.error('Failed to update quantity:', error);
+        console.error('Failed to decrease quantity:', error);
         alert('Failed to update quantity. Please try again.');
     } finally {
         adding.value = false;
@@ -102,6 +106,7 @@ async function handleRemoveFromCart() {
     if (!cartItem.value || adding.value) return;
 
     adding.value = true;
+
     try {
         await cartStore.removeItem(cartItem.value.id);
     } catch (error: any) {
@@ -111,13 +116,14 @@ async function handleRemoveFromCart() {
         adding.value = false;
     }
 }
+
 </script>
 
 <template>
-    <Card class="group overflow-hidden transition-shadow hover:shadow-lg card-modern">
+    <Card class="group overflow-hidden transition-shadow hover:shadow-md">
         <Link :href="`/products/${product.id}`" class="block">
             <CardHeader class="p-0">
-                <div class="relative aspect-square overflow-hidden bg-muted">
+                <div class="relative aspect-[2/1] overflow-hidden bg-muted rounded-t-md">
                     <img
                         v-if="productImage"
                         :src="productImage"
@@ -142,7 +148,7 @@ async function handleRemoveFromCart() {
             </CardHeader>
         </Link>
 
-        <CardContent class="p-4">
+        <CardContent class="px-3">
             <Link :href="`/products/${product.id}`">
                 <h3
                     class="line-clamp-2 text-sm font-medium transition-colors hover:text-primary"
@@ -151,15 +157,15 @@ async function handleRemoveFromCart() {
                 </h3>
             </Link>
 
-            <div class="mt-2 flex items-center justify-between">
-                <PriceDisplay :price="product.price" class="text-lg" />
+            <div class="mt-1 flex items-center justify-between">
+                <PriceDisplay :price="product.price" class="text-base font-semibold" />
                 <span v-if="product.shop" class="text-xs text-muted-foreground">
                     {{ product.shop.name }}
                 </span>
             </div>
         </CardContent>
 
-        <CardFooter class="p-4 pt-0">
+      <CardFooter class="p-4 pt-0">
             <!-- Show quantity controls when product is in cart -->
             <div v-if="isInCart" class="flex w-full gap-2">
                 <Button
