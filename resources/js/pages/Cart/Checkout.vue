@@ -361,7 +361,7 @@ function getItemSubtotal(item: any) {
                                 <Button
                                     type="submit"
                                     size="lg"
-                                    class="submit-button"
+                                    class="submit-button py-4"
                                     :disabled="processing"
                                 >
                                     <ShoppingBag :size="20" />
