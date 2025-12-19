@@ -243,7 +243,7 @@ async function handleAddToCart() {
                                     <button
                                         @click="decrementQuantity"
                                         :disabled="quantity <= 1 || isOutOfStock"
-                                        class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-concrete-300 bg-white text-steel-900 cursor-pointer transition-all duration-200 hover:border-amber-500 hover:text-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="flex items-center justify-center w-12 h-12 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                                     >
                                         <Minus :size="16" />
                                     </button>
@@ -253,12 +253,12 @@ async function handleAddToCart() {
                                         :min="1"
                                         :max="maxQuantity"
                                         :disabled="isOutOfStock"
-                                        class="w-20 h-12 text-center border-2 border-concrete-300 rounded-lg font-display text-lg font-bold"
+                                        class="w-20 h-12 text-center border-2 border-concrete-300 rounded-lg font-display text-lg font-bold focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                                     />
                                     <button
                                         @click="incrementQuantity"
                                         :disabled="quantity >= maxQuantity || isOutOfStock"
-                                        class="flex items-center justify-center w-12 h-12 rounded-lg border-2 border-concrete-300 bg-white text-steel-900 cursor-pointer transition-all duration-200 hover:border-amber-500 hover:text-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        class="flex items-center justify-center w-12 h-12 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                                     >
                                         <Plus :size="16" />
                                     </button>
@@ -269,10 +269,10 @@ async function handleAddToCart() {
                                 @click="handleAddToCart"
                                 :disabled="isOutOfStock || adding"
                                 :class="[
-                                    'flex items-center justify-center gap-3 h-14 rounded-lg border-none font-display text-lg font-bold cursor-pointer transition-all duration-200 shadow-lg',
+                                    'flex items-center justify-center gap-3 font-display font-bold px-8 py-4 rounded-xl transition-all duration-200',
                                     showSuccess
-                                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                        : 'bg-gradient-to-r from-amber-500 to-rust-500 text-white hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed'
+                                        ? 'bg-forest-600 text-white hover:bg-forest-700 hover:shadow-industrial-lg hover:-translate-y-0.5'
+                                        : 'bg-amber-500 text-white hover:bg-amber-600 hover:shadow-industrial-lg hover:-translate-y-0.5 disabled:bg-concrete-300 disabled:text-concrete-500 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:translate-y-0'
                                 ]"
                             >
                                 <Check v-if="showSuccess" :size="20" />

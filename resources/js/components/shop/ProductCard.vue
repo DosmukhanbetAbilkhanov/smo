@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -162,54 +161,47 @@ async function handleRemoveFromCart() {
         <CardFooter class="p-4 pt-0">
             <!-- Show quantity controls when product is in cart -->
             <div v-if="isInCart" class="flex w-full gap-2">
-                <Button
+                <button
                     @click="handleDecreaseQuantity"
                     :disabled="adding || cartQuantity <= 1"
-                    variant="outline"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                 >
                     <Minus :size="16" />
-                </Button>
+                </button>
 
-                <div class="flex flex-1 items-center justify-center rounded-md border bg-muted px-3 text-sm font-medium">
+                <div class="flex flex-1 items-center justify-center rounded-lg border-2 border-concrete-300 bg-white px-3 text-sm font-display font-semibold text-steel-900">
                     {{ cartQuantity }}
                 </div>
 
-                <Button
+                <button
                     @click="handleIncreaseQuantity"
                     :disabled="adding"
-                    variant="outline"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                 >
                     <Plus :size="16" />
-                </Button>
+                </button>
 
-                <Button
+                <button
                     @click="handleRemoveFromCart"
                     :disabled="adding"
-                    variant="destructive"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-rust-600 border-2 border-rust-600 rounded-lg hover:bg-rust-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-rust-600"
                 >
                     <Trash2 :size="16" />
-                </Button>
+                </button>
             </div>
 
             <!-- Show add to cart button when product is not in cart -->
-            <Button
+            <button
                 v-else
                 @click="handleAddToCart"
                 :disabled="isOutOfStock || adding"
-                class="w-full gap-2"
-                size="sm"
+                class="w-full font-display font-semibold px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 disabled:bg-concrete-300 disabled:text-concrete-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 <ShoppingCart :size="16" />
                 <span v-if="adding">Adding...</span>
                 <span v-else-if="isOutOfStock">Out of Stock</span>
                 <span v-else>Add to Cart</span>
-            </Button>
+            </button>
         </CardFooter>
     </Card>
 

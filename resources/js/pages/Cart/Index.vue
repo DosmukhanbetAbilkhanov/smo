@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CheckoutProgress from '@/components/checkout/CheckoutProgress.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
@@ -115,9 +114,12 @@ function getRemainingAmount(cart: any) {
                     <p class="mt-2 font-body text-base text-concrete-600">
                         {{ t({ ru: 'Добавьте товары для начала', kz: 'Бастау үшін тауарларды қосыңыз' }) }}
                     </p>
-                    <Button class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 mt-6" as-child>
-                        <Link href="/products">{{ t({ ru: 'Смотреть товары', kz: 'Тауарларды қарау' }) }}</Link>
-                    </Button>
+                    <button
+                        @click="$inertia.visit('/products')"
+                        class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 mt-6"
+                    >
+                        {{ t({ ru: 'Смотреть товары', kz: 'Тауарларды қарау' }) }}
+                    </button>
                 </div>
 
                 <!-- Cart Content -->
@@ -200,7 +202,7 @@ function getRemainingAmount(cart: any) {
                                             <button
                                                 @click="handleRemoveItem(item.id)"
                                                 :disabled="removing === item.id"
-                                                class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-concrete-500 transition-all hover:border-rust-500 hover:text-rust-600 hover:bg-rust-50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                                                class="flex items-center justify-center w-8 h-8 font-display font-bold bg-transparent text-rust-600 border-2 border-rust-600 rounded-lg hover:bg-rust-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-rust-600 flex-shrink-0"
                                             >
                                                 <X :size="18" />
                                             </button>
@@ -212,7 +214,7 @@ function getRemainingAmount(cart: any) {
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity - 1)"
                                                     :disabled="item.quantity <= 1 || updating === item.id"
-                                                    class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-steel-700 transition-all hover:border-steel-700 hover:bg-steel-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    class="flex items-center justify-center w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                                                 >
                                                     <Minus :size="16" />
                                                 </button>
@@ -228,13 +230,13 @@ function getRemainingAmount(cart: any) {
                                                                 ),
                                                             )
                                                     "
-                                                    class="font-body w-16 h-8 text-center border-2 border-concrete-300 rounded-lg font-semibold text-sm p-0 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                                                    class="font-display w-16 h-8 text-center border-2 border-concrete-300 rounded-lg font-semibold text-sm p-0 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                                                     min="1"
                                                 />
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity + 1)"
                                                     :disabled="updating === item.id"
-                                                    class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-steel-700 transition-all hover:border-steel-700 hover:bg-steel-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    class="flex items-center justify-center w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
                                                 >
                                                     <Plus :size="16" />
                                                 </button>
@@ -270,33 +272,29 @@ function getRemainingAmount(cart: any) {
                                     </div>
                                 </div>
                                 <div class="flex gap-3 flex-wrap">
-                                    <Button
+                                    <button
                                         v-if="canCheckout(cart)"
+                                        @click="$inertia.visit(`/checkout?shop_id=${cart.shop_id}`)"
                                         class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
-                                        as-child
                                     >
-                                        <Link :href="`/checkout?shop_id=${cart.shop_id}`">
-                                            <ShoppingCart :size="20" />
-                                            {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
-                                        </Link>
-                                    </Button>
+                                        <ShoppingCart :size="20" />
+                                        {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
+                                    </button>
                                     <template v-else>
-                                        <Button
-                                            class="font-display font-bold px-6 py-3 bg-forest-500 text-white rounded-lg hover:bg-forest-600 hover:shadow-industrial-md transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
-                                            as-child
+                                        <button
+                                            class="font-display font-bold px-6 py-3 bg-rust-500 text-white rounded-lg hover:bg-rust-600 hover:shadow-industrial-md transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
+                                            @click="$inertia.visit(`/shops/${cart.shop_id}`)"
                                         >
-                                            <Link :href="`/shops/${cart.shop_id}`">
-                                                <Store :size="18" />
-                                                {{ t({ ru: 'Продолжить покупки', kz: 'Сатып алуды жалғастыру' }) }}
-                                            </Link>
-                                        </Button>
-                                        <Button
-                                            class="font-display font-bold px-8 py-4 bg-concrete-300 text-concrete-500 rounded-xl cursor-not-allowed inline-flex items-center gap-2"
+                                            <Store :size="18" />
+                                            {{ t({ ru: 'Продолжить покупки', kz: 'Сатып алуды жалғастыру' }) }}
+                                        </button>
+                                        <button
                                             disabled
+                                            class="font-display font-bold px-8 py-4 bg-concrete-300 text-concrete-500 rounded-xl cursor-not-allowed inline-flex items-center gap-2"
                                         >
                                             <ShoppingCart :size="20" />
                                             {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
-                                        </Button>
+                                        </button>
                                     </template>
                                 </div>
                             </div>
