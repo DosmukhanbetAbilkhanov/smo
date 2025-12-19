@@ -20,7 +20,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const { getLocalizedName } = useLocale();
+const { getLocalizedName, t } = useLocale();
 const cartStore = useCartStore();
 
 const productName = computed(() => getLocalizedName(props.product));
@@ -57,7 +57,7 @@ async function handleAddToCart() {
         if (status === 401 || status === 419) {
             showLoginModal.value = true;
         } else {
-            alert('Failed to add item to cart. Please try again.');
+            alert(t({ ru: 'Не удалось добавить товар в корзину. Попробуйте еще раз.', kz: 'Тауарды себетке қосу мүмкін болмады. Қайталап көріңіз.' }));
         }
     } finally {
         adding.value = false;
@@ -75,7 +75,7 @@ async function handleIncreaseQuantity() {
         });
     } catch (error: any) {
         console.error('Failed to increase quantity:', error);
-        alert('Failed to update quantity. Please try again.');
+        alert(t({ ru: 'Не удалось обновить количество. Попробуйте еще раз.', kz: 'Санын жаңарту мүмкін болмады. Қайталап көріңіз.' }));
     } finally {
         adding.value = false;
     }
@@ -96,7 +96,7 @@ async function handleDecreaseQuantity() {
         }
     } catch (error: any) {
         console.error('Failed to decrease quantity:', error);
-        alert('Failed to update quantity. Please try again.');
+        alert(t({ ru: 'Не удалось обновить количество. Попробуйте еще раз.', kz: 'Санын жаңарту мүмкін болмады. Қайталап көріңіз.' }));
     } finally {
         adding.value = false;
     }
@@ -111,7 +111,7 @@ async function handleRemoveFromCart() {
         await cartStore.removeItem(cartItem.value.id);
     } catch (error: any) {
         console.error('Failed to remove from cart:', error);
-        alert('Failed to remove item from cart. Please try again.');
+        alert(t({ ru: 'Не удалось удалить товар из корзины. Попробуйте еще раз.', kz: 'Тауарды себеттен жою мүмкін болмады. Қайталап көріңіз.' }));
     } finally {
         adding.value = false;
     }
@@ -141,7 +141,7 @@ async function handleRemoveFromCart() {
                         class="absolute inset-0 flex items-center justify-center bg-background/80"
                     >
                         <span class="text-sm font-medium text-muted-foreground">
-                            Out of Stock
+                            {{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}
                         </span>
                     </div>
                 </div>
@@ -212,9 +212,9 @@ async function handleRemoveFromCart() {
                 size="sm"
             >
                 <ShoppingCart :size="16" />
-                <span v-if="adding">Adding...</span>
-                <span v-else-if="isOutOfStock">Out of Stock</span>
-                <span v-else>Add to Cart</span>
+                <span v-if="adding">{{ t({ ru: 'Добавление...', kz: 'Қосылуда...' }) }}</span>
+                <span v-else-if="isOutOfStock">{{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}</span>
+                <span v-else>{{ t({ ru: 'В корзину', kz: 'Себетке' }) }}</span>
             </Button>
         </CardFooter>
     </Card>

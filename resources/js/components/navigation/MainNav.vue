@@ -8,7 +8,9 @@ import { computed, onMounted, watch } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
 import SearchBar from './SearchBar.vue';
+import { useLocale } from '@/composables/useLocale';
 
+const { t } = useLocale();
 const cartStore = useCartStore();
 const page = usePage();
 
@@ -86,10 +88,10 @@ watch(isAuthenticated, (newValue) => {
                     </div>
                     <div v-else class="auth-section">
                         <Link href="/login" class="login-button">
-                            Login
+                            {{ t({ ru: 'Войти', kz: 'Кіру' }) }}
                         </Link>
                         <Link href="/register" class="register-button">
-                            Register
+                            {{ t({ ru: 'Регистрация', kz: 'Тіркелу' }) }}
                         </Link>
                     </div>
                 </div>

@@ -9,6 +9,9 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 defineProps<{
     status?: string;
@@ -17,10 +20,10 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="Forgot password"
-        description="Enter your email to receive a password reset link"
+        :title="t({ ru: 'Забыли пароль', kz: 'Құпия сөзді ұмыттыңыз ба' })"
+        :description="t({ ru: 'Введите email для получения ссылки сброса пароля', kz: 'Құпия сөзді қалпына келтіру сілтемесін алу үшін email енгізіңіз' })"
     >
-        <Head title="Forgot password" />
+        <Head :title="t({ ru: 'Забыли пароль', kz: 'Құпия сөзді ұмыттыңыз ба' })" />
 
         <div
             v-if="status"
@@ -32,14 +35,14 @@ defineProps<{
         <div class="space-y-6">
             <Form v-bind="email.form()" v-slot="{ errors, processing }">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">{{ t({ ru: 'Email адрес', kz: 'Email мекенжайы' }) }}</Label>
                     <Input
                         id="email"
                         type="email"
                         name="email"
                         autocomplete="off"
                         autofocus
-                        placeholder="email@example.com"
+                        :placeholder="t({ ru: 'email@example.com', kz: 'email@example.com' })"
                     />
                     <InputError :message="errors.email" />
                 </div>
@@ -51,14 +54,14 @@ defineProps<{
                         data-test="email-password-reset-link-button"
                     >
                         <Spinner v-if="processing" />
-                        Email password reset link
+                        {{ t({ ru: 'Отправить ссылку для сброса пароля', kz: 'Құпия сөзді қалпына келтіру сілтемесін жіберу' }) }}
                     </Button>
                 </div>
             </Form>
 
             <div class="space-x-1 text-center text-sm text-muted-foreground">
-                <span>Or, return to</span>
-                <TextLink :href="login()">log in</TextLink>
+                <span>{{ t({ ru: 'Или вернуться к', kz: 'Немесе қайту' }) }}</span>
+                <TextLink :href="login()">{{ t({ ru: 'входу', kz: 'кіруге' }) }}</TextLink>
             </div>
         </div>
     </AuthLayout>

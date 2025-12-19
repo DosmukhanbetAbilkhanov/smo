@@ -12,7 +12,7 @@ import { Minus, Plus, ShoppingBag, ShoppingCart, Store, Trash2, X } from 'lucide
 import { computed, onMounted, ref } from 'vue';
 
 const cartStore = useCartStore();
-const { getLocalizedName } = useLocale();
+const { getLocalizedName, t } = useLocale();
 const removing = ref<number | null>(null);
 const updating = ref<number | null>(null);
 
@@ -53,7 +53,7 @@ async function handleRemoveItem(itemId: number) {
 }
 
 async function handleClearCart() {
-    if (!confirm('Are you sure you want to clear your cart?')) return;
+    if (!confirm(t({ ru: 'Вы уверены, что хотите очистить корзину?', kz: 'Себетті тазалағыңыз келетініне сенімдісіз бе?' }))) return;
 
     try {
         await cartStore.clearCart();
@@ -78,7 +78,7 @@ function getRemainingAmount(cart: any) {
 </script>
 
 <template>
-    <Head title="Shopping Cart" />
+    <Head :title="t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' })" />
 
     <ShopLayout>
         <div class="min-h-screen pb-8">
@@ -88,9 +88,9 @@ function getRemainingAmount(cart: any) {
             <div class="max-w-5xl mx-auto px-4 py-6">
                 <!-- Page Header -->
                 <div class="text-center mb-8 animate-fadeInUp">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' }) }}</h1>
                     <p class="text-[15px] text-gray-600">
-                        Review your items and proceed to checkout
+                        {{ t({ ru: 'Проверьте товары и перейдите к оформлению', kz: 'Тауарларды тексеріп, рәсімдеуге өтіңіз' }) }}
                     </p>
                 </div>
 
@@ -100,7 +100,7 @@ function getRemainingAmount(cart: any) {
                     class="flex flex-col items-center justify-center py-8"
                 >
                     <div class="w-12 h-12 border-4 border-gray-200 border-t-[#2C5F5D] rounded-full animate-spin"></div>
-                    <p class="mt-4 text-gray-600 text-[15px]">Loading cart...</p>
+                    <p class="mt-4 text-gray-600 text-[15px]">{{ t({ ru: 'Загрузка корзины...', kz: 'Себет жүктелуде...' }) }}</p>
                 </div>
 
                 <!-- Empty State -->
@@ -111,12 +111,12 @@ function getRemainingAmount(cart: any) {
                     <div class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#2C5F5D]/10 to-[#2C5F5D]/5 text-[#2C5F5D]">
                         <ShoppingBag :size="48" />
                     </div>
-                    <h2 class="mt-4 text-2xl font-bold text-gray-900">Your cart is empty</h2>
+                    <h2 class="mt-4 text-2xl font-bold text-gray-900">{{ t({ ru: 'Ваша корзина пуста', kz: 'Себетіңіз бос' }) }}</h2>
                     <p class="mt-1.5 text-[15px] text-gray-600">
-                        Add some products to get started
+                        {{ t({ ru: 'Добавьте товары для начала', kz: 'Бастау үшін тауарларды қосыңыз' }) }}
                     </p>
                     <Button class="btn-primary-modern mt-6" as-child>
-                        <Link href="/products">Browse Products</Link>
+                        <Link href="/products">{{ t({ ru: 'Смотреть товары', kz: 'Тауарларды қарау' }) }}</Link>
                     </Button>
                 </div>
 
@@ -125,20 +125,20 @@ function getRemainingAmount(cart: any) {
                     <!-- Header with Clear All Button -->
                     <div class="flex items-center justify-between flex-wrap gap-4 animate-fadeInUp">
                         <div>
-                            <h2 class="text-xl font-bold text-gray-900">Your Cart</h2>
+                            <h2 class="text-xl font-bold text-gray-900">{{ t({ ru: 'Ваша корзина', kz: 'Сіздің себетіңіз' }) }}</h2>
                             <p class="text-sm text-gray-600 mt-0.5">
-                                {{ cartStore.itemsCount }} {{ cartStore.itemsCount === 1 ? 'item' : 'items' }}
-                                from {{ cartsWithItems.length }} {{ cartsWithItems.length === 1 ? 'shop' : 'shops' }}
+                                {{ cartStore.itemsCount }} {{ t({ ru: cartStore.itemsCount === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
+                                {{ t({ ru: 'из', kz: '' }) }} {{ cartsWithItems.length }} {{ t({ ru: cartsWithItems.length === 1 ? 'магазина' : 'магазинов', kz: 'дүкеннен' }) }}
                             </p>
                         </div>
-                        <button
+                        <!-- <button
                             @click="handleClearCart"
                             :disabled="cartStore.loading"
                             class="flex items-center gap-1.5 px-4 py-2 bg-white border-2 border-gray-300 rounded-md text-sm font-semibold text-gray-600 transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Trash2 :size="16" />
-                            Clear All
-                        </button>
+                            {{ t({ ru: 'Очистить все', kz: 'Барлығын тазалау' }) }}
+                        </button> -->
                     </div>
 
                     <!-- Cart Items Grouped by Shop -->
@@ -156,7 +156,7 @@ function getRemainingAmount(cart: any) {
                                     <div>
                                         <h3 class="text-[17px] font-bold text-gray-900">{{ cart.shop?.name }}</h3>
                                         <p class="text-[13px] text-gray-600 mt-0.5">
-                                            {{ cart.items_count }} {{ cart.items_count === 1 ? 'item' : 'items' }}
+                                            {{ cart.items_count }} {{ t({ ru: cart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                         </p>
                                     </div>
                                 </div>
@@ -258,12 +258,12 @@ function getRemainingAmount(cart: any) {
                             <div class="flex items-center justify-between gap-4 px-5 py-4 bg-gradient-to-br from-[#2C5F5D]/5 to-[#2C5F5D]/2 border-t-2 border-gray-300 flex-wrap">
                                 <div class="flex flex-col gap-1.5">
                                     <div class="flex items-center gap-2.5">
-                                        <span class="text-[15px] font-semibold text-gray-600">Shop Subtotal:</span>
+                                        <span class="text-[15px] font-semibold text-gray-600">{{ t({ ru: 'Промежуточный итог:', kz: 'Аралық қорытынды:' }) }}</span>
                                         <PriceDisplay :price="cart.total" class="text-xl font-bold text-[#2C5F5D]" />
                                     </div>
                                     <div v-if="!canCheckout(cart)" class="text-[13px] text-red-600 px-2.5 py-1.5 bg-red-50 border border-red-200 rounded-sm inline-flex items-center gap-1 flex-wrap">
-                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="font-semibold text-red-600" />
-                                        more to reach the minimum order amount of
+                                        {{ t({ ru: 'Добавьте еще', kz: 'Тағы қосыңыз' }) }} <PriceDisplay :price="getRemainingAmount(cart)" class="font-semibold text-red-600" />
+                                        {{ t({ ru: 'для достижения минимальной суммы заказа', kz: 'тапсырыстың ең аз сомасына жету үшін' }) }}
                                         <PriceDisplay :price="cart.shop?.min_order_amount" class="font-semibold text-red-600" />
                                     </div>
                                 </div>
@@ -275,7 +275,7 @@ function getRemainingAmount(cart: any) {
                                     >
                                         <Link :href="`/checkout?shop_id=${cart.shop_id}`">
                                             <ShoppingCart :size="20" />
-                                            Proceed to Checkout
+                                            {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
                                         </Link>
                                     </Button>
                                     <template v-else>
@@ -285,7 +285,7 @@ function getRemainingAmount(cart: any) {
                                         >
                                             <Link :href="`/shops/${cart.shop_id}`">
                                                 <Store :size="18" />
-                                                Continue Shopping
+                                                {{ t({ ru: 'Продолжить покупки', kz: 'Сатып алуды жалғастыру' }) }}
                                             </Link>
                                         </Button>
                                         <Button
@@ -293,7 +293,7 @@ function getRemainingAmount(cart: any) {
                                             disabled
                                         >
                                             <ShoppingCart :size="20" />
-                                            Proceed to Checkout
+                                            {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
                                         </Button>
                                     </template>
                                 </div>

@@ -6,6 +6,9 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 import { Form, Head } from '@inertiajs/vue3';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 defineProps<{
     status?: string;
@@ -14,17 +17,16 @@ defineProps<{
 
 <template>
     <AuthLayout
-        title="Verify email"
-        description="Please verify your email address by clicking on the link we just emailed to you."
+        :title="t({ ru: 'Подтверждение email', kz: 'Email растау' })"
+        :description="t({ ru: 'Пожалуйста, подтвердите ваш email адрес, нажав на ссылку, которую мы отправили вам на почту.', kz: 'Поштаңызға жіберілген сілтемені басу арқылы email мекенжайыңызды растаңыз.' })"
     >
-        <Head title="Email verification" />
+        <Head :title="t({ ru: 'Подтверждение email', kz: 'Email растау' })" />
 
         <div
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            {{ t({ ru: 'Новая ссылка для подтверждения была отправлена на email адрес, указанный при регистрации.', kz: 'Жаңа растау сілтемесі тіркелу кезінде көрсетілген email мекенжайына жіберілді.' }) }}
         </div>
 
         <Form
@@ -34,7 +36,7 @@ defineProps<{
         >
             <Button :disabled="processing" variant="secondary">
                 <Spinner v-if="processing" />
-                Resend verification email
+                {{ t({ ru: 'Отправить повторно', kz: 'Қайта жіберу' }) }}
             </Button>
 
             <TextLink
@@ -42,7 +44,7 @@ defineProps<{
                 as="button"
                 class="mx-auto block text-sm"
             >
-                Log out
+                {{ t({ ru: 'Выйти', kz: 'Шығу' }) }}
             </TextLink>
         </Form>
     </AuthLayout>

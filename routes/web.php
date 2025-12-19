@@ -57,4 +57,9 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Design System
+Route::get('/design-system', function () {
+    return Inertia::render('DesignSystem');
+})->name('design-system');
+
 require __DIR__.'/settings.php';

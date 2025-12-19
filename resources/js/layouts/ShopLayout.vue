@@ -10,6 +10,9 @@ import {
     Phone,
     Twitter,
 } from 'lucide-vue-next';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 interface Props {
     showFooter?: boolean;
@@ -43,24 +46,22 @@ const currentYear = new Date().getFullYear();
                 <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     <!-- About -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">About SMO</h3>
+                        <h3 class="text-lg font-semibold">{{ t({ ru: 'О SMO', kz: 'SMO туралы' }) }}</h3>
                         <p class="text-sm text-muted-foreground">
-                            Your trusted marketplace for building materials.
-                            Quality products from verified sellers across
-                            Kazakhstan.
+                            {{ t({ ru: 'Надежный маркетплейс строительных материалов. Качественная продукция от проверенных продавцов по всему Казахстану.', kz: 'Құрылыс материалдарының сенімді маркетплейсі. Қазақстан бойынша тексерілген сатушылардан сапалы өнім.' }) }}
                         </p>
                     </div>
 
                     <!-- Quick Links -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">Quick Links</h3>
+                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Быстрые ссылки', kz: 'Жылдам сілтемелер' }) }}</h3>
                         <ul class="space-y-2 text-sm">
                             <li>
                                 <Link
                                     href="/categories"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Categories
+                                    {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -68,7 +69,7 @@ const currentYear = new Date().getFullYear();
                                     href="/products"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Products
+                                    {{ t({ ru: 'Товары', kz: 'Тауарлар' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -76,7 +77,7 @@ const currentYear = new Date().getFullYear();
                                     href="/about"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    About Us
+                                    {{ t({ ru: 'О нас', kz: 'Біз туралы' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -84,7 +85,7 @@ const currentYear = new Date().getFullYear();
                                     href="/contact"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Contact
+                                    {{ t({ ru: 'Контакты', kz: 'Байланыс' }) }}
                                 </Link>
                             </li>
                         </ul>
@@ -92,14 +93,14 @@ const currentYear = new Date().getFullYear();
 
                     <!-- Support -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">Support</h3>
+                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Поддержка', kz: 'Қолдау' }) }}</h3>
                         <ul class="space-y-2 text-sm">
                             <li>
                                 <Link
                                     href="/help"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Help Center
+                                    {{ t({ ru: 'Центр помощи', kz: 'Көмек орталығы' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -107,7 +108,7 @@ const currentYear = new Date().getFullYear();
                                     href="/faq"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    FAQ
+                                    {{ t({ ru: 'FAQ', kz: 'Жиі қойылатын сұрақтар' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -115,7 +116,7 @@ const currentYear = new Date().getFullYear();
                                     href="/privacy"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Privacy Policy
+                                    {{ t({ ru: 'Политика конфиденциальности', kz: 'Құпиялылық саясаты' }) }}
                                 </Link>
                             </li>
                             <li>
@@ -123,7 +124,7 @@ const currentYear = new Date().getFullYear();
                                     href="/terms"
                                     class="text-muted-foreground transition-colors hover:text-foreground"
                                 >
-                                    Terms of Service
+                                    {{ t({ ru: 'Условия использования', kz: 'Пайдалану шарттары' }) }}
                                 </Link>
                             </li>
                         </ul>
@@ -131,11 +132,11 @@ const currentYear = new Date().getFullYear();
 
                     <!-- Contact -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">Contact Us</h3>
+                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Свяжитесь с нами', kz: 'Бізбен байланысыңыз' }) }}</h3>
                         <ul class="space-y-3 text-sm text-muted-foreground">
                             <li class="flex items-start gap-2">
                                 <MapPin :size="16" class="mt-0.5 shrink-0" />
-                                <span>Almaty, Kazakhstan</span>
+                                <span>{{ t({ ru: 'Алматы, Казахстан', kz: 'Алматы, Қазақстан' }) }}</span>
                             </li>
                             <li class="flex items-center gap-2">
                                 <Phone :size="16" class="shrink-0" />
@@ -178,7 +179,7 @@ const currentYear = new Date().getFullYear();
                 <div
                     class="mt-12 border-t pt-8 text-center text-sm text-muted-foreground"
                 >
-                    <p>&copy; {{ currentYear }} SMO. All rights reserved.</p>
+                    <p>&copy; {{ currentYear }} SMO. {{ t({ ru: 'Все права защищены.', kz: 'Барлық құқықтар қорғалған.' }) }}</p>
                 </div>
             </div>
         </footer>

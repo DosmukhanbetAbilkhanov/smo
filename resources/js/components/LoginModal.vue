@@ -13,6 +13,9 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import AlertError from '@/components/AlertError.vue'
 import { LogIn, Mail, Phone } from 'lucide-vue-next'
+import { useLocale } from '@/composables/useLocale'
+
+const { t } = useLocale()
 
 const props = defineProps<{
   open: boolean
@@ -39,7 +42,7 @@ const inputType = computed(() => {
 })
 
 const inputPlaceholder = computed(() => {
-  return 'Enter email or phone'
+  return t({ ru: 'Введите email или телефон', kz: 'Email немесе телефонды енгізіңіз' })
 })
 
 const inputIcon = computed(() => {
@@ -89,7 +92,7 @@ const handleSubmit = () => {
       }
 
       if (errorMessages.length === 0) {
-        errorMessages.push('Failed to login. Please check your credentials.')
+        errorMessages.push(t({ ru: 'Не удалось войти. Проверьте свои учетные данные.', kz: 'Кіру мүмкін болмады. Тіркелгі деректерін тексеріңіз.' }))
       }
 
       errors.value = errorMessages
@@ -121,7 +124,7 @@ const handleRegisterClick = () => {
           <LogIn class="h-7 w-7" style="color: var(--smo-primary)" />
         </div> -->
         <DialogTitle class="text-2xl font-bold" style="font-family: var(--font-display); color: var(--smo-text-primary); letter-spacing: -0.02em;">
-          Login
+          {{ t({ ru: 'Вход', kz: 'Кіру' }) }}
         </DialogTitle>
       </DialogHeader>
 
@@ -130,7 +133,7 @@ const handleRegisterClick = () => {
 
         <div class="space-y-2">
           <Label for="identifier" class="text-sm font-medium" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
-            Email or Phone
+            {{ t({ ru: 'Email или телефон', kz: 'Email немесе телефон' }) }}
           </Label>
           <div class="relative">
             <component
@@ -152,13 +155,13 @@ const handleRegisterClick = () => {
 
         <div class="space-y-2">
           <Label for="password" class="text-sm font-medium" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
-            Password
+            {{ t({ ru: 'Пароль', kz: 'Құпия сөз' }) }}
           </Label>
           <Input
             id="password"
             v-model="password"
             type="password"
-            placeholder="Enter password"
+            :placeholder="t({ ru: 'Введите пароль', kz: 'Құпия сөзді енгізіңіз' })"
             class="input-modern"
             required
             :disabled="processing"
@@ -169,7 +172,7 @@ const handleRegisterClick = () => {
           <div class="flex items-center gap-2">
             <Checkbox id="remember" v-model:checked="remember" :disabled="processing" />
             <Label for="remember" class="font-normal cursor-pointer" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
-              Remember me
+              {{ t({ ru: 'Запомнить меня', kz: 'Мені есте сақтау' }) }}
             </Label>
           </div>
 
@@ -179,17 +182,18 @@ const handleRegisterClick = () => {
             style="color: var(--smo-primary); font-family: var(--font-body);"
             @click.prevent="router.visit('/forgot-password')"
           >
-            Forgot password?
+            {{ t({ ru: 'Забыли пароль?', kz: 'Құпия сөзді ұмыттыңыз ба?' }) }}
           </a>
         </div>
 
         <div class="flex flex-col gap-4 pt-2">
           <Button type="submit" class="w-full btn-primary-modern" :disabled="processing">
-            {{ processing ? 'Please wait...' : 'Continue' }}
+            <span v-if="processing">{{ t({ ru: 'Пожалуйста, подождите...', kz: 'Күте тұрыңыз...' }) }}</span>
+            <span v-else>{{ t({ ru: 'Продолжить', kz: 'Жалғастыру' }) }}</span>
           </Button>
 
           <div class="text-center text-sm" style="font-family: var(--font-body); color: var(--smo-text-secondary);">
-            Don't have an account?
+            {{ t({ ru: 'Нет аккаунта?', kz: 'Тіркелгі жоқ па?' }) }}
             <button
               type="button"
               class="font-semibold hover:underline transition-colors ml-1"
@@ -197,7 +201,7 @@ const handleRegisterClick = () => {
               @click="handleRegisterClick"
               :disabled="processing"
             >
-              Register
+              {{ t({ ru: 'Регистрация', kz: 'Тіркелу' }) }}
             </button>
           </div>
         </div>

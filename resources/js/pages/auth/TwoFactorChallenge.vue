@@ -14,6 +14,9 @@ const store = {
 };
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 interface AuthConfigContent {
     title: string;
@@ -24,18 +27,22 @@ interface AuthConfigContent {
 const authConfigContent = computed<AuthConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Recovery Code',
-            description:
-                'Please confirm access to your account by entering one of your emergency recovery codes.',
-            toggleText: 'login using an authentication code',
+            title: t({ ru: 'Код восстановления', kz: 'Қалпына келтіру коды' }),
+            description: t({
+                ru: 'Пожалуйста, подтвердите доступ к аккаунту, введя один из резервных кодов восстановления.',
+                kz: 'Резервтік қалпына келтіру кодтарының бірін енгізу арқылы аккаунтқа қол жеткізуді растаңыз.'
+            }),
+            toggleText: t({ ru: 'войти с помощью кода аутентификации', kz: 'аутентификация кодын пайдаланып кіру' }),
         };
     }
 
     return {
-        title: 'Authentication Code',
-        description:
-            'Enter the authentication code provided by your authenticator application.',
-        toggleText: 'login using a recovery code',
+        title: t({ ru: 'Код аутентификации', kz: 'Аутентификация коды' }),
+        description: t({
+            ru: 'Введите код аутентификации из вашего приложения аутентификатора.',
+            kz: 'Аутентификатор қолданбасынан аутентификация кодын енгізіңіз.'
+        }),
+        toggleText: t({ ru: 'войти с помощью кода восстановления', kz: 'қалпына келтіру кодын пайдаланып кіру' }),
     };
 });
 
@@ -56,7 +63,7 @@ const codeValue = computed<string>(() => code.value.join(''));
         :title="authConfigContent.title"
         :description="authConfigContent.description"
     >
-        <Head title="Two-Factor Authentication" />
+        <Head :title="t({ ru: 'Двухфакторная аутентификация', kz: 'Екі факторлы аутентификация' })" />
 
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
@@ -93,10 +100,10 @@ const codeValue = computed<string>(() => code.value.join(''));
                         <InputError :message="errors.code" />
                     </div>
                     <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
+                        >{{ t({ ru: 'Продолжить', kz: 'Жалғастыру' }) }}</Button
                     >
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
+                        <span>{{ t({ ru: 'или вы можете ', kz: 'немесе сіз ' }) }}</span>
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
@@ -118,17 +125,17 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <Input
                         name="recovery_code"
                         type="text"
-                        placeholder="Enter recovery code"
+                        :placeholder="t({ ru: 'Введите код восстановления', kz: 'Қалпына келтіру кодын енгізіңіз' })"
                         :autofocus="showRecoveryInput"
                         required
                     />
                     <InputError :message="errors.recovery_code" />
                     <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
+                        >{{ t({ ru: 'Продолжить', kz: 'Жалғастыру' }) }}</Button
                     >
 
                     <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
+                        <span>{{ t({ ru: 'или вы можете ', kz: 'немесе сіз ' }) }}</span>
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

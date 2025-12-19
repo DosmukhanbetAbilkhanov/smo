@@ -9,6 +9,9 @@ import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
 import { ref, watch, onMounted } from 'vue';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 defineProps<{
     status?: string;
@@ -42,7 +45,7 @@ watch(identifier, (value) => {
 </script>
 
 <template>
-    <Head title="Log in">
+    <Head :title="t({ ru: 'Вход', kz: 'Кіру' })">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,8 +75,8 @@ watch(identifier, (value) => {
                 <div class="warm-card-inner">
                     <!-- Header -->
                     <div class="warm-header">
-                        <h1 class="warm-title">Welcome Back</h1>
-                        <p class="warm-subtitle">Sign in to continue to your account</p>
+                        <h1 class="warm-title">{{ t({ ru: 'Добро пожаловать!', kz: 'Қош келдіңіз!' }) }}</h1>
+                        <p class="warm-subtitle">{{ t({ ru: 'Войдите, чтобы продолжить', kz: 'Жалғастыру үшін кіріңіз' }) }}</p>
                     </div>
 
                     <!-- Status Message -->
@@ -93,7 +96,7 @@ watch(identifier, (value) => {
                     >
                         <!-- Email/Phone Field -->
                         <div class="warm-field">
-                            <label for="identifier" class="warm-label">Email or Phone</label>
+                            <label for="identifier" class="warm-label">{{ t({ ru: 'Email или телефон', kz: 'Email немесе телефон' }) }}</label>
                             <div class="warm-input-wrapper">
                                 <input
                                     id="identifier"
@@ -105,7 +108,7 @@ watch(identifier, (value) => {
                                     autofocus
                                     :tabindex="1"
                                     autocomplete="username"
-                                    placeholder="your@email.com or +77012345678"
+                                    :placeholder="t({ ru: 'your@email.com или +77012345678', kz: 'your@email.com немесе +77012345678' })"
                                 />
                                 <div class="warm-input-border"></div>
                             </div>
@@ -118,14 +121,14 @@ watch(identifier, (value) => {
                         <!-- Password Field -->
                         <div class="warm-field">
                             <div class="warm-label-row">
-                                <label for="password" class="warm-label">Password</label>
+                                <label for="password" class="warm-label">{{ t({ ru: 'Пароль', kz: 'Құпия сөз' }) }}</label>
                                 <TextLink
                                     v-if="canResetPassword"
                                     :href="request()"
                                     class="warm-link-small"
                                     :tabindex="5"
                                 >
-                                    Forgot?
+                                    {{ t({ ru: 'Забыли?', kz: 'Ұмыттыңыз ба?' }) }}
                                 </TextLink>
                             </div>
                             <div class="warm-input-wrapper">
@@ -138,7 +141,7 @@ watch(identifier, (value) => {
                                     required
                                     :tabindex="2"
                                     autocomplete="current-password"
-                                    placeholder="Enter your password"
+                                    :placeholder="t({ ru: 'Введите пароль', kz: 'Құпия сөзді енгізіңіз' })"
                                 />
                                 <div class="warm-input-border"></div>
                             </div>
@@ -149,7 +152,7 @@ watch(identifier, (value) => {
                         <div class="warm-remember">
                             <label for="remember" class="warm-checkbox-label">
                                 <Checkbox id="remember" name="remember" :tabindex="3" class="warm-checkbox" />
-                                <span>Keep me signed in</span>
+                                <span>{{ t({ ru: 'Запомнить меня', kz: 'Мені есте сақта' }) }}</span>
                             </label>
                         </div>
 
@@ -162,15 +165,15 @@ watch(identifier, (value) => {
                             data-test="login-button"
                         >
                             <Spinner v-if="processing" class="warm-spinner" />
-                            <span v-if="!processing">Sign In</span>
-                            <span v-else>Signing in...</span>
+                            <span v-if="!processing">{{ t({ ru: 'Войти', kz: 'Кіру' }) }}</span>
+                            <span v-else>{{ t({ ru: 'Вход...', kz: 'Кіру...' }) }}</span>
                         </Button>
 
                         <!-- Sign Up Link -->
                         <div class="warm-footer" v-if="canRegister">
-                            <span class="warm-footer-text">New here?</span>
+                            <span class="warm-footer-text">{{ t({ ru: 'Впервые здесь?', kz: 'Бұл жерде бірінші рет пе?' }) }}</span>
                             <TextLink :href="register()" :tabindex="5" class="warm-link">
-                                Create an account
+                                {{ t({ ru: 'Создать аккаунт', kz: 'Аккаунт жасау' }) }}
                             </TextLink>
                         </div>
                     </Form>

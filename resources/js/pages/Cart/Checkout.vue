@@ -17,7 +17,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const { getLocalizedName } = useLocale();
+const { getLocalizedName, t } = useLocale();
 
 // Select the first shop by default
 const selectedShopId = ref<number>(props.carts[0]?.shop_id || 0);
@@ -45,16 +45,16 @@ const formattedDeliveryAddress = computed(() => {
 
     const details: string[] = [];
     if (deliveryEntry.value) {
-        details.push(`Entry ${deliveryEntry.value}`);
+        details.push(`${t({ ru: 'Подъезд', kz: 'Кіреберіс' })} ${deliveryEntry.value}`);
     }
     if (deliveryFloor.value) {
-        details.push(`Floor ${deliveryFloor.value}`);
+        details.push(`${t({ ru: 'Этаж', kz: 'Қабат' })} ${deliveryFloor.value}`);
     }
     if (deliveryApartment.value) {
-        details.push(`Apt ${deliveryApartment.value}`);
+        details.push(`${t({ ru: 'Кв.', kz: 'Пәт.' })} ${deliveryApartment.value}`);
     }
     if (deliveryIntercom.value) {
-        details.push(`Intercom ${deliveryIntercom.value}`);
+        details.push(`${t({ ru: 'Домофон', kz: 'Домофон' })} ${deliveryIntercom.value}`);
     }
 
     if (details.length > 0) {
@@ -74,7 +74,7 @@ function getItemSubtotal(item: any) {
 </script>
 
 <template>
-    <Head title="Checkout" />
+    <Head :title="t({ ru: 'Оформление заказа', kz: 'Тапсырысты рәсімдеу' })" />
 
     <ShopLayout>
         <div class="checkout-page">
@@ -84,9 +84,9 @@ function getItemSubtotal(item: any) {
             <div class="container mx-auto px-4 py-12">
                 <!-- Page Header -->
                 <div class="page-header">
-                    <h1 class="page-title">Secure Checkout</h1>
+                    <h1 class="page-title">{{ t({ ru: 'Безопасное оформление', kz: 'Қауіпсіз рәсімдеу' }) }}</h1>
                     <p class="page-subtitle">
-                        Complete your delivery information to finalize your order
+                        {{ t({ ru: 'Заполните информацию о доставке для завершения заказа', kz: 'Тапсырысты аяқтау үшін жеткізу туралы ақпаратты толтырыңыз' }) }}
                     </p>
                 </div>
 
@@ -96,7 +96,7 @@ function getItemSubtotal(item: any) {
                         <div class="summary-card" v-if="selectedCart">
                             <div class="summary-header">
                                 <Package :size="24" class="summary-icon" />
-                                <h2 class="summary-title">Order Summary</h2>
+                                <h2 class="summary-title">{{ t({ ru: 'Сводка заказа', kz: 'Тапсырыс қорытындысы' }) }}</h2>
                             </div>
 
                             <!-- Shop Info -->
@@ -107,7 +107,7 @@ function getItemSubtotal(item: any) {
                                         <div class="shop-name">{{ selectedCart.shop?.name }}</div>
                                         <div class="shop-items">
                                             {{ selectedCart.items_count }}
-                                            {{ selectedCart.items_count === 1 ? 'item' : 'items' }}
+                                            {{ t({ ru: selectedCart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +131,7 @@ function getItemSubtotal(item: any) {
                                 <div class="delivery-preview-content">
                                     <MapPin :size="20" class="delivery-icon" />
                                     <div>
-                                        <div class="delivery-label">Delivery Address</div>
+                                        <div class="delivery-label">{{ t({ ru: 'Адрес доставки', kz: 'Жеткізу мекенжайы' }) }}</div>
                                         <div class="delivery-text">{{ formattedDeliveryAddress }}</div>
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ function getItemSubtotal(item: any) {
                                             <Package :size="18" class="items-toggle-icon" />
                                             <span class="items-toggle-text">
                                                 {{ selectedCart.items_count }}
-                                                {{ selectedCart.items_count === 1 ? 'Item' : 'Items' }}
+                                                {{ t({ ru: selectedCart.items_count === 1 ? 'Товар' : 'Товаров', kz: 'Тауар' }) }}
                                             </span>
                                         </div>
                                         <ChevronDown
@@ -167,7 +167,7 @@ function getItemSubtotal(item: any) {
                                         >
                                             <div class="item-details">
                                                 <div class="item-name">{{ getProductName(item) }}</div>
-                                                <div class="item-quantity">Qty: {{ item.quantity }}</div>
+                                                <div class="item-quantity">{{ t({ ru: 'Кол-во:', kz: 'Саны:' }) }} {{ item.quantity }}</div>
                                             </div>
                                             <PriceDisplay
                                                 :price="getItemSubtotal(item)"
@@ -183,19 +183,19 @@ function getItemSubtotal(item: any) {
                             <!-- Totals -->
                             <div class="totals-section">
                                 <div class="total-row">
-                                    <span class="total-label">Subtotal</span>
+                                    <span class="total-label">{{ t({ ru: 'Промежуточный итог', kz: 'Аралық қорытынды' }) }}</span>
                                     <PriceDisplay :price="selectedCart.total" class="total-value" />
                                 </div>
                                 <div class="total-row">
-                                    <span class="total-label">Shipping</span>
-                                    <span class="shipping-note">Calculated after order</span>
+                                    <span class="total-label">{{ t({ ru: 'Доставка', kz: 'Жеткізу' }) }}</span>
+                                    <span class="shipping-note">{{ t({ ru: 'Рассчитывается после заказа', kz: 'Тапсырыстан кейін есептеледі' }) }}</span>
                                 </div>
                             </div>
 
                             <div class="summary-divider-bold"></div>
 
                             <div class="grand-total">
-                                <span class="grand-total-label">Total</span>
+                                <span class="grand-total-label">{{ t({ ru: 'Итого', kz: 'Барлығы' }) }}</span>
                                 <PriceDisplay
                                     :price="selectedCart.total"
                                     class="grand-total-value"
@@ -208,8 +208,8 @@ function getItemSubtotal(item: any) {
                     <div class="form-column">
                         <!-- Shop Selection (if multiple shops) -->
                         <div v-if="carts.length > 1" class="shop-selection">
-                            <h3 class="section-title">Select Shop</h3>
-                            <p class="section-subtitle">Choose which shop to order from</p>
+                            <h3 class="section-title">{{ t({ ru: 'Выберите магазин', kz: 'Дүкенді таңдаңыз' }) }}</h3>
+                            <p class="section-subtitle">{{ t({ ru: 'Выберите магазин для заказа', kz: 'Тапсырыс үшін дүкенді таңдаңыз' }) }}</p>
 
                             <div class="shop-options">
                                 <button
@@ -226,7 +226,7 @@ function getItemSubtotal(item: any) {
                                             <div class="shop-option-name">{{ cart.shop?.name }}</div>
                                             <div class="shop-option-count">
                                                 {{ cart.items_count }}
-                                                {{ cart.items_count === 1 ? 'item' : 'items' }}
+                                                {{ t({ ru: cart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                             </div>
                                         </div>
                                     </div>
@@ -247,14 +247,14 @@ function getItemSubtotal(item: any) {
                             <div class="delivery-form">
                                 <div class="form-header">
                                     <MapPin :size="24" class="form-icon" />
-                                    <h3 class="form-title">Delivery Information</h3>
+                                    <h3 class="form-title">{{ t({ ru: 'Информация о доставке', kz: 'Жеткізу туралы ақпарат' }) }}</h3>
                                 </div>
 
                                 <div class="form-content">
                                     <!-- Address -->
                                     <div class="form-group">
                                         <Label for="delivery_address" class="form-label">
-                                            Street Address *
+                                            {{ t({ ru: 'Адрес улицы *', kz: 'Көше мекенжайы *' }) }}
                                         </Label>
                                         <Input
                                             id="delivery_address"
@@ -262,7 +262,7 @@ function getItemSubtotal(item: any) {
                                             type="text"
                                             required
                                             v-model="deliveryAddress"
-                                            placeholder="Street name, house number"
+                                            :placeholder="t({ ru: 'Название улицы, номер дома', kz: 'Көше атауы, үй нөмірі' })"
                                             class="form-input"
                                         />
                                         <p v-if="errors.delivery_address" class="form-error">
@@ -273,13 +273,13 @@ function getItemSubtotal(item: any) {
                                     <!-- Apartment Details Grid -->
                                     <div class="form-grid">
                                         <div class="form-group">
-                                            <Label for="delivery_entry" class="form-label">Entry</Label>
+                                            <Label for="delivery_entry" class="form-label">{{ t({ ru: 'Подъезд', kz: 'Кіреберіс' }) }}</Label>
                                             <Input
                                                 id="delivery_entry"
                                                 name="delivery_entry"
                                                 type="text"
                                                 v-model="deliveryEntry"
-                                                placeholder="e.g., 2"
+                                                :placeholder="t({ ru: 'напр., 2', kz: 'мыс., 2' })"
                                                 class="form-input"
                                             />
                                             <p v-if="errors.delivery_entry" class="form-error">
@@ -288,13 +288,13 @@ function getItemSubtotal(item: any) {
                                         </div>
 
                                         <div class="form-group">
-                                            <Label for="delivery_floor" class="form-label">Floor</Label>
+                                            <Label for="delivery_floor" class="form-label">{{ t({ ru: 'Этаж', kz: 'Қабат' }) }}</Label>
                                             <Input
                                                 id="delivery_floor"
                                                 name="delivery_floor"
                                                 type="text"
                                                 v-model="deliveryFloor"
-                                                placeholder="e.g., 5"
+                                                :placeholder="t({ ru: 'напр., 5', kz: 'мыс., 5' })"
                                                 class="form-input"
                                             />
                                             <p v-if="errors.delivery_floor" class="form-error">
@@ -304,14 +304,14 @@ function getItemSubtotal(item: any) {
 
                                         <div class="form-group">
                                             <Label for="delivery_apartment" class="form-label">
-                                                Apartment
+                                                {{ t({ ru: 'Квартира', kz: 'Пәтер' }) }}
                                             </Label>
                                             <Input
                                                 id="delivery_apartment"
                                                 name="delivery_apartment"
                                                 type="text"
                                                 v-model="deliveryApartment"
-                                                placeholder="e.g., 23"
+                                                :placeholder="t({ ru: 'напр., 23', kz: 'мыс., 23' })"
                                                 class="form-input"
                                             />
                                             <p v-if="errors.delivery_apartment" class="form-error">
@@ -321,14 +321,14 @@ function getItemSubtotal(item: any) {
 
                                         <div class="form-group">
                                             <Label for="delivery_intercom" class="form-label">
-                                                Intercom
+                                                {{ t({ ru: 'Домофон', kz: 'Домофон' }) }}
                                             </Label>
                                             <Input
                                                 id="delivery_intercom"
                                                 name="delivery_intercom"
                                                 type="text"
                                                 v-model="deliveryIntercom"
-                                                placeholder="e.g., 123"
+                                                :placeholder="t({ ru: 'напр., 123', kz: 'мыс., 123' })"
                                                 class="form-input"
                                             />
                                             <p v-if="errors.delivery_intercom" class="form-error">
@@ -340,13 +340,13 @@ function getItemSubtotal(item: any) {
                                     <!-- Delivery Notes -->
                                     <div class="form-group">
                                         <Label for="delivery_notes" class="form-label">
-                                            Delivery Notes (Optional)
+                                            {{ t({ ru: 'Примечания к доставке (необязательно)', kz: 'Жеткізу туралы ескертпелер (міндетті емес)' }) }}
                                         </Label>
                                         <textarea
                                             id="delivery_notes"
                                             name="delivery_notes"
                                             rows="3"
-                                            placeholder="Any special instructions for delivery..."
+                                            :placeholder="t({ ru: 'Любые особые инструкции для доставки...', kz: 'Жеткізу үшін арнайы нұсқаулар...' })"
                                             class="form-textarea"
                                         ></textarea>
                                         <p v-if="errors.delivery_notes" class="form-error">
@@ -365,7 +365,7 @@ function getItemSubtotal(item: any) {
                                     :disabled="processing"
                                 >
                                     <ShoppingBag :size="20" />
-                                    {{ processing ? 'Processing...' : 'Place Order' }}
+                                    {{ processing ? t({ ru: 'Обработка...', kz: 'Өңдеу...' }) : t({ ru: 'Оформить заказ', kz: 'Тапсырысты рәсімдеу' }) }}
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -374,7 +374,7 @@ function getItemSubtotal(item: any) {
                                     class="cancel-button"
                                     :disabled="processing"
                                 >
-                                    <Link href="/cart">Cancel</Link>
+                                    <Link href="/cart">{{ t({ ru: 'Отмена', kz: 'Болдырмау' }) }}</Link>
                                 </Button>
                             </div>
                         </Form>

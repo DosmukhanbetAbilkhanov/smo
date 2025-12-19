@@ -6,6 +6,9 @@ import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Category, Product } from '@/types/api';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, Package, ShoppingBag, Truck } from 'lucide-vue-next';
+import { useLocale } from '@/composables/useLocale';
+
+const { t } = useLocale();
 
 interface Props {
     featuredCategories: Category[];
@@ -16,7 +19,7 @@ defineProps<Props>();
 </script>
 
 <template>
-    <Head title="Home" />
+    <Head :title="t({ ru: 'Главная', kz: 'Басты бет' })" />
 
     <ShopLayout>
         <!-- Hero Section -->
@@ -26,12 +29,10 @@ defineProps<Props>();
             <div class="container mx-auto px-4 py-4 lg:py-24">
                 <div class="mx-auto max-w-3xl text-center">
                     <h1 class="text-2xl font-bold tracking-tight lg:text-4xl">
-                        Building Materials Marketplace
+                        {{ t({ ru: 'Маркетплейс строительных материалов', kz: 'Құрылыс материалдарының маркетплейсі' }) }}
                     </h1>
                     <p class="mt-6 text-lg text-muted-foreground lg:text-xl">
-                        Find quality building materials from verified sellers
-                        across Kazakhstan. Fast delivery, competitive prices,
-                        and reliable service.
+                        {{ t({ ru: 'Находите качественные строительные материалы от проверенных продавцов по всему Казахстану. Быстрая доставка, конкурентные цены и надежный сервис.', kz: 'Қазақстан бойынша тексерілген сатушылардан сапалы құрылыс материалдарын табыңыз. Жылдам жеткізу, бәсекеге қабілетті бағалар және сенімді қызмет.' }) }}
                     </p>
                     <!-- <div
                         class="mt-10 flex flex-wrap items-center justify-center gap-4"
@@ -110,7 +111,7 @@ defineProps<Props>();
                 <div class="flex justify-end">
                      <Button variant="ghost" as-child class="mt-2">
                         <Link href="/categories">
-                            View All
+                            {{ t({ ru: 'Смотреть все', kz: 'Барлығын көру' }) }}
                             <ArrowRight :size="16" class="ml-2" />
                         </Link>
                     </Button>
@@ -123,17 +124,12 @@ defineProps<Props>();
             <div class="container mx-auto px-4">
                 <div class="mb-8 flex items-center justify-between">
                     <div>
-                        <h2 class="text-3xl font-bold">Popular Products</h2>
+                        <h2 class="text-3xl font-bold">{{ t({ ru: 'Популярные товары', kz: 'Танымал тауарлар' }) }}</h2>
                         <p class="mt-2 text-muted-foreground">
-                            Check out our most popular items
+                            {{ t({ ru: 'Посмотрите наши самые популярные товары', kz: 'Біздің ең танымал тауарларды қараңыз' }) }}
                         </p>
                     </div>
-                    <Button variant="ghost" as-child>
-                        <Link href="/products">
-                            View All
-                            <ArrowRight :size="16" class="ml-2" />
-                        </Link>
-                    </Button>
+                
                 </div>
 
                 <div
@@ -145,6 +141,15 @@ defineProps<Props>();
                         :product="product"
                     />
                 </div>
+                <div class="flex justify-end mt-2">
+                    <Button variant="ghost" as-child>
+                        <Link href="/products">
+                            {{ t({ ru: 'Смотреть все', kz: 'Барлығын көру' }) }}
+                            <ArrowRight :size="16" class="ml-2" />
+                        </Link>
+                    </Button>
+                </div>
+                 
             </div>
         </section>
     </ShopLayout>
