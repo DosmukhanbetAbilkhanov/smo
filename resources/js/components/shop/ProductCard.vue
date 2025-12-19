@@ -27,6 +27,9 @@ const productImage = computed(
     () => props.product.images?.[0] || null,
 );
 const isOutOfStock = computed(() => props.product.quantity === 0);
+const unitName = computed(() =>
+    props.product.nomenclature?.unit ? getLocalizedName(props.product.nomenclature.unit) : ''
+);
 const adding = ref(false);
 const showLoginModal = ref(false);
 
@@ -155,6 +158,29 @@ async function handleRemoveFromCart() {
                 <span v-if="product.shop" class="text-xs text-muted-foreground">
                     {{ product.shop.name }}
                 </span>
+            </div>
+
+            <!-- Availability -->
+            <div class="mt-3">
+                <div
+                    :class="[
+                        'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs font-semibold',
+                        isOutOfStock
+                            ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300 text-red-700'
+                            : 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300 text-emerald-700'
+                    ]"
+                >
+                    <span :class="['w-1.5 h-1.5 rounded-full', isOutOfStock ? 'bg-red-600' : 'bg-emerald-600']" />
+                    <span v-if="isOutOfStock">
+                        {{ t({ ru: 'Нет в наличии', kz: 'Қолжетімсіз' }) }}
+                    </span>
+                    <span v-else>
+                        {{ t({
+                            ru: `В наличии: ${product.quantity} ${unitName}`,
+                            kz: `Қолжетімді: ${product.quantity} ${unitName}`,
+                        }) }}
+                    </span>
+                </div>
             </div>
         </CardContent>
 
