@@ -81,15 +81,15 @@ function getRemainingAmount(cart: any) {
     <Head :title="t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' })" />
 
     <ShopLayout>
-        <div class="min-h-screen pb-8">
+        <div class="min-h-screen pb-8 bg-concrete-50">
             <!-- Progress Indicator -->
             <CheckoutProgress :current-step="1" />
 
             <div class="max-w-5xl mx-auto px-4 py-6">
                 <!-- Page Header -->
                 <div class="text-center mb-8 animate-fadeInUp">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' }) }}</h1>
-                    <p class="text-[15px] text-gray-600">
+                    <h1 class="font-display text-4xl font-bold text-steel-900 mb-2">{{ t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' }) }}</h1>
+                    <p class="font-body text-base text-concrete-600">
                         {{ t({ ru: 'Проверьте товары и перейдите к оформлению', kz: 'Тауарларды тексеріп, рәсімдеуге өтіңіз' }) }}
                     </p>
                 </div>
@@ -97,36 +97,36 @@ function getRemainingAmount(cart: any) {
                 <!-- Loading State -->
                 <div
                     v-if="cartStore.loading && cartStore.carts.length === 0"
-                    class="flex flex-col items-center justify-center py-8"
+                    class="flex flex-col items-center justify-center py-12"
                 >
-                    <div class="w-12 h-12 border-4 border-gray-200 border-t-[#2C5F5D] rounded-full animate-spin"></div>
-                    <p class="mt-4 text-gray-600 text-[15px]">{{ t({ ru: 'Загрузка корзины...', kz: 'Себет жүктелуде...' }) }}</p>
+                    <div class="w-12 h-12 border-4 border-concrete-200 border-t-steel-700 rounded-full animate-spin"></div>
+                    <p class="mt-4 font-body text-concrete-600">{{ t({ ru: 'Загрузка корзины...', kz: 'Себет жүктелуде...' }) }}</p>
                 </div>
 
                 <!-- Empty State -->
                 <div
                     v-else-if="cartStore.isEmpty"
-                    class="flex flex-col items-center justify-center py-8 text-center animate-fadeIn"
+                    class="flex flex-col items-center justify-center py-12 text-center animate-fadeIn"
                 >
-                    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#2C5F5D]/10 to-[#2C5F5D]/5 text-[#2C5F5D]">
-                        <ShoppingBag :size="48" />
+                    <div class="flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-steel-100 to-steel-50 text-steel-700 shadow-industrial-md">
+                        <ShoppingBag :size="40" :stroke-width="2" />
                     </div>
-                    <h2 class="mt-4 text-2xl font-bold text-gray-900">{{ t({ ru: 'Ваша корзина пуста', kz: 'Себетіңіз бос' }) }}</h2>
-                    <p class="mt-1.5 text-[15px] text-gray-600">
+                    <h2 class="mt-6 font-display text-3xl font-bold text-steel-900">{{ t({ ru: 'Ваша корзина пуста', kz: 'Себетіңіз бос' }) }}</h2>
+                    <p class="mt-2 font-body text-base text-concrete-600">
                         {{ t({ ru: 'Добавьте товары для начала', kz: 'Бастау үшін тауарларды қосыңыз' }) }}
                     </p>
-                    <Button class="btn-primary-modern mt-6" as-child>
+                    <Button class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 mt-6" as-child>
                         <Link href="/products">{{ t({ ru: 'Смотреть товары', kz: 'Тауарларды қарау' }) }}</Link>
                     </Button>
                 </div>
 
                 <!-- Cart Content -->
-                <div v-else class="flex flex-col gap-5">
+                <div v-else class="flex flex-col gap-6">
                     <!-- Header with Clear All Button -->
                     <div class="flex items-center justify-between flex-wrap gap-4 animate-fadeInUp">
                         <div>
-                            <h2 class="text-xl font-bold text-gray-900">{{ t({ ru: 'Ваша корзина', kz: 'Сіздің себетіңіз' }) }}</h2>
-                            <p class="text-sm text-gray-600 mt-0.5">
+                            <h2 class="font-display text-2xl font-bold text-steel-900">{{ t({ ru: 'Ваша корзина', kz: 'Сіздің себетіңіз' }) }}</h2>
+                            <p class="font-body text-sm text-concrete-600 mt-1">
                                 {{ cartStore.itemsCount }} {{ t({ ru: cartStore.itemsCount === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                 {{ t({ ru: 'из', kz: '' }) }} {{ cartsWithItems.length }} {{ t({ ru: cartsWithItems.length === 1 ? 'магазина' : 'магазинов', kz: 'дүкеннен' }) }}
                             </p>
@@ -142,20 +142,22 @@ function getRemainingAmount(cart: any) {
                     </div>
 
                     <!-- Cart Items Grouped by Shop -->
-                    <div class="flex flex-col gap-5">
+                    <div class="flex flex-col gap-6">
                         <div
                             v-for="(cart, index) in cartsWithItems"
                             :key="cart.id"
-                            class="bg-white rounded-lg border border-gray-300 shadow-md overflow-hidden transition-all hover:shadow-lg animate-fadeInUp"
+                            class="bg-white rounded-2xl border border-concrete-200 shadow-industrial-md overflow-hidden transition-all hover:shadow-industrial-lg animate-fadeInUp"
                             :style="{ animationDelay: `${index * 100}ms` }"
                         >
                             <!-- Shop Header -->
-                            <div class="px-5 py-4 border-b-2 border-gray-300 bg-gradient-to-br from-[#2C5F5D]/3 to-[#2C5F5D]/1">
-                                <div class="flex items-center gap-2.5">
-                                    <Store :size="20" class="text-[#2C5F5D]" />
+                            <div class="px-6 py-4 border-b-2 border-concrete-200 bg-gradient-to-br from-steel-50 to-steel-25">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-steel-600 to-steel-700 rounded-lg text-white shadow-industrial-sm">
+                                        <Store :size="20" :stroke-width="2.5" />
+                                    </div>
                                     <div>
-                                        <h3 class="text-[17px] font-bold text-gray-900">{{ cart.shop?.name }}</h3>
-                                        <p class="text-[13px] text-gray-600 mt-0.5">
+                                        <h3 class="font-display text-lg font-bold text-steel-900">{{ cart.shop?.name }}</h3>
+                                        <p class="font-body text-sm text-concrete-600 mt-0.5">
                                             {{ cart.items_count }} {{ t({ ru: cart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                         </p>
                                     </div>
@@ -163,23 +165,23 @@ function getRemainingAmount(cart: any) {
                             </div>
 
                             <!-- Shop Items -->
-                            <div class="divide-y divide-gray-200">
+                            <div class="divide-y divide-concrete-200">
                                 <div
                                     v-for="item in cart.items"
                                     :key="item.id"
-                                    class="flex gap-4 p-4 transition-all hover:bg-gray-50"
+                                    class="flex gap-4 p-5 transition-all hover:bg-concrete-50"
                                 >
                                     <!-- Product Image -->
                                     <Link
                                         :href="`/products/${item.product_id}`"
                                         class="flex-shrink-0"
                                     >
-                                        <div class="w-18 h-18 rounded-md overflow-hidden bg-white border border-gray-200">
+                                        <div class="w-20 h-20 rounded-xl overflow-hidden bg-white border-2 border-concrete-200 shadow-industrial-sm hover:shadow-industrial-md transition-shadow">
                                             <img
                                                 v-if="item.product?.images?.[0]"
                                                 :src="item.product.images[0]"
                                                 :alt="getProductName(item)"
-                                                class="w-full h-full object-cover transition-transform hover:scale-105"
+                                                class="w-full h-full object-cover transition-transform hover:scale-110"
                                             />
                                             <div v-else class="flex items-center justify-center w-full h-full text-3xl">
                                                 <span>📦</span>
@@ -188,31 +190,31 @@ function getRemainingAmount(cart: any) {
                                     </Link>
 
                                     <!-- Product Info -->
-                                    <div class="flex-1 flex flex-col gap-2.5">
+                                    <div class="flex-1 flex flex-col gap-3">
                                         <div class="flex items-start justify-between gap-3">
                                             <Link :href="`/products/${item.product_id}`">
-                                                <h4 class="text-[15px] font-semibold text-gray-900 transition-colors hover:text-[#2C5F5D]">
+                                                <h4 class="font-display text-base font-semibold text-steel-900 transition-colors hover:text-amber-600">
                                                     {{ getProductName(item) }}
                                                 </h4>
                                             </Link>
                                             <button
                                                 @click="handleRemoveItem(item.id)"
                                                 :disabled="removing === item.id"
-                                                class="flex items-center justify-center w-7 h-7 rounded-sm border border-gray-300 bg-white text-gray-400 transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                                                class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-concrete-500 transition-all hover:border-rust-500 hover:text-rust-600 hover:bg-rust-50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                                             >
-                                                <X :size="16" />
+                                                <X :size="18" />
                                             </button>
                                         </div>
 
                                         <div class="flex items-center justify-between gap-3 mt-auto flex-wrap">
                                             <!-- Quantity Controls -->
-                                            <div class="flex items-center gap-1.5">
+                                            <div class="flex items-center gap-2">
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity - 1)"
                                                     :disabled="item.quantity <= 1 || updating === item.id"
-                                                    class="flex items-center justify-center w-7 h-7 rounded-sm border-2 border-gray-300 bg-white text-gray-900 transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-steel-700 transition-all hover:border-steel-700 hover:bg-steel-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <Minus :size="14" />
+                                                    <Minus :size="16" />
                                                 </button>
                                                 <Input
                                                     type="number"
@@ -226,27 +228,27 @@ function getRemainingAmount(cart: any) {
                                                                 ),
                                                             )
                                                     "
-                                                    class="w-14 h-7 text-center border-2 border-gray-300 rounded-sm font-semibold text-sm p-0"
+                                                    class="font-body w-16 h-8 text-center border-2 border-concrete-300 rounded-lg font-semibold text-sm p-0 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                                                     min="1"
                                                 />
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity + 1)"
                                                     :disabled="updating === item.id"
-                                                    class="flex items-center justify-center w-7 h-7 rounded-sm border-2 border-gray-300 bg-white text-gray-900 transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    class="flex items-center justify-center w-8 h-8 rounded-lg border-2 border-concrete-300 bg-white text-steel-700 transition-all hover:border-steel-700 hover:bg-steel-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <Plus :size="14" />
+                                                    <Plus :size="16" />
                                                 </button>
                                             </div>
 
                                             <!-- Item Pricing -->
-                                            <div class="flex flex-col items-end gap-0.5">
+                                            <div class="flex flex-col items-end gap-1">
                                                 <PriceDisplay
                                                     :price="item.price"
-                                                    class="text-[13px] text-gray-500"
+                                                    class="font-body text-sm text-concrete-500"
                                                 />
                                                 <PriceDisplay
                                                     :price="getItemSubtotal(item)"
-                                                    class="text-[17px] font-bold text-gray-900"
+                                                    class="font-display text-lg font-bold text-steel-900"
                                                 />
                                             </div>
                                         </div>
@@ -255,22 +257,22 @@ function getRemainingAmount(cart: any) {
                             </div>
 
                             <!-- Shop Footer -->
-                            <div class="flex items-center justify-between gap-4 px-5 py-4 bg-gradient-to-br from-[#2C5F5D]/5 to-[#2C5F5D]/2 border-t-2 border-gray-300 flex-wrap">
-                                <div class="flex flex-col gap-1.5">
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="text-[15px] font-semibold text-gray-600">{{ t({ ru: 'Промежуточный итог:', kz: 'Аралық қорытынды:' }) }}</span>
-                                        <PriceDisplay :price="cart.total" class="text-xl font-bold text-[#2C5F5D]" />
+                            <div class="flex items-center justify-between gap-4 px-6 py-5 bg-gradient-to-br from-steel-50 to-concrete-50 border-t-2 border-concrete-200 flex-wrap">
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center gap-3">
+                                        <span class="font-display font-semibold text-steel-700">{{ t({ ru: 'Промежуточный итог:', kz: 'Аралық қорытынды:' }) }}</span>
+                                        <PriceDisplay :price="cart.total" class="font-display text-2xl font-bold text-steel-900" />
                                     </div>
-                                    <div v-if="!canCheckout(cart)" class="text-[13px] text-red-600 px-2.5 py-1.5 bg-red-50 border border-red-200 rounded-sm inline-flex items-center gap-1 flex-wrap">
-                                        {{ t({ ru: 'Добавьте еще', kz: 'Тағы қосыңыз' }) }} <PriceDisplay :price="getRemainingAmount(cart)" class="font-semibold text-red-600" />
+                                    <div v-if="!canCheckout(cart)" class="font-body text-sm text-rust-700 px-3 py-2 bg-rust-50 border-l-4 border-rust-500 rounded-lg inline-flex items-center gap-1 flex-wrap">
+                                        {{ t({ ru: 'Добавьте еще', kz: 'Тағы қосыңыз' }) }} <PriceDisplay :price="getRemainingAmount(cart)" class="font-semibold text-rust-700" />
                                         {{ t({ ru: 'для достижения минимальной суммы заказа', kz: 'тапсырыстың ең аз сомасына жету үшін' }) }}
-                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="font-semibold text-red-600" />
+                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="font-semibold text-rust-700" />
                                     </div>
                                 </div>
                                 <div class="flex gap-3 flex-wrap">
                                     <Button
                                         v-if="canCheckout(cart)"
-                                        class="btn-primary-modern"
+                                        class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
                                         as-child
                                     >
                                         <Link :href="`/checkout?shop_id=${cart.shop_id}`">
@@ -280,7 +282,7 @@ function getRemainingAmount(cart: any) {
                                     </Button>
                                     <template v-else>
                                         <Button
-                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-[#6EAA4B] to-[#7AB85D] border-2 border-[#5D9440] rounded-md text-[15px] font-bold text-white transition-all hover:from-[#7AB85D] hover:to-[#88C56B] hover:border-[#6EAA4B] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md"
+                                            class="font-display font-bold px-6 py-3 bg-forest-500 text-white rounded-lg hover:bg-forest-600 hover:shadow-industrial-md transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
                                             as-child
                                         >
                                             <Link :href="`/shops/${cart.shop_id}`">
@@ -289,7 +291,7 @@ function getRemainingAmount(cart: any) {
                                             </Link>
                                         </Button>
                                         <Button
-                                            class="btn-primary-modern"
+                                            class="font-display font-bold px-8 py-4 bg-concrete-300 text-concrete-500 rounded-xl cursor-not-allowed inline-flex items-center gap-2"
                                             disabled
                                         >
                                             <ShoppingCart :size="20" />
@@ -307,7 +309,7 @@ function getRemainingAmount(cart: any) {
 </template>
 
 <style scoped>
-/* Animations */
+/* Industrial Refined Design System Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -329,30 +331,10 @@ function getRemainingAmount(cart: any) {
 }
 
 .animate-fadeInUp {
-    animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.4s ease-out forwards;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .flex.gap-4.p-4 {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .w-18.h-18 {
-        width: 100%;
-        height: 160px;
-    }
-}
-
-@media (max-width: 640px) {
-    .flex.items-center.justify-between.flex-wrap.gap-4 {
-        flex-direction: column;
-        align-items: stretch;
-    }
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 </style>

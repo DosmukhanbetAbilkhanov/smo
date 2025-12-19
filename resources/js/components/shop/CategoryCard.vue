@@ -28,24 +28,24 @@ const toggleExpanded = () => {
 </script>
 
 <template>
-    <div class="category-group">
+    <div class="flex flex-col gap-1">
         <Link
             v-if="!hasChildren"
             :href="`/categories/${category.slug}`"
-            class="category-link category-parent-link"
+            class="font-display text-sm font-bold text-steel-900 no-underline cursor-pointer transition-colors duration-200 hover:text-amber-600"
         >
             {{ categoryName }}
         </Link>
         <button
             v-else
             @click="toggleExpanded"
-            class="category-parent category-parent-button md:cursor-default"
+            class="w-full text-left flex justify-between items-center bg-none border-none p-0 font-display text-sm font-bold text-steel-900 mb-1 cursor-pointer md:cursor-default md:pointer-events-none"
             type="button"
         >
             <span>{{ categoryName }}</span>
             <svg
-                class="chevron md:hidden"
-                :class="{ expanded: isExpanded }"
+                class="w-5 h-5 flex-shrink-0 ml-2 transition-transform duration-200 md:hidden"
+                :class="{ 'rotate-180': isExpanded }"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
@@ -60,127 +60,17 @@ const toggleExpanded = () => {
 
         <div
             v-if="hasChildren"
-            class="category-children"
-            :class="{ 'mobile-collapsed': !isExpanded }"
+            class="flex flex-col gap-1 overflow-hidden transition-all duration-300 ease-in-out md:max-h-none md:opacity-100"
+            :class="isExpanded ? 'max-h-[500px] opacity-100 mt-1 md:mt-0' : 'max-h-0 opacity-0 mt-0 md:opacity-100 md:max-h-none'"
         >
             <Link
                 v-for="child in category.children"
                 :key="child.id"
                 :href="`/categories/${child.slug}`"
-                class="category-link category-child"
+                class="font-body text-sm text-steel-700 underline decoration-steel-400 underline-offset-2 no-underline-hover cursor-pointer transition-colors duration-200 hover:text-amber-600 hover:decoration-amber-600"
             >
                 {{ getLocalizedName(child) }}
             </Link>
         </div>
     </div>
 </template>
-
-<style scoped>
-.category-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.category-link {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: opacity var(--transition-base);
-    text-decoration: none;
-    display: block;
-}
-
-.category-link:hover {
-    opacity: 0.7;
-}
-
-/* Parent categories that are clickable (no children) */
-.category-parent-link {
-    color: #000;
-    font-weight: 700;
-}
-
-/* Parent categories - black bold text (non-clickable) */
-.category-parent {
-    color: #000;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-}
-
-/* Parent category button for mobile collapsible */
-.category-parent-button {
-    width: 100%;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
-@media (min-width: 768px) {
-    .category-parent-button {
-        cursor: default;
-        pointer-events: none;
-    }
-}
-
-/* Chevron icon */
-.chevron {
-    width: 1.25rem;
-    height: 1.25rem;
-    transition: transform var(--transition-base);
-    flex-shrink: 0;
-    margin-left: 0.5rem;
-}
-
-.chevron.expanded {
-    transform: rotate(180deg);
-}
-
-/* Children container */
-.category-children {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    overflow: hidden;
-    transition:
-        max-height 0.3s ease-in-out,
-        opacity 0.3s ease-in-out;
-}
-
-/* Mobile collapsed state */
-@media (max-width: 767px) {
-    .category-children.mobile-collapsed {
-        max-height: 0;
-        opacity: 0;
-        margin-top: 0;
-    }
-
-    .category-children:not(.mobile-collapsed) {
-        max-height: 500px;
-        opacity: 1;
-        margin-top: 0.25rem;
-    }
-}
-
-/* Desktop - always show children */
-@media (min-width: 768px) {
-    .category-children {
-        max-height: none;
-        opacity: 1;
-    }
-}
-
-/* Children categories - blue normal underlined */
-.category-child {
-    color: #2563eb;
-    font-weight: 400;
-    text-decoration: underline;
-}
-</style>

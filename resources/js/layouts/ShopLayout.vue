@@ -41,25 +41,25 @@ const currentYear = new Date().getFullYear();
         </main>
 
         <!-- Footer -->
-        <footer v-if="showFooter" class="border-t bg-muted/50">
-            <div class="container mx-auto px-4 py-12">
+        <footer v-if="showFooter" class="border-t-4 border-rust-500 bg-steel-900">
+            <div class="container mx-auto px-6 py-12">
                 <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                     <!-- About -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">{{ t({ ru: 'О SMO', kz: 'SMO туралы' }) }}</h3>
-                        <p class="text-sm text-muted-foreground">
+                        <h3 class="font-display text-lg font-bold text-white">{{ t({ ru: 'О SMO', kz: 'SMO туралы' }) }}</h3>
+                        <p class="font-body text-sm text-steel-300 leading-relaxed">
                             {{ t({ ru: 'Надежный маркетплейс строительных материалов. Качественная продукция от проверенных продавцов по всему Казахстану.', kz: 'Құрылыс материалдарының сенімді маркетплейсі. Қазақстан бойынша тексерілген сатушылардан сапалы өнім.' }) }}
                         </p>
                     </div>
 
                     <!-- Quick Links -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Быстрые ссылки', kz: 'Жылдам сілтемелер' }) }}</h3>
+                        <h3 class="font-display text-lg font-bold text-white">{{ t({ ru: 'Быстрые ссылки', kz: 'Жылдам сілтемелер' }) }}</h3>
                         <ul class="space-y-2 text-sm">
                             <li>
                                 <Link
                                     href="/categories"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                                 </Link>
@@ -67,7 +67,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/products"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Товары', kz: 'Тауарлар' }) }}
                                 </Link>
@@ -75,7 +75,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/about"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'О нас', kz: 'Біз туралы' }) }}
                                 </Link>
@@ -83,7 +83,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/contact"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Контакты', kz: 'Байланыс' }) }}
                                 </Link>
@@ -93,12 +93,12 @@ const currentYear = new Date().getFullYear();
 
                     <!-- Support -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Поддержка', kz: 'Қолдау' }) }}</h3>
+                        <h3 class="font-display text-lg font-bold text-white">{{ t({ ru: 'Поддержка', kz: 'Қолдау' }) }}</h3>
                         <ul class="space-y-2 text-sm">
                             <li>
                                 <Link
                                     href="/help"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Центр помощи', kz: 'Көмек орталығы' }) }}
                                 </Link>
@@ -106,7 +106,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/faq"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'FAQ', kz: 'Жиі қойылатын сұрақтар' }) }}
                                 </Link>
@@ -114,7 +114,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/privacy"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Политика конфиденциальности', kz: 'Құпиялылық саясаты' }) }}
                                 </Link>
@@ -122,7 +122,7 @@ const currentYear = new Date().getFullYear();
                             <li>
                                 <Link
                                     href="/terms"
-                                    class="text-muted-foreground transition-colors hover:text-foreground"
+                                    class="font-body text-steel-300 transition-colors duration-200 hover:text-amber-400"
                                 >
                                     {{ t({ ru: 'Условия использования', kz: 'Пайдалану шарттары' }) }}
                                 </Link>
@@ -132,19 +132,19 @@ const currentYear = new Date().getFullYear();
 
                     <!-- Contact -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold">{{ t({ ru: 'Свяжитесь с нами', kz: 'Бізбен байланысыңыз' }) }}</h3>
-                        <ul class="space-y-3 text-sm text-muted-foreground">
-                            <li class="flex items-start gap-2">
-                                <MapPin :size="16" class="mt-0.5 shrink-0" />
-                                <span>{{ t({ ru: 'Алматы, Казахстан', kz: 'Алматы, Қазақстан' }) }}</span>
+                        <h3 class="font-display text-lg font-bold text-white">{{ t({ ru: 'Свяжитесь с нами', kz: 'Бізбен байланысыңыз' }) }}</h3>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start gap-3 text-steel-300">
+                                <MapPin :size="16" class="mt-0.5 shrink-0 text-amber-400" />
+                                <span class="font-body">{{ t({ ru: 'Алматы, Казахстан', kz: 'Алматы, Қазақстан' }) }}</span>
                             </li>
-                            <li class="flex items-center gap-2">
-                                <Phone :size="16" class="shrink-0" />
-                                <span>+7 (777) 123-45-67</span>
+                            <li class="flex items-center gap-3 text-steel-300">
+                                <Phone :size="16" class="shrink-0 text-amber-400" />
+                                <span class="font-body">+7 (777) 123-45-67</span>
                             </li>
-                            <li class="flex items-center gap-2">
-                                <Mail :size="16" class="shrink-0" />
-                                <span>info@smo.kz</span>
+                            <li class="flex items-center gap-3 text-steel-300">
+                                <Mail :size="16" class="shrink-0 text-amber-400" />
+                                <span class="font-body">info@smo.kz</span>
                             </li>
                         </ul>
 
@@ -152,21 +152,21 @@ const currentYear = new Date().getFullYear();
                         <div class="flex gap-2 pt-2">
                             <a
                                 href="#"
-                                class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors hover:bg-accent"
+                                class="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-steel-700 text-steel-300 transition-all duration-200 hover:border-amber-500 hover:bg-amber-500 hover:text-white"
                                 aria-label="Facebook"
                             >
                                 <Facebook :size="18" />
                             </a>
                             <a
                                 href="#"
-                                class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors hover:bg-accent"
+                                class="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-steel-700 text-steel-300 transition-all duration-200 hover:border-amber-500 hover:bg-amber-500 hover:text-white"
                                 aria-label="Instagram"
                             >
                                 <Instagram :size="18" />
                             </a>
                             <a
                                 href="#"
-                                class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors hover:bg-accent"
+                                class="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-steel-700 text-steel-300 transition-all duration-200 hover:border-amber-500 hover:bg-amber-500 hover:text-white"
                                 aria-label="Twitter"
                             >
                                 <Twitter :size="18" />
@@ -177,9 +177,9 @@ const currentYear = new Date().getFullYear();
 
                 <!-- Copyright -->
                 <div
-                    class="mt-12 border-t pt-8 text-center text-sm text-muted-foreground"
+                    class="mt-12 border-t border-steel-700 pt-8 text-center text-sm"
                 >
-                    <p>&copy; {{ currentYear }} SMO. {{ t({ ru: 'Все права защищены.', kz: 'Барлық құқықтар қорғалған.' }) }}</p>
+                    <p class="font-body text-steel-400">&copy; {{ currentYear }} SMO. {{ t({ ru: 'Все права защищены.', kz: 'Барлық құқықтар қорғалған.' }) }}</p>
                 </div>
             </div>
         </footer>

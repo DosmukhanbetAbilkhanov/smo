@@ -50,10 +50,10 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'shop_id' => 'required|exists:shops,id',
             'delivery_address' => 'required|string|max:500',
-            'delivery_entry' => 'nullable|string|max:50',
+            'delivery_entry' => 'nullable|numeric|max:50',
             'delivery_floor' => 'nullable|string|max:50',
-            'delivery_apartment' => 'nullable|string|max:50',
-            'delivery_intercom' => 'nullable|string|max:50',
+            'delivery_apartment' => 'required|numeric|max:50',
+            'delivery_intercom' => 'nullable|numeric|max:50',
             'delivery_notes' => 'nullable|string|max:1000',
         ]);
 

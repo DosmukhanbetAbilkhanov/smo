@@ -83,29 +83,33 @@ function getItemSubtotal(item: any) {
 
             <div class="container mx-auto px-4 py-12">
                 <!-- Page Header -->
-                <div class="page-header">
-                    <h1 class="page-title">{{ t({ ru: 'Безопасное оформление', kz: 'Қауіпсіз рәсімдеу' }) }}</h1>
-                    <p class="page-subtitle">
+                <div class="text-center mb-12">
+                    <h1 class="font-display text-4xl md:text-5xl font-bold text-steel-900 mb-3 tracking-tight">{{ t({ ru: 'Безопасное оформление', kz: 'Қауіпсіз рәсімдеу' }) }}</h1>
+                    <p class="font-body text-lg text-concrete-600 font-medium">
                         {{ t({ ru: 'Заполните информацию о доставке для завершения заказа', kz: 'Тапсырысты аяқтау үшін жеткізу туралы ақпаратты толтырыңыз' }) }}
                     </p>
                 </div>
 
-                <div class="checkout-grid">
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12">
                     <!-- Order Summary (appears first on mobile) -->
-                    <div class="summary-column">
-                        <div class="summary-card" v-if="selectedCart">
-                            <div class="summary-header">
-                                <Package :size="24" class="summary-icon" />
-                                <h2 class="summary-title">{{ t({ ru: 'Сводка заказа', kz: 'Тапсырыс қорытындысы' }) }}</h2>
+                    <div class="order-1 lg:order-2">
+                        <div class="bg-white rounded-2xl p-8 shadow-industrial-xl border border-concrete-200 sticky top-4 backdrop-blur-sm bg-gradient-to-br from-white/95 to-concrete-50/95" v-if="selectedCart">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-steel-600 to-steel-700 rounded-xl text-white shadow-industrial-sm">
+                                    <Package :size="24" :stroke-width="2.5" />
+                                </div>
+                                <h2 class="font-display text-2xl font-bold text-steel-900">{{ t({ ru: 'Сводка заказа', kz: 'Тапсырыс қорытындысы' }) }}</h2>
                             </div>
 
                             <!-- Shop Info -->
-                            <div class="shop-info">
-                                <div class="shop-details">
-                                    <Store :size="20" class="shop-icon" />
-                                    <div class="shop-text">
-                                        <div class="shop-name">{{ selectedCart.shop?.name }}</div>
-                                        <div class="shop-items">
+                            <div class="bg-gradient-to-br from-steel-100/50 to-steel-50/30 rounded-xl p-5 mb-6 border border-steel-200/50">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-steel-600 to-steel-700 rounded-lg text-white shadow-industrial-sm flex-shrink-0">
+                                        <Store :size="20" :stroke-width="2.5" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-display text-lg font-semibold text-steel-900 mb-1">{{ selectedCart.shop?.name }}</div>
+                                        <div class="font-body text-sm text-concrete-600 font-medium">
                                             {{ selectedCart.items_count }}
                                             {{ t({ ru: selectedCart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                         </div>
@@ -113,13 +117,13 @@ function getItemSubtotal(item: any) {
                                 </div>
 
                                 <!-- Shop Location -->
-                                <div v-if="selectedCart.shop?.city || selectedCart.shop?.address" class="shop-location">
-                                    <MapPin :size="16" class="location-icon" />
-                                    <div class="location-text">
-                                        <div v-if="selectedCart.shop?.city" class="location-city">
+                                <div v-if="selectedCart.shop?.city || selectedCart.shop?.address" class="flex items-start gap-3 mt-4 pt-4 border-t border-steel-200/50">
+                                    <MapPin :size="16" class="text-concrete-500 flex-shrink-0 mt-0.5" />
+                                    <div class="flex-1 min-w-0">
+                                        <div v-if="selectedCart.shop?.city" class="font-body text-sm font-semibold text-steel-900 mb-0.5">
                                             {{ selectedCart.shop.city.name }}
                                         </div>
-                                        <div v-if="selectedCart.shop?.address" class="location-address">
+                                        <div v-if="selectedCart.shop?.address" class="font-body text-sm text-concrete-600">
                                             {{ selectedCart.shop.address }}
                                         </div>
                                     </div>
@@ -127,110 +131,110 @@ function getItemSubtotal(item: any) {
                             </div>
 
                             <!-- Delivery Address Preview -->
-                            <div v-if="formattedDeliveryAddress" class="delivery-preview">
-                                <div class="delivery-preview-content">
-                                    <MapPin :size="20" class="delivery-icon" />
+                            <div v-if="formattedDeliveryAddress" class="bg-gradient-to-br from-amber-100/40 to-amber-50/30 rounded-xl p-5 mb-6 border border-amber-200/50">
+                                <div class="flex items-start gap-4">
+                                    <MapPin :size="20" class="text-amber-600 flex-shrink-0 mt-0.5" />
                                     <div>
-                                        <div class="delivery-label">{{ t({ ru: 'Адрес доставки', kz: 'Жеткізу мекенжайы' }) }}</div>
-                                        <div class="delivery-text">{{ formattedDeliveryAddress }}</div>
+                                        <div class="font-display text-sm font-semibold text-steel-900 mb-1">{{ t({ ru: 'Адрес доставки', kz: 'Жеткізу мекенжайы' }) }}</div>
+                                        <div class="font-body text-sm text-concrete-700 leading-relaxed break-words">{{ formattedDeliveryAddress }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="summary-divider"></div>
+                            <div class="h-px bg-concrete-200 my-6"></div>
 
                             <!-- Items List - Collapsible -->
                             <Collapsible v-model:open="isItemsOpen">
                                 <CollapsibleTrigger as-child>
-                                    <button type="button" class="items-toggle">
-                                        <div class="items-toggle-content">
-                                            <Package :size="18" class="items-toggle-icon" />
-                                            <span class="items-toggle-text">
+                                    <button type="button" class="flex items-center justify-between w-full px-4 py-3 bg-gradient-to-br from-steel-100/30 to-steel-50/20 border border-steel-200/50 rounded-xl cursor-pointer transition-all duration-200 mb-4 hover:bg-gradient-to-br hover:from-steel-100/50 hover:to-steel-50/30 hover:border-steel-700 hover:-translate-y-0.5">
+                                        <div class="flex items-center gap-2">
+                                            <Package :size="18" class="text-steel-700 flex-shrink-0" />
+                                            <span class="font-body text-base font-semibold text-steel-900">
                                                 {{ selectedCart.items_count }}
                                                 {{ t({ ru: selectedCart.items_count === 1 ? 'Товар' : 'Товаров', kz: 'Тауар' }) }}
                                             </span>
                                         </div>
                                         <ChevronDown
                                             :size="20"
-                                            class="items-toggle-chevron"
+                                            class="text-concrete-600 transition-transform duration-200 flex-shrink-0"
                                             :class="{ 'rotate-180': isItemsOpen }"
                                         />
                                     </button>
                                 </CollapsibleTrigger>
 
                                 <CollapsibleContent>
-                                    <div class="items-list">
+                                    <div class="flex flex-col gap-4 pt-2">
                                         <div
                                             v-for="item in selectedCart.items"
                                             :key="item.id"
-                                            class="item-row"
+                                            class="flex items-start justify-between gap-4"
                                         >
-                                            <div class="item-details">
-                                                <div class="item-name">{{ getProductName(item) }}</div>
-                                                <div class="item-quantity">{{ t({ ru: 'Кол-во:', kz: 'Саны:' }) }} {{ item.quantity }}</div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-body font-semibold text-steel-900 text-base mb-1">{{ getProductName(item) }}</div>
+                                                <div class="font-body text-sm text-concrete-600">{{ t({ ru: 'Кол-во:', kz: 'Саны:' }) }} {{ item.quantity }}</div>
                                             </div>
                                             <PriceDisplay
                                                 :price="getItemSubtotal(item)"
-                                                class="item-price"
+                                                class="font-body font-semibold text-steel-900 flex-shrink-0"
                                             />
                                         </div>
                                     </div>
                                 </CollapsibleContent>
                             </Collapsible>
 
-                            <div class="summary-divider"></div>
+                            <div class="h-px bg-concrete-200 my-6"></div>
 
                             <!-- Totals -->
-                            <div class="totals-section">
-                                <div class="total-row">
-                                    <span class="total-label">{{ t({ ru: 'Промежуточный итог', kz: 'Аралық қорытынды' }) }}</span>
-                                    <PriceDisplay :price="selectedCart.total" class="total-value" />
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center justify-between text-base">
+                                    <span class="font-body text-concrete-600 font-medium">{{ t({ ru: 'Промежуточный итог', kz: 'Аралық қорытынды' }) }}</span>
+                                    <PriceDisplay :price="selectedCart.total" class="font-body font-semibold text-steel-900" />
                                 </div>
-                                <div class="total-row">
-                                    <span class="total-label">{{ t({ ru: 'Доставка', kz: 'Жеткізу' }) }}</span>
-                                    <span class="shipping-note">{{ t({ ru: 'Рассчитывается после заказа', kz: 'Тапсырыстан кейін есептеледі' }) }}</span>
+                                <div class="flex items-center justify-between text-base">
+                                    <span class="font-body text-concrete-600 font-medium">{{ t({ ru: 'Доставка', kz: 'Жеткізу' }) }}</span>
+                                    <span class="font-body text-sm text-concrete-500 italic">{{ t({ ru: 'Рассчитывается после заказа', kz: 'Тапсырыстан кейін есептеледі' }) }}</span>
                                 </div>
                             </div>
 
-                            <div class="summary-divider-bold"></div>
+                            <div class="h-0.5 bg-gradient-to-r from-steel-600 to-steel-700 my-6 rounded-full"></div>
 
-                            <div class="grand-total">
-                                <span class="grand-total-label">{{ t({ ru: 'Итого', kz: 'Барлығы' }) }}</span>
+                            <div class="flex items-center justify-between">
+                                <span class="font-display text-xl font-bold text-steel-900">{{ t({ ru: 'Итого', kz: 'Барлығы' }) }}</span>
                                 <PriceDisplay
                                     :price="selectedCart.total"
-                                    class="grand-total-value"
+                                    class="font-display text-2xl font-bold text-steel-900"
                                 />
                             </div>
                         </div>
                     </div>
 
                     <!-- Delivery Form -->
-                    <div class="form-column">
+                    <div class="order-2 lg:order-1">
                         <!-- Shop Selection (if multiple shops) -->
-                        <div v-if="carts.length > 1" class="shop-selection">
-                            <h3 class="section-title">{{ t({ ru: 'Выберите магазин', kz: 'Дүкенді таңдаңыз' }) }}</h3>
-                            <p class="section-subtitle">{{ t({ ru: 'Выберите магазин для заказа', kz: 'Тапсырыс үшін дүкенді таңдаңыз' }) }}</p>
+                        <div v-if="carts.length > 1" class="bg-white rounded-2xl p-8 mb-8 shadow-industrial-md border border-concrete-200">
+                            <h3 class="font-display text-xl font-bold text-steel-900 mb-2">{{ t({ ru: 'Выберите магазин', kz: 'Дүкенді таңдаңыз' }) }}</h3>
+                            <p class="font-body text-base text-concrete-600 mb-6">{{ t({ ru: 'Выберите магазин для заказа', kz: 'Тапсырыс үшін дүкенді таңдаңыз' }) }}</p>
 
-                            <div class="shop-options">
+                            <div class="flex flex-col gap-3">
                                 <button
                                     v-for="cart in carts"
                                     :key="cart.id"
                                     @click="selectedShopId = cart.shop_id"
                                     type="button"
-                                    class="shop-option"
-                                    :class="{ active: selectedShopId === cart.shop_id }"
+                                    class="flex items-center justify-between p-5 bg-concrete-50 border-2 border-concrete-300 rounded-xl cursor-pointer transition-all duration-200 hover:border-steel-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-industrial-md"
+                                    :class="{ 'border-steel-700 bg-gradient-to-br from-steel-100/30 to-steel-50/20 shadow-[0_0_0_3px_rgba(45,58,58,0.1)]': selectedShopId === cart.shop_id }"
                                 >
-                                    <div class="shop-option-content">
-                                        <Store :size="20" class="shop-option-icon" />
-                                        <div class="shop-option-text">
-                                            <div class="shop-option-name">{{ cart.shop?.name }}</div>
-                                            <div class="shop-option-count">
+                                    <div class="flex items-center gap-4">
+                                        <Store :size="20" class="text-concrete-500 transition-colors" :class="{ 'text-steel-700': selectedShopId === cart.shop_id }" />
+                                        <div class="text-left">
+                                            <div class="font-display font-semibold text-steel-900 mb-1">{{ cart.shop?.name }}</div>
+                                            <div class="font-body text-sm text-concrete-600">
                                                 {{ cart.items_count }}
                                                 {{ t({ ru: cart.items_count === 1 ? 'товар' : 'товаров', kz: 'тауар' }) }}
                                             </div>
                                         </div>
                                     </div>
-                                    <PriceDisplay :price="cart.total" class="shop-option-price" />
+                                    <PriceDisplay :price="cart.total" class="font-display font-bold text-steel-900" />
                                 </button>
                             </div>
                         </div>
@@ -244,67 +248,68 @@ function getItemSubtotal(item: any) {
                         >
                             <input type="hidden" name="shop_id" :value="selectedShopId" />
 
-                            <div class="delivery-form">
-                                <div class="form-header">
-                                    <MapPin :size="24" class="form-icon" />
-                                    <h3 class="form-title">{{ t({ ru: 'Информация о доставке', kz: 'Жеткізу туралы ақпарат' }) }}</h3>
+                            <div class="bg-white rounded-2xl p-8 shadow-industrial-md border border-concrete-200 mb-6">
+                                <div class="flex items-center gap-3 mb-8 pb-6 border-b-2 border-concrete-200">
+                                    <div class="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-steel-600 to-steel-700 rounded-xl text-white shadow-industrial-sm">
+                                        <MapPin :size="24" :stroke-width="2.5" />
+                                    </div>
+                                    <h3 class="font-display text-2xl font-bold text-steel-900">{{ t({ ru: 'Информация о доставке', kz: 'Жеткізу туралы ақпарат' }) }}</h3>
                                 </div>
 
-                                <div class="form-content">
+                                <div class="flex flex-col gap-6">
                                     <!-- Address -->
-                                    <div class="form-group">
-                                        <Label for="delivery_address" class="form-label">
-                                            {{ t({ ru: 'Адрес улицы *', kz: 'Көше мекенжайы *' }) }}
+                                    <div class="flex flex-col gap-2">
+                                        <Label for="delivery_address" class="font-display text-base font-semibold text-steel-900">
+                                            {{ t({ ru: 'Адрес *', kz: 'Мекенжайы *' }) }}
                                         </Label>
                                         <Input
                                             id="delivery_address"
                                             name="delivery_address"
                                             type="text"
-                                            required
                                             v-model="deliveryAddress"
                                             :placeholder="t({ ru: 'Название улицы, номер дома', kz: 'Көше атауы, үй нөмірі' })"
-                                            class="form-input"
+                                            class="font-body h-12 px-4 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                         />
-                                        <p v-if="errors.delivery_address" class="form-error">
+                                        <p v-if="errors.delivery_address" class="font-body text-sm text-rust-600 font-medium">
                                             {{ errors.delivery_address }}
                                         </p>
                                     </div>
 
                                     <!-- Apartment Details Grid -->
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <Label for="delivery_entry" class="form-label">{{ t({ ru: 'Подъезд', kz: 'Кіреберіс' }) }}</Label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="flex flex-col gap-2">
+                                            <Label for="delivery_entry" class="font-display text-base font-semibold text-steel-900">{{ t({ ru: 'Подъезд', kz: 'Кіреберіс' }) }}</Label>
                                             <Input
                                                 id="delivery_entry"
                                                 name="delivery_entry"
                                                 type="text"
                                                 v-model="deliveryEntry"
                                                 :placeholder="t({ ru: 'напр., 2', kz: 'мыс., 2' })"
-                                                class="form-input"
+                                                class="font-body h-12 px-4 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                             />
-                                            <p v-if="errors.delivery_entry" class="form-error">
+                                            <p v-if="errors.delivery_entry" class="font-body text-sm text-rust-600 font-medium">
                                                 {{ errors.delivery_entry }}
                                             </p>
                                         </div>
 
-                                        <div class="form-group">
-                                            <Label for="delivery_floor" class="form-label">{{ t({ ru: 'Этаж', kz: 'Қабат' }) }}</Label>
+                                        <div class="flex flex-col gap-2">
+                                            <Label for="delivery_floor" class="font-display text-base font-semibold text-steel-900">{{ t({ ru: 'Этаж', kz: 'Қабат' }) }}</Label>
                                             <Input
                                                 id="delivery_floor"
                                                 name="delivery_floor"
                                                 type="text"
                                                 v-model="deliveryFloor"
                                                 :placeholder="t({ ru: 'напр., 5', kz: 'мыс., 5' })"
-                                                class="form-input"
+                                                class="font-body h-12 px-4 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                             />
-                                            <p v-if="errors.delivery_floor" class="form-error">
+                                            <p v-if="errors.delivery_floor" class="font-body text-sm text-rust-600 font-medium">
                                                 {{ errors.delivery_floor }}
                                             </p>
                                         </div>
 
-                                        <div class="form-group">
-                                            <Label for="delivery_apartment" class="form-label">
-                                                {{ t({ ru: 'Квартира', kz: 'Пәтер' }) }}
+                                        <div class="flex flex-col gap-2">
+                                            <Label for="delivery_apartment" class="font-display text-base font-semibold text-steel-900">
+                                                {{ t({ ru: 'Квартира *', kz: 'Пәтер *' }) }}
                                             </Label>
                                             <Input
                                                 id="delivery_apartment"
@@ -312,15 +317,15 @@ function getItemSubtotal(item: any) {
                                                 type="text"
                                                 v-model="deliveryApartment"
                                                 :placeholder="t({ ru: 'напр., 23', kz: 'мыс., 23' })"
-                                                class="form-input"
+                                                class="font-body h-12 px-4 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                             />
-                                            <p v-if="errors.delivery_apartment" class="form-error">
+                                            <p v-if="errors.delivery_apartment" class="font-body text-sm text-rust-600 font-medium">
                                                 {{ errors.delivery_apartment }}
                                             </p>
                                         </div>
 
-                                        <div class="form-group">
-                                            <Label for="delivery_intercom" class="form-label">
+                                        <div class="flex flex-col gap-2">
+                                            <Label for="delivery_intercom" class="font-display text-base font-semibold text-steel-900">
                                                 {{ t({ ru: 'Домофон', kz: 'Домофон' }) }}
                                             </Label>
                                             <Input
@@ -329,17 +334,17 @@ function getItemSubtotal(item: any) {
                                                 type="text"
                                                 v-model="deliveryIntercom"
                                                 :placeholder="t({ ru: 'напр., 123', kz: 'мыс., 123' })"
-                                                class="form-input"
+                                                class="font-body h-12 px-4 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                             />
-                                            <p v-if="errors.delivery_intercom" class="form-error">
+                                            <p v-if="errors.delivery_intercom" class="font-body text-sm text-rust-600 font-medium">
                                                 {{ errors.delivery_intercom }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <!-- Delivery Notes -->
-                                    <div class="form-group">
-                                        <Label for="delivery_notes" class="form-label">
+                                    <div class="flex flex-col gap-2">
+                                        <Label for="delivery_notes" class="font-display text-base font-semibold text-steel-900">
                                             {{ t({ ru: 'Примечания к доставке (необязательно)', kz: 'Жеткізу туралы ескертпелер (міндетті емес)' }) }}
                                         </Label>
                                         <textarea
@@ -347,9 +352,9 @@ function getItemSubtotal(item: any) {
                                             name="delivery_notes"
                                             rows="3"
                                             :placeholder="t({ ru: 'Любые особые инструкции для доставки...', kz: 'Жеткізу үшін арнайы нұсқаулар...' })"
-                                            class="form-textarea"
+                                            class="font-body min-h-[100px] px-4 py-3 border-2 border-concrete-300 rounded-lg text-base text-steel-900 bg-white transition-all duration-200 resize-vertical hover:border-steel-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                         ></textarea>
-                                        <p v-if="errors.delivery_notes" class="form-error">
+                                        <p v-if="errors.delivery_notes" class="font-body text-sm text-rust-600 font-medium">
                                             {{ errors.delivery_notes }}
                                         </p>
                                     </div>
@@ -357,11 +362,11 @@ function getItemSubtotal(item: any) {
                             </div>
 
                             <!-- Submit Buttons -->
-                            <div class="form-actions">
+                            <div class="flex gap-4 flex-col sm:flex-row-reverse">
                                 <Button
                                     type="submit"
                                     size="lg"
-                                    class="submit-button py-4"
+                                    class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex-1 inline-flex items-center justify-center gap-2"
                                     :disabled="processing"
                                 >
                                     <ShoppingBag :size="20" />
@@ -371,7 +376,7 @@ function getItemSubtotal(item: any) {
                                     variant="outline"
                                     size="lg"
                                     as-child
-                                    class="cancel-button"
+                                    class="font-display font-bold px-6 py-4 bg-transparent text-steel-700 border-2 border-steel-700 rounded-xl hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                     :disabled="processing"
                                 >
                                     <Link href="/cart">{{ t({ ru: 'Отмена', kz: 'Болдырмау' }) }}</Link>
@@ -386,46 +391,10 @@ function getItemSubtotal(item: any) {
 </template>
 
 <style scoped>
-/* Import distinctive fonts */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
-
-/* CSS Variables for cohesive theming */
+/* Industrial Refined Design System for Checkout */
 .checkout-page {
-    --color-primary: #2C5F5D;
-    --color-primary-light: #3D7A77;
-    --color-primary-dark: #1F4544;
-    --color-accent: #D97757;
-    --color-accent-light: #E89375;
-    --color-bg: #FAF9F6;
-    --color-surface: #FFFFFF;
-    --color-surface-elevated: #FFFFFF;
-    --color-text-primary: #1A1A1A;
-    --color-text-secondary: #6B6B6B;
-    --color-text-muted: #9E9E9E;
-    --color-border: #E5E5E5;
-    --color-border-focus: var(--color-primary);
-    --color-success: #4A9B7F;
-    --color-warning: #F59E0B;
-
-    --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
-
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-
-    background: var(--color-bg);
+    background: #f8f7f5;
     min-height: 100vh;
-    font-family: var(--font-body);
-    color: var(--color-text-primary);
     position: relative;
 }
 
@@ -438,11 +407,12 @@ function getItemSubtotal(item: any) {
     right: 0;
     bottom: 0;
     background-image:
-        linear-gradient(90deg, rgba(44, 95, 93, 0.02) 1px, transparent 1px),
-        linear-gradient(rgba(44, 95, 93, 0.02) 1px, transparent 1px);
+        linear-gradient(90deg, rgba(45, 58, 58, 0.03) 1px, transparent 1px),
+        linear-gradient(rgba(45, 58, 58, 0.03) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
+    opacity: 0.5;
 }
 
 .checkout-page > * {
@@ -450,13 +420,7 @@ function getItemSubtotal(item: any) {
     z-index: 1;
 }
 
-/* Page Header */
-.page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    animation: fadeInUp var(--transition-slow);
-}
-
+/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -468,100 +432,15 @@ function getItemSubtotal(item: any) {
     }
 }
 
-.page-title {
-    font-family: var(--font-display);
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
-}
-
-.page-subtitle {
-    font-size: 1.125rem;
-    color: var(--color-text-secondary);
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .page-title {
-        font-size: 2rem;
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
     }
-
-    .page-subtitle {
-        font-size: 1rem;
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
-}
-
-/* Checkout Grid */
-.checkout-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-@media (min-width: 1024px) {
-    .checkout-grid {
-        grid-template-columns: 1fr 400px;
-        gap: 3rem;
-    }
-}
-
-.form-column {
-    order: 2;
-    animation: fadeInUp var(--transition-slow);
-    animation-delay: 100ms;
-    animation-fill-mode: both;
-}
-
-.summary-column {
-    order: 1;
-    animation: fadeInUp var(--transition-slow);
-    animation-delay: 200ms;
-    animation-fill-mode: both;
-}
-
-@media (min-width: 1024px) {
-    .form-column {
-        order: 1;
-    }
-
-    .summary-column {
-        order: 2;
-    }
-}
-
-/* Summary Card */
-.summary-card {
-    background: var(--color-surface-elevated);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(44, 95, 93, 0.1);
-    position: sticky;
-    top: 1rem;
-    backdrop-filter: blur(10px);
-    background: linear-gradient(135deg,
-        rgba(255, 255, 255, 0.95) 0%,
-        rgba(250, 249, 246, 0.95) 100%);
-}
-
-.summary-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.summary-icon {
-    color: var(--color-primary);
-}
-
-.summary-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
 }
 
 /* Shop Info */

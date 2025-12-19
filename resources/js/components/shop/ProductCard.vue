@@ -120,104 +120,91 @@ async function handleRemoveFromCart() {
 </script>
 
 <template>
-    <Card class="group overflow-hidden transition-shadow hover:shadow-md">
+    <div class="group bg-white rounded-2xl border border-concrete-200 overflow-hidden transition-all duration-300 hover:shadow-industrial-lg hover:-translate-y-1">
         <Link :href="`/products/${product.id}`" class="block">
-            <CardHeader class="p-0">
-                <div class="relative aspect-[2/1] overflow-hidden bg-muted rounded-t-md">
-                    <img
-                        v-if="productImage"
-                        :src="productImage"
-                        :alt="productName"
-                        class="h-full w-full object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div
-                        v-else
-                        class="flex h-full w-full items-center justify-center bg-muted"
-                    >
-                        <span class="text-4xl text-muted-foreground/20">📦</span>
-                    </div>
-                    <div
-                        v-if="isOutOfStock"
-                        class="absolute inset-0 flex items-center justify-center bg-background/80"
-                    >
-                        <span class="text-sm font-medium text-muted-foreground">
-                            {{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}
-                        </span>
-                    </div>
+            <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-concrete-100 to-concrete-50">
+                <img
+                    v-if="productImage"
+                    :src="productImage"
+                    :alt="productName"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+                <div
+                    v-else
+                    class="flex h-full w-full items-center justify-center"
+                >
+                    <span class="text-6xl opacity-20">📦</span>
                 </div>
-            </CardHeader>
+                <div
+                    v-if="isOutOfStock"
+                    class="absolute inset-0 flex items-center justify-center bg-steel-900/80 backdrop-blur-sm"
+                >
+                    <span class="font-display text-sm font-bold text-white px-4 py-2 bg-rust-600 rounded-lg">
+                        {{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}
+                    </span>
+                </div>
+            </div>
         </Link>
 
-        <CardContent class="px-3">
+        <div class="p-4">
             <Link :href="`/products/${product.id}`">
-                <h3
-                    class="line-clamp-2 text-sm font-medium transition-colors hover:text-primary"
-                >
+                <h3 class="font-display line-clamp-2 text-base font-semibold text-steel-900 transition-colors duration-200 hover:text-amber-600 mb-3">
                     {{ productName }}
                 </h3>
             </Link>
 
-            <div class="mt-1 flex items-center justify-between">
-                <PriceDisplay :price="product.price" class="text-base font-semibold" />
-                <span v-if="product.shop" class="text-xs text-muted-foreground">
+            <div class="flex items-center justify-between mb-4">
+                <PriceDisplay :price="product.price" class="font-display text-xl font-bold text-steel-900" />
+                <span v-if="product.shop" class="font-body text-xs text-concrete-600 px-2 py-1 bg-concrete-100 rounded-md">
                     {{ product.shop.name }}
                 </span>
             </div>
-        </CardContent>
 
-      <CardFooter class="p-4 pt-0">
             <!-- Show quantity controls when product is in cart -->
             <div v-if="isInCart" class="flex w-full gap-2">
-                <Button
+                <button
                     @click="handleDecreaseQuantity"
                     :disabled="adding || cartQuantity <= 1"
-                    variant="outline"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-white border-2 border-concrete-300 text-steel-700 rounded-lg transition-all duration-200 hover:border-steel-700 hover:bg-concrete-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Minus :size="16" />
-                </Button>
+                </button>
 
-                <div class="flex flex-1 items-center justify-center rounded-md border bg-muted px-3 text-sm font-medium">
+                <div class="flex flex-1 items-center justify-center rounded-lg border-2 border-concrete-300 bg-concrete-50 px-3 font-display text-base font-bold text-steel-900">
                     {{ cartQuantity }}
                 </div>
 
-                <Button
+                <button
                     @click="handleIncreaseQuantity"
                     :disabled="adding"
-                    variant="outline"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-white border-2 border-concrete-300 text-steel-700 rounded-lg transition-all duration-200 hover:border-steel-700 hover:bg-concrete-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Plus :size="16" />
-                </Button>
+                </button>
 
-                <Button
+                <button
                     @click="handleRemoveFromCart"
                     :disabled="adding"
-                    variant="destructive"
-                    size="sm"
-                    class="flex-shrink-0"
+                    class="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-rust-500 text-white rounded-lg transition-all duration-200 hover:bg-rust-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Trash2 :size="16" />
-                </Button>
+                </button>
             </div>
 
             <!-- Show add to cart button when product is not in cart -->
-            <Button
+            <button
                 v-else
                 @click="handleAddToCart"
                 :disabled="isOutOfStock || adding"
-                class="w-full gap-2 btn-primary-modern"
-                size="sm"
+                class="w-full flex items-center justify-center gap-2 font-display font-bold px-6 py-3 bg-amber-500 text-white rounded-lg transition-all duration-200 hover:bg-amber-600 hover:shadow-industrial-md hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-                <ShoppingCart :size="16" />
+                <ShoppingCart :size="18" />
                 <span v-if="adding">{{ t({ ru: 'Добавление...', kz: 'Қосылуда...' }) }}</span>
                 <span v-else-if="isOutOfStock">{{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}</span>
                 <span v-else>{{ t({ ru: 'В корзину', kz: 'Себетке' }) }}</span>
-            </Button>
-        </CardFooter>
-    </Card>
+            </button>
+        </div>
+    </div>
 
     <LoginModal v-model:open="showLoginModal" />
 </template>
