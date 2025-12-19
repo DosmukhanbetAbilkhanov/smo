@@ -81,15 +81,15 @@ function getRemainingAmount(cart: any) {
     <Head title="Shopping Cart" />
 
     <ShopLayout>
-        <div class="cart-page bg-pattern">
+        <div class="min-h-screen pb-8">
             <!-- Progress Indicator -->
             <CheckoutProgress :current-step="1" />
 
-            <div class="page-container">
+            <div class="max-w-5xl mx-auto px-4 py-6">
                 <!-- Page Header -->
-                <div class="page-header animate-fadeInUp">
-                    <h1 class="page-title">Shopping Cart</h1>
-                    <p class="page-subtitle">
+                <div class="text-center mb-8 animate-fadeInUp">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
+                    <p class="text-[15px] text-gray-600">
                         Review your items and proceed to checkout
                     </p>
                 </div>
@@ -97,22 +97,22 @@ function getRemainingAmount(cart: any) {
                 <!-- Loading State -->
                 <div
                     v-if="cartStore.loading && cartStore.carts.length === 0"
-                    class="loading-state"
+                    class="flex flex-col items-center justify-center py-8"
                 >
-                    <div class="loading-spinner"></div>
-                    <p class="loading-text">Loading cart...</p>
+                    <div class="w-12 h-12 border-4 border-gray-200 border-t-[#2C5F5D] rounded-full animate-spin"></div>
+                    <p class="mt-4 text-gray-600 text-[15px]">Loading cart...</p>
                 </div>
 
                 <!-- Empty State -->
                 <div
                     v-else-if="cartStore.isEmpty"
-                    class="empty-state animate-fadeIn"
+                    class="flex flex-col items-center justify-center py-8 text-center animate-fadeIn"
                 >
-                    <div class="empty-icon">
+                    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#2C5F5D]/10 to-[#2C5F5D]/5 text-[#2C5F5D]">
                         <ShoppingBag :size="48" />
                     </div>
-                    <h2 class="empty-title">Your cart is empty</h2>
-                    <p class="empty-subtitle">
+                    <h2 class="mt-4 text-2xl font-bold text-gray-900">Your cart is empty</h2>
+                    <p class="mt-1.5 text-[15px] text-gray-600">
                         Add some products to get started
                     </p>
                     <Button class="btn-primary-modern mt-6" as-child>
@@ -121,12 +121,12 @@ function getRemainingAmount(cart: any) {
                 </div>
 
                 <!-- Cart Content -->
-                <div v-else class="cart-content">
+                <div v-else class="flex flex-col gap-5">
                     <!-- Header with Clear All Button -->
-                    <div class="cart-header animate-fadeInUp">
+                    <div class="flex items-center justify-between flex-wrap gap-4 animate-fadeInUp">
                         <div>
-                            <h2 class="cart-title">Your Cart</h2>
-                            <p class="cart-subtitle">
+                            <h2 class="text-xl font-bold text-gray-900">Your Cart</h2>
+                            <p class="text-sm text-gray-600 mt-0.5">
                                 {{ cartStore.itemsCount }} {{ cartStore.itemsCount === 1 ? 'item' : 'items' }}
                                 from {{ cartsWithItems.length }} {{ cartsWithItems.length === 1 ? 'shop' : 'shops' }}
                             </p>
@@ -134,7 +134,7 @@ function getRemainingAmount(cart: any) {
                         <button
                             @click="handleClearCart"
                             :disabled="cartStore.loading"
-                            class="btn-clear-all"
+                            class="flex items-center gap-1.5 px-4 py-2 bg-white border-2 border-gray-300 rounded-md text-sm font-semibold text-gray-600 transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Trash2 :size="16" />
                             Clear All
@@ -142,20 +142,20 @@ function getRemainingAmount(cart: any) {
                     </div>
 
                     <!-- Cart Items Grouped by Shop -->
-                    <div class="shops-list">
+                    <div class="flex flex-col gap-5">
                         <div
                             v-for="(cart, index) in cartsWithItems"
                             :key="cart.id"
-                            class="shop-card animate-fadeInUp"
+                            class="bg-white rounded-lg border border-gray-300 shadow-md overflow-hidden transition-all hover:shadow-lg animate-fadeInUp"
                             :style="{ animationDelay: `${index * 100}ms` }"
                         >
                             <!-- Shop Header -->
-                            <div class="shop-header">
-                                <div class="shop-info">
-                                    <Store :size="20" class="shop-icon" />
+                            <div class="px-5 py-4 border-b-2 border-gray-300 bg-gradient-to-br from-[#2C5F5D]/3 to-[#2C5F5D]/1">
+                                <div class="flex items-center gap-2.5">
+                                    <Store :size="20" class="text-[#2C5F5D]" />
                                     <div>
-                                        <h3 class="shop-name">{{ cart.shop?.name }}</h3>
-                                        <p class="shop-items">
+                                        <h3 class="text-[17px] font-bold text-gray-900">{{ cart.shop?.name }}</h3>
+                                        <p class="text-[13px] text-gray-600 mt-0.5">
                                             {{ cart.items_count }} {{ cart.items_count === 1 ? 'item' : 'items' }}
                                         </p>
                                     </div>
@@ -163,53 +163,54 @@ function getRemainingAmount(cart: any) {
                             </div>
 
                             <!-- Shop Items -->
-                            <div class="shop-items-list">
+                            <div class="divide-y divide-gray-200">
                                 <div
                                     v-for="item in cart.items"
                                     :key="item.id"
-                                    class="cart-item"
+                                    class="flex gap-4 p-4 transition-all hover:bg-gray-50"
                                 >
                                     <!-- Product Image -->
                                     <Link
                                         :href="`/products/${item.product_id}`"
-                                        class="item-image-link"
+                                        class="flex-shrink-0"
                                     >
-                                        <div class="item-image">
+                                        <div class="w-18 h-18 rounded-md overflow-hidden bg-white border border-gray-200">
                                             <img
                                                 v-if="item.product?.images?.[0]"
                                                 :src="item.product.images[0]"
                                                 :alt="getProductName(item)"
+                                                class="w-full h-full object-cover transition-transform hover:scale-105"
                                             />
-                                            <div v-else class="item-image-placeholder">
+                                            <div v-else class="flex items-center justify-center w-full h-full text-3xl">
                                                 <span>📦</span>
                                             </div>
                                         </div>
                                     </Link>
 
                                     <!-- Product Info -->
-                                    <div class="item-details">
-                                        <div class="item-header">
+                                    <div class="flex-1 flex flex-col gap-2.5">
+                                        <div class="flex items-start justify-between gap-3">
                                             <Link :href="`/products/${item.product_id}`">
-                                                <h4 class="item-name">
+                                                <h4 class="text-[15px] font-semibold text-gray-900 transition-colors hover:text-[#2C5F5D]">
                                                     {{ getProductName(item) }}
                                                 </h4>
                                             </Link>
                                             <button
                                                 @click="handleRemoveItem(item.id)"
                                                 :disabled="removing === item.id"
-                                                class="btn-remove"
+                                                class="flex items-center justify-center w-7 h-7 rounded-sm border border-gray-300 bg-white text-gray-400 transition-all hover:border-red-600 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                                             >
                                                 <X :size="16" />
                                             </button>
                                         </div>
 
-                                        <div class="item-footer">
+                                        <div class="flex items-center justify-between gap-3 mt-auto flex-wrap">
                                             <!-- Quantity Controls -->
-                                            <div class="quantity-controls">
+                                            <div class="flex items-center gap-1.5">
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity - 1)"
                                                     :disabled="item.quantity <= 1 || updating === item.id"
-                                                    class="qty-btn"
+                                                    class="flex items-center justify-center w-7 h-7 rounded-sm border-2 border-gray-300 bg-white text-gray-900 transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     <Minus :size="14" />
                                                 </button>
@@ -225,27 +226,27 @@ function getRemainingAmount(cart: any) {
                                                                 ),
                                                             )
                                                     "
-                                                    class="qty-input"
+                                                    class="w-14 h-7 text-center border-2 border-gray-300 rounded-sm font-semibold text-sm p-0"
                                                     min="1"
                                                 />
                                                 <button
                                                     @click="handleUpdateQuantity(item.id, item.quantity + 1)"
                                                     :disabled="updating === item.id"
-                                                    class="qty-btn"
+                                                    class="flex items-center justify-center w-7 h-7 rounded-sm border-2 border-gray-300 bg-white text-gray-900 transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     <Plus :size="14" />
                                                 </button>
                                             </div>
 
                                             <!-- Item Pricing -->
-                                            <div class="item-pricing">
+                                            <div class="flex flex-col items-end gap-0.5">
                                                 <PriceDisplay
                                                     :price="item.price"
-                                                    class="item-unit-price"
+                                                    class="text-[13px] text-gray-500"
                                                 />
                                                 <PriceDisplay
                                                     :price="getItemSubtotal(item)"
-                                                    class="item-subtotal"
+                                                    class="text-[17px] font-bold text-gray-900"
                                                 />
                                             </div>
                                         </div>
@@ -254,19 +255,19 @@ function getRemainingAmount(cart: any) {
                             </div>
 
                             <!-- Shop Footer -->
-                            <div class="shop-footer">
-                                <div class="shop-total-section">
-                                    <div class="shop-total">
-                                        <span class="shop-total-label">Shop Subtotal:</span>
-                                        <PriceDisplay :price="cart.total" class="shop-total-value" />
+                            <div class="flex items-center justify-between gap-4 px-5 py-4 bg-gradient-to-br from-[#2C5F5D]/5 to-[#2C5F5D]/2 border-t-2 border-gray-300 flex-wrap">
+                                <div class="flex flex-col gap-1.5">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="text-[15px] font-semibold text-gray-600">Shop Subtotal:</span>
+                                        <PriceDisplay :price="cart.total" class="text-xl font-bold text-[#2C5F5D]" />
                                     </div>
-                                    <div v-if="!canCheckout(cart)" class="min-order-warning">
-                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="remaining-amount" />
+                                    <div v-if="!canCheckout(cart)" class="text-[13px] text-red-600 px-2.5 py-1.5 bg-red-50 border border-red-200 rounded-sm inline-flex items-center gap-1 flex-wrap">
+                                        Add <PriceDisplay :price="getRemainingAmount(cart)" class="font-semibold text-red-600" />
                                         more to reach the minimum order amount of
-                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="min-amount" />
+                                        <PriceDisplay :price="cart.shop?.min_order_amount" class="font-semibold text-red-600" />
                                     </div>
                                 </div>
-                                <div class="shop-footer-actions">
+                                <div class="flex gap-3 flex-wrap">
                                     <Button
                                         v-if="canCheckout(cart)"
                                         class="btn-primary-modern"
@@ -279,7 +280,7 @@ function getRemainingAmount(cart: any) {
                                     </Button>
                                     <template v-else>
                                         <Button
-                                            class="btn-continue-shopping"
+                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-[#6EAA4B] to-[#7AB85D] border-2 border-[#5D9440] rounded-md text-[15px] font-bold text-white transition-all hover:from-[#7AB85D] hover:to-[#88C56B] hover:border-[#6EAA4B] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md"
                                             as-child
                                         >
                                             <Link :href="`/shops/${cart.shop_id}`">
@@ -306,532 +307,52 @@ function getRemainingAmount(cart: any) {
 </template>
 
 <style scoped>
-/* Cart Page */
-.cart-page {
-    background: var(--smo-bg);
-    min-height: 100vh;
-    font-family: var(--font-body);
-    padding-bottom: 2rem;
-}
-
-/* Loading State */
-.loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-}
-
-.loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--smo-border);
-    border-top-color: var(--smo-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
     to {
-        transform: rotate(360deg);
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.loading-text {
-    margin-top: 1rem;
-    color: var(--smo-text-secondary);
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-    text-align: center;
+.animate-fadeInUp {
+    animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    color: var(--smo-primary);
+.animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
-.empty-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-    margin-top: 1rem;
-}
-
-.empty-subtitle {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    color: var(--smo-text-secondary);
-    margin-top: 0.375rem;
-}
-
-/* Cart Content */
-.cart-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-/* Cart Header */
-.cart-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.cart-title {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.cart-subtitle {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    color: var(--smo-text-secondary);
-    margin-top: 0.125rem;
-}
-
-.btn-clear-all {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.5rem 1rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--smo-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.btn-clear-all:hover:not(:disabled) {
-    border-color: #DC2626;
-    color: #DC2626;
-    background: rgba(220, 38, 38, 0.05);
-}
-
-.btn-clear-all:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Shops List */
-.shops-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-/* Shop Card */
-.shop-card {
-    background: var(--smo-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    transition: all var(--transition-base);
-}
-
-.shop-card:hover {
-    box-shadow: var(--shadow-lg);
-}
-
-/* Shop Header */
-.shop-header {
-    padding: 1rem 1.25rem;
-    border-bottom: 2px solid var(--smo-border);
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.03) 0%,
-        rgba(44, 95, 93, 0.01) 100%);
-}
-
-.shop-info {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-}
-
-.shop-icon {
-    color: var(--smo-primary);
-}
-
-.shop-name {
-    font-family: var(--font-display);
-    font-size: 1.0625rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.shop-items {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: var(--smo-text-secondary);
-    margin-top: 0.0625rem;
-}
-
-/* Shop Items List */
-.shop-items-list {
-    padding: 1rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-}
-
-/* Cart Item */
-.cart-item {
-    display: flex;
-    gap: 1rem;
-    padding: 0.875rem;
-    background: var(--smo-bg);
-    border: 1px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-base);
-}
-
-.cart-item:hover {
-    border-color: var(--smo-primary-light);
-    box-shadow: var(--shadow-sm);
-}
-
-/* Item Image */
-.item-image-link {
-    flex-shrink: 0;
-}
-
-.item-image {
-    width: 72px;
-    height: 72px;
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-    background: white;
-    border: 1px solid var(--smo-border);
-}
-
-.item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--transition-base);
-}
-
-.item-image:hover img {
-    transform: scale(1.05);
-}
-
-.item-image-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 2rem;
-}
-
-/* Item Details */
-.item-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-}
-
-.item-header {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: 0.75rem;
-}
-
-.item-name {
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-primary);
-    transition: color var(--transition-base);
-}
-
-.item-name:hover {
-    color: var(--smo-primary);
-}
-
-.btn-remove {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--smo-border);
-    background: var(--smo-surface);
-    color: var(--smo-text-muted);
-    cursor: pointer;
-    transition: all var(--transition-base);
-    flex-shrink: 0;
-}
-
-.btn-remove:hover:not(:disabled) {
-    border-color: #DC2626;
-    color: #DC2626;
-    background: rgba(220, 38, 38, 0.05);
-}
-
-.btn-remove:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Item Footer */
-.item-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    margin-top: auto;
-    flex-wrap: wrap;
-}
-
-/* Quantity Controls */
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.qty-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: 2px solid var(--smo-border);
-    background: var(--smo-surface);
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.qty-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-primary);
-}
-
-.qty-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.qty-input {
-    width: 56px;
-    height: 28px;
-    text-align: center;
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.875rem;
-    padding: 0;
-}
-
-/* Item Pricing */
-.item-pricing {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.125rem;
-}
-
-.item-unit-price {
-    font-size: 0.8125rem;
-    color: var(--smo-text-muted);
-}
-
-.item-subtotal {
-    font-family: var(--font-display);
-    font-size: 1.0625rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-/* Shop Footer */
-.shop-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.05) 0%,
-        rgba(44, 95, 93, 0.02) 100%);
-    border-top: 2px solid var(--smo-border);
-    flex-wrap: wrap;
-}
-
-.shop-total-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-}
-
-.shop-total {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-}
-
-.shop-total-label {
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-secondary);
-}
-
-.shop-total-value {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--smo-primary);
-}
-
-.min-order-warning {
-    font-family: var(--font-body);
-    font-size: 0.8125rem;
-    color: #DC2626;
-    padding: 0.375rem 0.625rem;
-    background: rgba(220, 38, 38, 0.05);
-    border: 1px solid rgba(220, 38, 38, 0.2);
-    border-radius: var(--radius-sm);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex-wrap: wrap;
-}
-
-.min-order-warning .remaining-amount,
-.min-order-warning .min-amount {
-    font-weight: 600;
-    color: #DC2626;
-}
-
-.shop-footer-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.btn-continue-shopping {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    background: linear-gradient(135deg, #6EAA4B 0%, #7AB85D 100%);
-    border: 2px solid #5D9440;
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    transition: all var(--transition-base);
-    box-shadow: 0 2px 8px rgba(110, 170, 75, 0.2);
-}
-
-.btn-continue-shopping:hover {
-    background: linear-gradient(135deg, #7AB85D 0%, #88C56B 100%);
-    border-color: #6EAA4B;
-    box-shadow: 0 4px 12px rgba(110, 170, 75, 0.3);
-    transform: translateY(-1px);
-}
-
-.btn-continue-shopping:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(110, 170, 75, 0.2);
-}
-
-/* Responsive */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    .cart-item {
+    .flex.gap-4.p-4 {
         flex-direction: column;
         gap: 0.75rem;
     }
 
-    .item-image {
+    .w-18.h-18 {
         width: 100%;
         height: 160px;
-    }
-
-    .item-footer {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .item-pricing {
-        align-items: flex-start;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .shop-footer {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .shop-total-section {
-        width: 100%;
-    }
-
-    .shop-total {
-        justify-content: space-between;
-    }
-
-    .min-order-warning {
-        font-size: 0.75rem;
-    }
-
-    .shop-footer-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .btn-continue-shopping {
-        width: 100%;
-        justify-content: center;
     }
 }
 
 @media (max-width: 640px) {
-    .cart-header {
+    .flex.items-center.justify-between.flex-wrap.gap-4 {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .btn-clear-all {
-        justify-content: center;
     }
 }
 </style>
