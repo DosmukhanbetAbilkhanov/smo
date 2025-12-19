@@ -28,41 +28,41 @@ defineProps<Props>();
                 <div class="absolute inset-0" style="background-image: linear-gradient(90deg, #2d3a3a 1px, transparent 1px), linear-gradient(#2d3a3a 1px, transparent 1px); background-size: 40px 40px;"></div>
             </div>
 
-            <div class="container mx-auto px-6 py-4 lg:py-8 relative z-10">
+            <div class="container mx-auto px-6 py-6 lg:py-10 relative z-10">
                 <div class="mx-auto max-w-4xl text-center">
-                    <h1 class="font-display text-4xl font-bold tracking-tight text-steel-900 lg:text-6xl mb-6">
+                    <h1 class="font-display text-3xl font-bold tracking-tight text-steel-900 lg:text-4xl mb-3">
                         {{ t({ ru: 'Маркетплейс строительных материалов', kz: 'Құрылыс материалдарының маркетплейсі' }) }}
                     </h1>
-                    <p class="font-body text-lg text-steel-700 lg:text-xl leading-relaxed max-w-3xl mx-auto">
+                    <p class="font-body text-base text-steel-700 lg:text-lg leading-relaxed max-w-2xl mx-auto">
                         {{ t({ ru: 'Находите качественные строительные материалы от проверенных продавцов по всему Казахстану. Быстрая доставка, конкурентные цены и надежный сервис.', kz: 'Қазақстан бойынша тексерілген сатушылардан сапалы құрылыс материалдарын табыңыз. Жылдам жеткізу, бәсекеге қабілетті бағалар және сенімді қызмет.' }) }}
                     </p>
 
                     <!-- Feature Highlights -->
-                    <div class="mt-6 grid gap-3 sm:grid-cols-3 max-w-3xl mx-auto">
-                        <div class="flex flex-col items-center text-center p-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-industrial-md">
-                                <Package :size="28" class="text-white" stroke-width="2" />
+                    <div class="mt-6 grid gap-4 sm:grid-cols-3 max-w-2xl mx-auto">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 shadow-industrial-md">
+                                <Package :size="20" class="text-white" stroke-width="2" />
                             </div>
-                            <h3 class="font-display mt-4 font-bold text-steel-900">{{ t({ ru: 'Широкий выбор', kz: 'Кең таңдау' }) }}</h3>
-                            <p class="font-body mt-2 text-sm text-concrete-600">
+                            <h3 class="font-display mt-2 text-sm font-bold text-steel-900">{{ t({ ru: 'Широкий выбор', kz: 'Кең таңдау' }) }}</h3>
+                            <p class="font-body mt-1 text-xs text-concrete-600">
                                 {{ t({ ru: 'Тысячи товаров от надежных поставщиков', kz: 'Сенімді жеткізушілерден мыңдаған тауарлар' }) }}
                             </p>
                         </div>
-                        <div class="flex flex-col items-center text-center p-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-rust-500 to-rust-600 shadow-industrial-md">
-                                <Truck :size="28" class="text-white" stroke-width="2" />
+                        <div class="flex flex-col items-center text-center">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-rust-500 to-rust-600 shadow-industrial-md">
+                                <Truck :size="20" class="text-white" stroke-width="2" />
                             </div>
-                            <h3 class="font-display mt-4 font-bold text-steel-900">{{ t({ ru: 'Быстрая доставка', kz: 'Жылдам жеткізу' }) }}</h3>
-                            <p class="font-body mt-2 text-sm text-concrete-600">
+                            <h3 class="font-display mt-2 text-sm font-bold text-steel-900">{{ t({ ru: 'Быстрая доставка', kz: 'Жылдам жеткізу' }) }}</h3>
+                            <p class="font-body mt-1 text-xs text-concrete-600">
                                 {{ t({ ru: 'Оперативная доставка по  ', kz: 'Қазақстан бойынша жедел жеткізу' }) }}
                             </p>
                         </div>
-                        <div class="flex flex-col items-center text-center p-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-forest-500 to-forest-600 shadow-industrial-md">
-                                <ShoppingBag :size="28" class="text-white" stroke-width="2" />
+                        <div class="flex flex-col items-center text-center">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-forest-500 to-forest-600 shadow-industrial-md">
+                                <ShoppingBag :size="20" class="text-white" stroke-width="2" />
                             </div>
-                            <h3 class="font-display mt-4 font-bold text-steel-900">{{ t({ ru: 'Простой заказ', kz: 'Қарапайым тапсырыс' }) }}</h3>
-                            <p class="font-body mt-2 text-sm text-concrete-600">
+                            <h3 class="font-display mt-2 text-sm font-bold text-steel-900">{{ t({ ru: 'Простой заказ', kz: 'Қарапайым тапсырыс' }) }}</h3>
+                            <p class="font-body mt-1 text-xs text-concrete-600">
                                 {{ t({ ru: 'Удобное оформление с безопасной оплатой', kz: 'Қауіпсіз төлеммен ыңғайлы рәсімдеу' }) }}
                             </p>
                         </div>
