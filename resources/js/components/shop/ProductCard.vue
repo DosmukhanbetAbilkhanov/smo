@@ -19,7 +19,7 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const { getLocalizedName } = useLocale();
+const { getLocalizedName, t } = useLocale();
 const cartStore = useCartStore();
 
 const productName = computed(() => getLocalizedName(props.product));
@@ -134,7 +134,7 @@ async function handleRemoveFromCart() {
                         class="absolute inset-0 flex items-center justify-center bg-background/80"
                     >
                         <span class="text-sm font-medium text-muted-foreground">
-                            Out of Stock
+                            {{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}
                         </span>
                     </div>
                 </div>
@@ -198,9 +198,9 @@ async function handleRemoveFromCart() {
                 class="w-full font-display font-semibold px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 disabled:bg-concrete-300 disabled:text-concrete-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 <ShoppingCart :size="16" />
-                <span v-if="adding">Adding...</span>
-                <span v-else-if="isOutOfStock">Out of Stock</span>
-                <span v-else>Add to Cart</span>
+                <span v-if="adding">{{ t({ ru: 'Добавление...', kz: 'Қосылуда...' }) }}</span>
+                <span v-else-if="isOutOfStock">{{ t({ ru: 'Нет в наличии', kz: 'Қолда жоқ' }) }}</span>
+                <span v-else>{{ t({ ru: 'В корзину', kz: 'Себетке' }) }}</span>
             </button>
         </CardFooter>
     </Card>
