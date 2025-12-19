@@ -54,7 +54,7 @@ defineProps<Props>();
                             </div>
                             <h3 class="font-display mt-2 text-sm font-bold text-steel-900">{{ t({ ru: 'Быстрая доставка', kz: 'Жылдам жеткізу' }) }}</h3>
                             <p class="font-body mt-1 text-xs text-concrete-600">
-                                {{ t({ ru: 'Оперативная доставка по  ', kz: 'Қазақстан бойынша жедел жеткізу' }) }}
+                                {{ t({ ru: 'Оперативная доставка', kz: 'Жедел жеткізу' }) }}
                             </p>
                         </div>
                         <div class="flex flex-col items-center text-center">
@@ -74,11 +74,11 @@ defineProps<Props>();
         <!-- Featured Categories -->
         <section class="py-12 bg-white">
             <div class="container mx-auto px-6">
-                <div class="mb-8">
+                <!-- <div class="mb-8">
                     <h2 class="font-display text-3xl font-bold text-steel-900 border-l-4 border-amber-500 pl-4">
                         {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                     </h2>
-                </div>
+                </div> -->
 
                 <div class="grid gap-2 grid-cols-2 sm:grid-cols-3 lg:grid-cols-8">
                     <CategoryCard
