@@ -53,9 +53,12 @@ const nomenclatureName = computed(() =>
 const nomenclatureDescription = computed(() =>
     props.product.nomenclature ? getLocalizedDescription(props.product.nomenclature) : null
 );
-const unitName = computed(() =>
-    props.product.nomenclature?.unit ? getLocalizedName(props.product.nomenclature.unit) : ''
-);
+const unitName = computed(() => {
+    const unit = props.product.nomenclature?.unit;
+    if (!unit) return '';
+    const locale = (window as any).locale || 'ru';
+    return locale === 'kz' ? unit.shortname_kz : unit.shortname_ru;
+});
 
 function incrementQuantity() {
     if (quantity.value < maxQuantity.value) {

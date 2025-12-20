@@ -20,6 +20,8 @@ export interface Unit {
     name_kz: string;
     abbreviation_ru: string;
     abbreviation_kz: string;
+    shortname_ru: string;
+    shortname_kz: string;
 }
 
 export interface UserType {

@@ -10,7 +10,14 @@ class Unit extends Model
     /** @use HasFactory<\Database\Factories\UnitFactory> */
     use HasFactory;
 
-    protected $fillable = ['name_ru', 'name_kz'];
+    protected $fillable = [
+        'name_ru',
+        'name_kz',
+        'abbreviation_ru',
+        'abbreviation_kz',
+        'shortname_ru',
+        'shortname_kz',
+    ];
 
     public function nomenclatures()
     {

@@ -23,6 +23,13 @@ function getProductName(item: CartItem) {
     return item.product ? getLocalizedName(item.product) : 'Product';
 }
 
+function getUnitShortname(item: CartItem) {
+    const unit = item.product?.nomenclature?.unit;
+    if (!unit) return '';
+    const locale = (window as any).locale || 'ru';
+    return locale === 'kz' ? unit.shortname_kz : unit.shortname_ru;
+}
+
 onMounted(async () => {
     await cartStore.fetchCart();
 });
@@ -244,10 +251,15 @@ function getRemainingAmount(cart: any) {
 
                                             <!-- Item Pricing -->
                                             <div class="flex flex-col items-end gap-1">
-                                                <PriceDisplay
-                                                    :price="item.price"
-                                                    class="font-body text-sm text-concrete-500"
-                                                />
+                                                <div class="flex items-baseline gap-1">
+                                                    <PriceDisplay
+                                                        :price="item.price"
+                                                        class="font-body text-sm text-concrete-500"
+                                                    />
+                                                    <span v-if="getUnitShortname(item)" class="font-body text-xs text-concrete-400">
+                                                        / {{ getUnitShortname(item) }}
+                                                    </span>
+                                                </div>
                                                 <PriceDisplay
                                                     :price="getItemSubtotal(item)"
                                                     class="font-display text-lg font-bold text-steel-900"

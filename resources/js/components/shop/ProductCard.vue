@@ -27,9 +27,12 @@ const productImage = computed(
     () => props.product.images?.[0] || null,
 );
 const isOutOfStock = computed(() => props.product.quantity === 0);
-const unitName = computed(() =>
-    props.product.nomenclature?.unit ? getLocalizedName(props.product.nomenclature.unit) : ''
-);
+const unitName = computed(() => {
+    const unit = props.product.nomenclature?.unit;
+    if (!unit) return '';
+    const locale = (window as any).locale || 'ru';
+    return locale === 'kz' ? unit.shortname_kz : unit.shortname_ru;
+});
 const adding = ref(false);
 const showLoginModal = ref(false);
 
@@ -154,7 +157,10 @@ async function handleRemoveFromCart() {
             </Link>
 
             <div class="mt-2 flex items-center justify-between">
-                <PriceDisplay :price="product.price" class="text-lg" />
+                <div class="flex items-baseline gap-1">
+                    <PriceDisplay :price="product.price" class="text-lg" />
+                    <span v-if="unitName" class="text-xs text-muted-foreground">/ {{ unitName }}</span>
+                </div>
                 <span v-if="product.shop" class="text-xs text-muted-foreground">
                     {{ product.shop.name }}
                 </span>

@@ -68,6 +68,13 @@ function getProductName(item: any) {
     return item.product ? getLocalizedName(item.product) : 'Product';
 }
 
+function getUnitShortname(item: any) {
+    const unit = item.product?.nomenclature?.unit;
+    if (!unit) return '';
+    const locale = (window as any).locale || 'ru';
+    return locale === 'kz' ? unit.shortname_kz : unit.shortname_ru;
+}
+
 function getItemSubtotal(item: any) {
     return item.price * item.quantity;
 }
@@ -171,7 +178,10 @@ function getItemSubtotal(item: any) {
                                         >
                                             <div class="flex-1 min-w-0">
                                                 <div class="font-body font-semibold text-steel-900 text-base mb-1">{{ getProductName(item) }}</div>
-                                                <div class="font-body text-sm text-concrete-600">{{ t({ ru: 'Кол-во:', kz: 'Саны:' }) }} {{ item.quantity }}</div>
+                                                <div class="font-body text-sm text-concrete-600">
+                                                    {{ t({ ru: 'Кол-во:', kz: 'Саны:' }) }} {{ item.quantity }}
+                                                    <span v-if="getUnitShortname(item)">{{ getUnitShortname(item) }}</span>
+                                                </div>
                                             </div>
                                             <PriceDisplay
                                                 :price="getItemSubtotal(item)"

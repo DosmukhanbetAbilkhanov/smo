@@ -18,6 +18,10 @@ class UnitResource extends BaseResource
             'id' => $this->id,
             'name_ru' => $this->name_ru,
             'name_kz' => $this->name_kz,
+            'abbreviation_ru' => $this->abbreviation_ru,
+            'abbreviation_kz' => $this->abbreviation_kz,
+            'shortname_ru' => $this->shortname_ru,
+            'shortname_kz' => $this->shortname_kz,
         ];
     }
 }
