@@ -87,9 +87,9 @@ watch(isAuthenticated, (newValue) => {
                     class="group flex items-center gap-3 flex-shrink-0 no-underline p-2 rounded-xl transition-all duration-200 hover:bg-steel-50 hover:-translate-y-0.5"
                 >
                     <div class="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br from-steel-100 to-steel-50 rounded-lg text-steel-700 shadow-industrial-sm transition-all duration-200 group-hover:shadow-industrial-md group-hover:rotate-[-5deg]">
-                        <Package :size="24" :stroke-width="2.5" />
+                        <Package :size="20" :stroke-width="2.5" />
                     </div>
-                    <span class="font-display text-2xl sm:text-3xl font-bold tracking-tight text-steel-900 transition-colors duration-200 group-hover:text-amber-600">
+                    <span class="font-display text-lg sm:text-xl font-bold tracking-tight text-steel-900 transition-colors duration-200 group-hover:text-amber-600">
                         SMO
                     </span>
                 </Link>
