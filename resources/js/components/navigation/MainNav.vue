@@ -15,8 +15,19 @@ const page = usePage();
 
 const isAuthenticated = computed(() => !!page.props.auth?.user);
 const cartItemsCount = computed(() => cartStore.itemsCount);
+const cartTotal = computed(() => cartStore.total);
 const isSticky = ref(false);
 const sentinelRef = ref<HTMLElement | null>(null);
+
+// Format currency
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'KZT',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(amount);
+};
 
 // Initialize cart when user is authenticated
 onMounted(() => {
@@ -104,15 +115,22 @@ watch(isAuthenticated, (newValue) => {
                     <Link
                         v-if="isAuthenticated"
                         href="/cart"
-                        class="relative flex items-center justify-center w-11 h-11 bg-white border-2 border-concrete-200 rounded-lg text-steel-600 no-underline transition-all duration-200 hover:border-amber-500 hover:text-amber-600 hover:-translate-y-0.5 hover:shadow-industrial-md"
+                        class="flex items-center gap-3 px-4 py-2.5 bg-lime-500  rounded-lg no-underline transition-all duration-200 hover:border-lime-700 hover:bg-lime-600 hover:-translate-y-0.5 hover:shadow-industrial-md"
                     >
-                        <ShoppingCart :size="20" :stroke-width="2" />
-                        <span
-                            v-if="cartItemsCount > 0"
-                            class="absolute -top-2 -right-2 flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-amber-500 text-white font-display text-xs font-bold rounded-full shadow-industrial-sm animate-bounce-subtle"
-                        >
-                            {{ cartItemsCount }}
-                        </span>
+                        <div class="relative">
+                            <ShoppingCart :size="20" :stroke-width="2" class="text-white" />
+                            <span
+                                v-if="cartItemsCount > 0"
+                                class="absolute -top-2 -right-2 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-amber-500 text-white font-display text-[10px] font-bold rounded-full shadow-industrial-sm"
+                            >
+                                {{ cartItemsCount }}
+                            </span>
+                        </div>
+                        <div v-if="cartItemsCount > 0" class="flex flex-col">
+                            <span class="font-display text-sm font-bold text-white leading-tight">
+                                {{ formatCurrency(cartTotal) }}
+                            </span>
+                        </div>
                     </Link>
 
                     <!-- Auth Buttons -->
