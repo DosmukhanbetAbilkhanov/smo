@@ -102,8 +102,8 @@ function goToPage(page: number) {
 
 <template>
     <ShopLayout>
-        <div class="products-page bg-pattern">
-            <div class="page-container">
+        <div class="-mx-4 products-page bg-pattern">
+            <div class="px-4">
                 <!-- Breadcrumbs -->
                 <Breadcrumb class="breadcrumb-nav animate-fadeIn">
                     <BreadcrumbList>

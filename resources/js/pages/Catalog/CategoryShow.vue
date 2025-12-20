@@ -40,8 +40,8 @@ function goToPage(page: number) {
 
     <ShopLayout>
         <!-- Breadcrumb -->
-        <div class="breadcrumb-bar">
-            <div class="container mx-auto px-4 py-4">
+        <div class="-mx-4 breadcrumb-bar">
+            <div class="px-4 py-4">
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -71,10 +71,10 @@ function goToPage(page: number) {
         </div>
 
         <!-- Category Page -->
-        <div class="category-page bg-pattern">
+        <div class="-mx-4 category-page bg-pattern">
             <!-- Category Header -->
             <div class="category-header">
-                <div class="container mx-auto px-4">
+                <div class="px-4">
                     <div class="header-content animate-fadeInUp">
                         <h1 class="category-title">{{ categoryName }}</h1>
                         <p v-if="categoryDescription" class="category-description">
@@ -86,7 +86,7 @@ function goToPage(page: number) {
 
             <!-- Subcategories Section -->
             <div v-if="category.children && category.children.length > 0" class="subcategories-section">
-                <div class="container mx-auto px-4">
+                <div class="px-4">
                     <div class="section-header animate-fadeInUp">
                         <FolderTree :size="24" class="section-icon" />
                         <h2 class="section-title">
@@ -108,7 +108,7 @@ function goToPage(page: number) {
 
             <!-- Products Section -->
             <div class="products-section">
-                <div class="container mx-auto px-4">
+                <div class="px-4">
                     <div class="section-header animate-fadeInUp">
                         <div class="header-left">
                             <Package :size="24" class="section-icon" />

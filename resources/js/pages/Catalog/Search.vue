@@ -141,8 +141,8 @@ function goToPage(page: number) {
 <template>
     <ShopLayout>
         <!-- Breadcrumb Bar -->
-        <div class="breadcrumb-bar">
-            <div class="container mx-auto px-4 py-4">
+        <div class="-mx-4 breadcrumb-bar">
+            <div class="px-4 py-4">
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -162,8 +162,8 @@ function goToPage(page: number) {
         </div>
 
         <!-- Search Page -->
-        <div class="search-page bg-pattern">
-            <div class="page-container">
+        <div class="-mx-4 search-page bg-pattern">
+            <div class="px-4">
                 <!-- Search Header -->
                 <div class="search-header animate-fadeInUp">
                     <h1 class="page-title">

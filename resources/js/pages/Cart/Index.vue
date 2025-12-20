@@ -87,7 +87,7 @@ function getRemainingAmount(cart: any) {
     <Head :title="t({ ru: 'Корзина покупок', kz: 'Сатып алу себеті' })" />
 
     <ShopLayout>
-        <div class="min-h-screen pb-8 bg-concrete-50">
+        <div class="-mx-4 min-h-screen pb-8 bg-concrete-50">
             <!-- Progress Indicator -->
             <CheckoutProgress :current-step="1" />
 

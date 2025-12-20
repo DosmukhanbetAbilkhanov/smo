@@ -100,10 +100,10 @@ async function handleAddToCart() {
     <Head :title="productName" />
 
     <ShopLayout>
-        <div class="min-h-screen bg-concrete-50">
+        <div class="-mx-4 min-h-screen bg-concrete-50">
             <!-- Breadcrumbs -->
             <div class="bg-white border-b border-concrete-200">
-                <div class="container mx-auto px-6 py-4">
+                <div class="px-4 sm:px-6 py-4">
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
@@ -136,7 +136,7 @@ async function handleAddToCart() {
             </div>
 
             <!-- Product Detail -->
-            <div class="container mx-auto px-6 py-8">
+            <div class="px-4 sm:px-6 py-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Image Gallery -->
                     <div class="flex flex-col gap-4">
@@ -294,7 +294,7 @@ async function handleAddToCart() {
             </div>
 
             <!-- Product Specs -->
-            <div v-if="product.nomenclature?.specs && product.nomenclature.specs.length > 0" class="container mx-auto px-6 py-8">
+            <div v-if="product.nomenclature?.specs && product.nomenclature.specs.length > 0" class="container mx-auto px-4 sm:px-6 py-8">
                 <h2 class="font-display text-2xl lg:text-3xl font-bold text-steel-900 mb-6">
                     {{ t({ ru: 'Характеристики', kz: 'Сипаттамалар' }) }}
                 </h2>
@@ -318,7 +318,7 @@ async function handleAddToCart() {
             </div>
 
             <!-- Similar Products -->
-            <div v-if="similarProducts.length > 0" class="container mx-auto px-6 py-8">
+            <div v-if="similarProducts.length > 0" class="container mx-auto px-4 sm:px-6 py-8">
                 <div class="mb-8">
                     <h2 class="font-display text-2xl lg:text-3xl font-bold text-steel-900 border-l-4 border-amber-500 pl-4">
                         {{ t({ ru: 'Похожие товары', kz: 'Ұқсас тауарлар' }) }}

@@ -45,7 +45,7 @@ function formatDate(dateString: string) {
     <Head :title="`Order ${order.order_number} Confirmed`" />
 
     <ShopLayout>
-        <div class="container mx-auto px-4 py-8">
+        <div class="py-8">
             <!-- Success Message -->
             <div
                 class="mb-8 flex flex-col items-center justify-center text-center"

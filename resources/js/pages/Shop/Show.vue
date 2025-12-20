@@ -121,8 +121,8 @@ function filterByCategory(categoryId: number | null) {
 
 <template>
     <ShopLayout>
-        <div class="shop-page bg-pattern">
-            <div class="page-container">
+        <div class="-mx-4 shop-page bg-pattern">
+            <div class="px-4">
                 <!-- Breadcrumbs -->
                 <Breadcrumb class="breadcrumb-nav animate-fadeIn">
                     <BreadcrumbList>

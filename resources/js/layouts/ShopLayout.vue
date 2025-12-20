@@ -37,7 +37,9 @@ const currentYear = new Date().getFullYear();
 
         <!-- Main Content -->
         <main class="flex-1">
-            <slot />
+            <div class="container mx-auto px-4">
+                <slot />
+            </div>
         </main>
 
         <!-- Footer -->

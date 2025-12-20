@@ -111,7 +111,7 @@ async function handleCancelOrder() {
     <Head :title="`Order ${order.order_number}`" />
 
     <ShopLayout>
-        <div class="container mx-auto px-4 py-8">
+        <div class="py-8">
             <!-- Back Button -->
             <div class="mb-6">
                 <Button variant="ghost" as-child>

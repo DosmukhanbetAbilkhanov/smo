@@ -59,7 +59,7 @@ function formatDate(dateString: string) {
     <Head title="My Orders" />
 
     <ShopLayout>
-        <div class="container mx-auto px-4 py-8">
+        <div class="py-8">
             <!-- Page Header -->
             <div class="mb-8">
                 <h1 class="text-3xl font-bold">My Orders</h1>

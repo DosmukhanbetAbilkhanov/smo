@@ -84,11 +84,11 @@ function getItemSubtotal(item: any) {
     <Head :title="t({ ru: 'Оформление заказа', kz: 'Тапсырысты рәсімдеу' })" />
 
     <ShopLayout>
-        <div class="checkout-page">
+        <div class="-mx-4 checkout-page">
             <!-- Progress Indicator -->
             <CheckoutProgress :current-step="2" />
 
-            <div class="container mx-auto px-4 py-12">
+            <div class="px-4 py-12">
                 <!-- Page Header -->
                 <div class="text-center mb-12">
                     <h1 class="font-display text-4xl md:text-5xl font-bold text-steel-900 mb-3 tracking-tight">{{ t({ ru: 'Безопасное оформление', kz: 'Қауіпсіз рәсімдеу' }) }}</h1>

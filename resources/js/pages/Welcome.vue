@@ -22,13 +22,13 @@ defineProps<Props>();
 
     <ShopLayout>
         <!-- Hero Section -->
-        <section class="relative border-b-4 border-amber-500 bg-gradient-to-br from-steel-50 via-concrete-50 to-amber-50 overflow-hidden">
+        <section class="relative -mx-4 border-b-4 border-amber-500 bg-gradient-to-br from-steel-50 via-concrete-50 to-amber-50 overflow-hidden">
             <!-- Decorative Pattern -->
             <div class="absolute inset-0 opacity-5">
                 <div class="absolute inset-0" style="background-image: linear-gradient(90deg, #2d3a3a 1px, transparent 1px), linear-gradient(#2d3a3a 1px, transparent 1px); background-size: 40px 40px;"></div>
             </div>
 
-            <div class="container mx-auto px-6 py-6 lg:py-10 relative z-10">
+            <div class="px-4 sm:px-6 py-6 lg:py-10 relative z-10">
                 <div class="mx-auto max-w-4xl text-center">
                     <h1 class="font-display text-3xl font-bold tracking-tight text-steel-900 lg:text-4xl mb-3">
                         {{ t({ ru: 'Маркетплейс строительных материалов', kz: 'Құрылыс материалдарының маркетплейсі' }) }}
@@ -72,8 +72,8 @@ defineProps<Props>();
         </section>
 
         <!-- Featured Categories -->
-        <section class="py-12 bg-white">
-            <div class="container mx-auto px-6">
+        <section class="-mx-4 py-12 bg-white">
+            <div class="px-4 sm:px-6">
                 <!-- <div class="mb-8">
                     <h2 class="font-display text-3xl font-bold text-steel-900 border-l-4 border-amber-500 pl-4">
                         {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
@@ -100,8 +100,8 @@ defineProps<Props>();
         </section>
 
         <!-- Popular Products -->
-        <section class="border-t border-concrete-200 bg-concrete-50 py-16">
-            <div class="container mx-auto px-6">
+        <section class="-mx-4 border-t border-concrete-200 bg-concrete-50 py-16">
+            <div class="px-4 sm:px-6">
                 <div class="mb-10">
                     <h2 class="font-display text-3xl font-bold text-steel-900 border-l-4 border-rust-500 pl-4 mb-3">
                         {{ t({ ru: 'Популярные товары', kz: 'Танымал тауарлар' }) }}
