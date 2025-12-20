@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import CitySelector from '@/components/CitySelector.vue';
-import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Package, ShoppingCart, User } from 'lucide-vue-next';
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
 import SearchBar from './SearchBar.vue';
@@ -16,11 +15,33 @@ const page = usePage();
 
 const isAuthenticated = computed(() => !!page.props.auth?.user);
 const cartItemsCount = computed(() => cartStore.itemsCount);
+const isSticky = ref(false);
+const sentinelRef = ref<HTMLElement | null>(null);
 
 // Initialize cart when user is authenticated
 onMounted(() => {
     if (isAuthenticated.value) {
         cartStore.initialize();
+    }
+
+    // Use Intersection Observer on sentinel element to detect when nav should be sticky
+    if (sentinelRef.value) {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // When sentinel is NOT intersecting (out of view), make nav sticky
+                isSticky.value = !entry.isIntersecting;
+            },
+            {
+                threshold: 0,
+            }
+        );
+
+        observer.observe(sentinelRef.value);
+
+        // Cleanup
+        onUnmounted(() => {
+            observer.disconnect();
+        });
     }
 });
 
@@ -35,9 +56,19 @@ watch(isAuthenticated, (newValue) => {
 </script>
 
 <template>
-    <nav class="relative bg-white border-b border-concrete-200">
+    <div>
+        <!-- Sentinel element for intersection observer -->
+        <div ref="sentinelRef" class="h-0" />
+
+        <nav
+            class="bg-white border-b border-concrete-200 transition-all duration-300"
+            :class="{
+                'fixed top-0 left-0 right-0 z-50 shadow-sm': isSticky,
+                'relative': !isSticky
+            }"
+        >
         <!-- Decorative Top Border -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-rust-500 to-amber-600" />
+        <!-- <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-rust-500 to-amber-600" /> -->
 
         <div class="container mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between gap-4 h-[70px] sm:h-[75px]">
@@ -116,4 +147,5 @@ watch(isAuthenticated, (newValue) => {
             </div>
         </div>
     </nav>
+    </div>
 </template>
