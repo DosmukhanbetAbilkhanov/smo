@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ProductCard from '@/components/shop/ProductCard.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
+import QuantityControl from '@/components/shop/QuantityControl.vue';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -9,14 +10,13 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Input } from '@/components/ui/input';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
 import { useLocaleStore } from '@/stores/locale';
 import type { Product } from '@/types/api';
 import { Head } from '@inertiajs/vue3';
-import { Check, Minus, Package, Plus, ShoppingCart, Store } from 'lucide-vue-next';
+import { Check, Package, ShoppingCart, Store } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import LoginModal from '@/components/LoginModal.vue';
 
@@ -59,18 +59,6 @@ const unitName = computed(() => {
     const locale = (window as any).locale || 'ru';
     return locale === 'kz' ? unit.shortname_kz : unit.shortname_ru;
 });
-
-function incrementQuantity() {
-    if (quantity.value < maxQuantity.value) {
-        quantity.value++;
-    }
-}
-
-function decrementQuantity() {
-    if (quantity.value > 1) {
-        quantity.value--;
-    }
-}
 
 function selectImage(index: number) {
     selectedImageIndex.value = index;
@@ -242,30 +230,14 @@ async function handleAddToCart() {
                                 <label class="font-display text-sm font-semibold text-steel-900">
                                     {{ t({ ru: 'Количество', kz: 'Саны' }) }}
                                 </label>
-                                <div class="flex items-center gap-3">
-                                    <button
-                                        @click="decrementQuantity"
-                                        :disabled="quantity <= 1 || isOutOfStock"
-                                        class="flex items-center justify-center w-12 h-12 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                                    >
-                                        <Minus :size="16" />
-                                    </button>
-                                    <Input
-                                        v-model.number="quantity"
-                                        type="number"
-                                        :min="1"
-                                        :max="maxQuantity"
-                                        :disabled="isOutOfStock"
-                                        class="w-20 h-12 text-center border-2 border-concrete-300 rounded-lg font-display text-lg font-bold focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-                                    />
-                                    <button
-                                        @click="incrementQuantity"
-                                        :disabled="quantity >= maxQuantity || isOutOfStock"
-                                        class="flex items-center justify-center w-12 h-12 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                                    >
-                                        <Plus :size="16" />
-                                    </button>
-                                </div>
+                                <QuantityControl
+                                    v-model="quantity"
+                                    :min="1"
+                                    :max="maxQuantity"
+                                    :disabled="isOutOfStock"
+                                    :editable="false"
+                                    :large="true"
+                                />
                             </div>
 
                             <button

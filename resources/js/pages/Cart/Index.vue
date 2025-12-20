@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import CheckoutProgress from '@/components/checkout/CheckoutProgress.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
-import { Input } from '@/components/ui/input';
+import QuantityControl from '@/components/shop/QuantityControl.vue';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
 import type { CartItem } from '@/types/api';
 import { Head, Link } from '@inertiajs/vue3';
-import { Minus, Plus, ShoppingBag, ShoppingCart, Store, Trash2, X } from 'lucide-vue-next';
+import { ShoppingBag, ShoppingCart, Store, X } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 
 const cartStore = useCartStore();
@@ -217,37 +217,12 @@ function getRemainingAmount(cart: any) {
 
                                         <div class="flex items-center justify-between gap-3 mt-auto flex-wrap">
                                             <!-- Quantity Controls -->
-                                            <div class="flex items-center gap-2">
-                                                <button
-                                                    @click="handleUpdateQuantity(item.id, item.quantity - 1)"
-                                                    :disabled="item.quantity <= 1 || updating === item.id"
-                                                    class="flex items-center justify-center w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                                                >
-                                                    <Minus :size="16" />
-                                                </button>
-                                                <Input
-                                                    type="number"
-                                                    :value="item.quantity"
-                                                    @input="
-                                                        (e: Event) =>
-                                                            handleUpdateQuantity(
-                                                                item.id,
-                                                                parseInt(
-                                                                    (e.target as HTMLInputElement).value,
-                                                                ),
-                                                            )
-                                                    "
-                                                    class="font-display w-16 h-8 text-center border-2 border-concrete-300 rounded-lg font-semibold text-sm p-0 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
-                                                    min="1"
-                                                />
-                                                <button
-                                                    @click="handleUpdateQuantity(item.id, item.quantity + 1)"
-                                                    :disabled="updating === item.id"
-                                                    class="flex items-center justify-center w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                                                >
-                                                    <Plus :size="16" />
-                                                </button>
-                                            </div>
+                                            <QuantityControl
+                                                :model-value="item.quantity"
+                                                @update:model-value="(newQty) => handleUpdateQuantity(item.id, newQty)"
+                                                :disabled="updating === item.id"
+                                                :editable="false"
+                                            />
 
                                             <!-- Item Pricing -->
                                             <div class="flex flex-col items-end gap-1">

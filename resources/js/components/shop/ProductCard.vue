@@ -9,10 +9,11 @@ import { useLocale } from '@/composables/useLocale';
 import { useCartStore } from '@/stores/cart';
 import type { Product } from '@/types/api';
 import { Link } from '@inertiajs/vue3';
-import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-vue-next';
+import { ShoppingCart } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import PriceDisplay from './PriceDisplay.vue';
 import LoginModal from '@/components/LoginModal.vue';
+import QuantityControl from './QuantityControl.vue';
 
 interface Props {
     product: Product;
@@ -69,32 +70,14 @@ async function handleAddToCart() {
     }
 }
 
-async function handleIncreaseQuantity() {
+async function handleQuantityChange(newQuantity: number) {
     if (!cartItem.value || adding.value) return;
 
     adding.value = true;
     try {
         await cartStore.updateQuantity(cartItem.value.id, {
-            quantity: cartItem.value.quantity + 1,
+            quantity: newQuantity,
         });
-    } catch (error: any) {
-        console.error('Failed to update quantity:', error);
-        alert('Failed to update quantity. Please try again.');
-    } finally {
-        adding.value = false;
-    }
-}
-
-async function handleDecreaseQuantity() {
-    if (!cartItem.value || adding.value) return;
-
-    adding.value = true;
-    try {
-        if (cartItem.value.quantity > 1) {
-            await cartStore.updateQuantity(cartItem.value.id, {
-                quantity: cartItem.value.quantity - 1,
-            });
-        }
     } catch (error: any) {
         console.error('Failed to update quantity:', error);
         alert('Failed to update quantity. Please try again.');
@@ -192,35 +175,16 @@ async function handleRemoveFromCart() {
 
         <CardFooter class="p-4 pt-0">
             <!-- Show quantity controls when product is in cart -->
-            <div v-if="isInCart" class="flex w-full gap-2">
-                <button
-                    @click="handleDecreaseQuantity"
-                    :disabled="adding || cartQuantity <= 1"
-                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                >
-                    <Minus :size="16" />
-                </button>
-
-                <div class="flex flex-1 items-center justify-center rounded-lg border-2 border-concrete-300 bg-white px-3 text-sm font-display font-semibold text-steel-900">
-                    {{ cartQuantity }}
-                </div>
-
-                <button
-                    @click="handleIncreaseQuantity"
-                    :disabled="adding"
-                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-steel-700 border-2 border-steel-700 rounded-lg hover:bg-steel-700 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-steel-700"
-                >
-                    <Plus :size="16" />
-                </button>
-
-                <button
-                    @click="handleRemoveFromCart"
-                    :disabled="adding"
-                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-display font-bold bg-transparent text-rust-600 border-2 border-rust-600 rounded-lg hover:bg-rust-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-rust-600"
-                >
-                    <Trash2 :size="16" />
-                </button>
-            </div>
+            <QuantityControl
+                v-if="isInCart"
+                :model-value="cartQuantity"
+                @update:model-value="handleQuantityChange"
+                @remove="handleRemoveFromCart"
+                :disabled="adding"
+                :editable="false"
+                :show-remove="true"
+                class="w-full"
+            />
 
             <!-- Show add to cart button when product is not in cart -->
             <button
