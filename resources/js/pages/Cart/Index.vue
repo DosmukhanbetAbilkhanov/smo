@@ -262,7 +262,7 @@ function getRemainingAmount(cart: any) {
                                     <button
                                         v-if="canCheckout(cart)"
                                         @click="$inertia.visit(`/checkout?shop_id=${cart.shop_id}`)"
-                                        class="font-display font-bold px-8 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
+                                        class="font-display font-bold px-4 py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 hover:cursor-pointer hover:shadow-industrial-lg transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2"
                                     >
                                         <ShoppingCart :size="20" />
                                         {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}
@@ -277,7 +277,7 @@ function getRemainingAmount(cart: any) {
                                         </button>
                                         <button
                                             disabled
-                                            class="font-display font-bold px-8 py-4 bg-concrete-300 text-concrete-500 rounded-xl cursor-not-allowed inline-flex items-center gap-2"
+                                            class="font-display font-bold px-4 py-2 bg-concrete-300 text-concrete-500 rounded-xl cursor-not-allowed inline-flex items-center gap-2 hover:cursor-pointer"
                                         >
                                             <ShoppingCart :size="20" />
                                             {{ t({ ru: 'Перейти к оформлению', kz: 'Рәсімдеуге өту' }) }}

@@ -156,10 +156,10 @@ async function handleRemoveFromCart() {
                         'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs font-semibold',
                         isOutOfStock
                             ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300 text-red-700'
-                            : 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-300 text-emerald-700'
+                            : 'bg-gradient-to-br from-lime-100 to-lime-200 border-lime-300 text-lime-700'
                     ]"
                 >
-                    <span :class="['w-1.5 h-1.5 rounded-full', isOutOfStock ? 'bg-red-600' : 'bg-emerald-600']" />
+                    <span :class="['w-1.5 h-1.5 rounded-full', isOutOfStock ? 'bg-red-600' : 'bg-lime-600']" />
                     <span v-if="isOutOfStock">
                         {{ t({ ru: 'Нет в наличии', kz: 'Қолжетімсіз' }) }}
                     </span>
@@ -191,7 +191,7 @@ async function handleRemoveFromCart() {
                 v-else
                 @click="handleAddToCart"
                 :disabled="isOutOfStock || adding"
-                class="w-full font-display font-semibold px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 disabled:bg-concrete-300 disabled:text-concrete-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                class="w-full font-display font-semibold px-4 py-2 bg-amber-500 text-white rounded-lg hover:cursor-pointer hover:bg-amber-600 transition-all duration-200 disabled:bg-concrete-300 disabled:text-concrete-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 <ShoppingCart :size="16" />
                 <span v-if="adding">{{ t({ ru: 'Добавление...', kz: 'Қосылуда...' }) }}</span>
