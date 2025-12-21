@@ -114,7 +114,7 @@ async function handleAddToCart() {
     <Head :title="productName" />
 
     <ShopLayout>
-        <div class="-mx-4 min-h-screen bg-concrete-50">
+        <div class="-mx-4 min-h-screen">
             <!-- Breadcrumbs -->
             <PageBreadcrumb :items="breadcrumbItems" />
 
@@ -124,7 +124,7 @@ async function handleAddToCart() {
                     <!-- Image Gallery -->
                     <div class="flex flex-col gap-4">
                         <!-- Main Image -->
-                        <div class="aspect-square overflow-hidden rounded-xl border border-concrete-200 bg-white shadow-lg">
+                        <div class="aspect-square overflow-hidden rounded-xl border border-concrete-200 bg-white shadow-sm">
                             <img
                                 v-if="selectedImage"
                                 :src="selectedImage"
@@ -158,14 +158,14 @@ async function handleAddToCart() {
                     <div class="flex flex-col gap-6">
                         <!-- Title and Price -->
                         <div class="flex flex-col gap-3">
-                            <h1 class="font-display text-3xl lg:text-4xl font-bold text-steel-900 leading-tight">
+                            <h1 class="font-display text-3xl lg:text-3xl font-bold text-steel-900 leading-tight">
                                 {{ productName }}
                             </h1>
                             <p v-if="nomenclatureName" class="font-body text-base text-concrete-600">
                                 {{ nomenclatureName }}
                             </p>
                             <div class="flex items-baseline gap-2 mt-2">
-                                <PriceDisplay :price="product.price" class="font-display text-4xl font-bold text-amber-600" />
+                                <PriceDisplay :price="product.price" class="font-display text-2xl font-bold text-slate-600" />
                                 <span class="font-body text-base text-concrete-500">/ {{ unitName }}</span>
                             </div>
                         </div>

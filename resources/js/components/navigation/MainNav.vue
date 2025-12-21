@@ -140,13 +140,13 @@ watch(isAuthenticated, (newValue) => {
                     <div v-if="!isAuthenticated" class="flex items-center gap-2">
                         <Link
                             href="/login"
-                            class="hidden sm:inline-flex items-center px-4 py-2.5 bg-white border-2 border-concrete-300 rounded-lg font-display text-sm font-semibold text-steel-700 no-underline transition-all duration-200 hover:border-steel-700 hover:bg-concrete-50 hover:-translate-y-0.5"
+                            class="inline-flex items-center px-3 py-2.5 sm:px-4 bg-white border-2 border-concrete-300 rounded-lg font-display text-sm font-semibold text-steel-700 no-underline transition-all duration-200 hover:border-steel-700 hover:bg-concrete-50 hover:-translate-y-0.5"
                         >
                             {{ t({ ru: 'Войти', kz: 'Кіру' }) }}
                         </Link>
                         <Link
                             href="/register"
-                            class="inline-flex items-center px-4 py-2.5 bg-amber-500 rounded-lg font-display text-sm font-bold text-white no-underline transition-all duration-200 hover:bg-amber-600 hover:shadow-industrial-md hover:-translate-y-0.5"
+                            class="inline-flex items-center px-3 py-2.5 sm:px-4 bg-amber-500 rounded-lg font-display text-sm font-bold text-white no-underline transition-all duration-200 hover:bg-amber-600 hover:shadow-industrial-md hover:-translate-y-0.5"
                         >
                             {{ t({ ru: 'Регистрация', kz: 'Тіркелу' }) }}
                         </Link>
