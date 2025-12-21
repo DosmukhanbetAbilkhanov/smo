@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import ProductCard from '@/components/shop/ProductCard.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,6 +30,11 @@ const currentPage = computed(() => props.products.current_page);
 const totalPages = computed(() => props.products.last_page);
 const hasNextPage = computed(() => currentPage.value < totalPages.value);
 const hasPrevPage = computed(() => currentPage.value > 1);
+
+const breadcrumbItems = computed(() => [
+    { label: t({ ru: 'Главная', kz: 'Басты бет' }), href: '/' },
+    { label: props.shop.name, isCurrentPage: true },
+]);
 
 // Live search with debounce
 watch(localSearchQuery, (newValue, oldValue) => {
@@ -121,60 +119,47 @@ function filterByCategory(categoryId: number | null) {
 
 <template>
     <ShopLayout>
+        <!-- Breadcrumbs -->
+        <PageBreadcrumb :items="breadcrumbItems" variant="minimal" />
+
         <div class="-mx-4 shop-page bg-pattern">
             <div class="px-4">
-                <!-- Breadcrumbs -->
-                <Breadcrumb class="breadcrumb-nav animate-fadeIn">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/" class="breadcrumb-link">
-                                {{ t({ ru: 'Главная', kz: 'Басты бет' }) }}
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage class="breadcrumb-current">
-                                {{ shop.name }}
-                            </BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
 
                 <!-- Shop Header -->
-                <div class="shop-header animate-fadeInUp">
-                    <div class="shop-icon-wrapper">
-                        <Store :size="32" class="shop-icon" />
+                <div class="flex gap-3 p-4 bg-white rounded-lg border border-gray-200 shadow-lg mb-6 animate-fadeInUp">
+                    <div class="flex items-center justify-center w-16 h-16 flex-shrink-0 rounded-lg bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border-2 border-[rgba(44,95,93,0.2)]">
+                        <Store :size="24" class="text-[#2C5F5D]" />
                     </div>
-                    <div class="shop-info">
-                        <h1 class="shop-name">{{ shop.name }}</h1>
-                        <div class="shop-meta">
-                            <div v-if="shop.city" class="meta-item">
-                                <MapPin :size="16" />
+                    <div class="flex-1 flex flex-col gap-2">
+                        <h1 class="text-2xl font-bold text-gray-900">{{ shop.name }}</h1>
+                        <div class="flex flex-wrap gap-4">
+                            <div v-if="shop.city" class="flex items-center gap-2 text-sm text-gray-600">
+                                <MapPin :size="16" class="text-[#2C5F5D]" />
                                 <span>{{ shop.city.name_ru }}</span>
                             </div>
-                            <div class="meta-item">
-                                <Package :size="16" />
+                            <div class="flex items-center gap-2 text-sm text-gray-600">
+                                <Package :size="16" class="text-[#2C5F5D]" />
                                 <span>{{ products.total }} {{ t({ ru: 'товаров', kz: 'тауар' }) }}</span>
                             </div>
                         </div>
-                        <p v-if="shop.address" class="shop-address">{{ shop.address }}</p>
+                        <p v-if="shop.address" class="text-sm text-gray-600">{{ shop.address }}</p>
                     </div>
                 </div>
 
                 <!-- Search Section -->
-                <div class="search-section animate-fadeInUp" style="animation-delay: 100ms">
-                    <div class="search-input-wrapper">
-                        <Search :size="16" class="search-icon" />
+                <div class="mb-6 animate-fadeInUp" style="animation-delay: 100ms">
+                    <div class="relative flex items-center gap-2 px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm transition-all focus-within:border-[#2C5F5D] focus-within:shadow-[0_0_0_2px_rgba(44,95,93,0.1)]">
+                        <Search :size="16" class="text-gray-500 flex-shrink-0" />
                         <Input
                             v-model="localSearchQuery"
                             type="text"
                             :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
-                            class="search-input"
+                            class="flex-1 border-0 bg-transparent text-sm text-gray-900 outline-none p-0 placeholder:text-gray-400"
                         />
                         <button
                             v-if="localSearchQuery"
                             @click="clearSearch"
-                            class="search-clear-btn"
+                            class="flex items-center justify-center w-7 h-7 rounded border-0 bg-gray-100 text-gray-400 cursor-pointer transition-all hover:bg-gray-200 hover:text-gray-900 flex-shrink-0"
                         >
                             <X :size="16" />
                         </button>
@@ -184,35 +169,35 @@ function filterByCategory(categoryId: number | null) {
                 <!-- Categories Navigation -->
                 <div
                     v-if="categories.length > 0"
-                    class="categories-section animate-fadeInUp"
+                    class="bg-white rounded-md border border-gray-200 p-5 mb-6 animate-fadeInUp"
                     style="animation-delay: 200ms"
                 >
-                    <div class="categories-header">
-                        <Grid :size="20" class="categories-icon" />
-                        <h2 class="categories-title">
+                    <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
+                        <Grid :size="20" class="text-[#2C5F5D]" />
+                        <h2 class="text-base font-bold text-gray-900">
                             {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
                         </h2>
                     </div>
-                    <div class="categories-list">
-                        <div class="category-group">
+                    <div class="flex flex-wrap gap-6">
+                        <div class="flex flex-col gap-1">
                             <a
                                 @click.prevent="filterByCategory(null)"
-                                :class="['category-link', 'category-all', { active: !selectedCategoryId }]"
+                                :class="['text-sm cursor-pointer transition-opacity hover:opacity-70 no-underline block', !selectedCategoryId ? 'text-black font-bold underline' : 'text-black font-bold']"
                                 href="#"
                             >
                                 {{ t({ ru: 'Все товары', kz: 'Барлық тауарлар' }) }}
                             </a>
                         </div>
-                        <div v-for="category in categories" :key="category.id" class="category-group">
-                            <span class="category-parent">
+                        <div v-for="category in categories" :key="category.id" class="flex flex-col gap-1">
+                            <span class="text-black font-bold mb-1 text-sm">
                                 {{ getLocalizedName(category) }}
                             </span>
-                            <div v-if="category.children && category.children.length > 0" class="category-children">
+                            <div v-if="category.children && category.children.length > 0" class="flex flex-col gap-1">
                                 <a
                                     v-for="child in category.children"
                                     :key="child.id"
                                     @click.prevent="filterByCategory(child.id)"
-                                    :class="['category-link', 'category-child', { active: selectedCategoryId === child.id }]"
+                                    :class="['text-sm cursor-pointer transition-opacity hover:opacity-70 block', selectedCategoryId === child.id ? 'text-blue-600 font-bold underline' : 'text-blue-600 font-normal underline']"
                                     href="#"
                                 >
                                     {{ getLocalizedName(child) }}
@@ -223,30 +208,30 @@ function filterByCategory(categoryId: number | null) {
                 </div>
 
                 <!-- Products Section -->
-                <div class="products-section">
-                    <div class="section-header animate-fadeInUp" style="animation-delay: 300ms">
-                        <h2 class="section-title">
+                <div class="flex flex-col gap-8">
+                    <div class="flex items-center justify-between flex-wrap gap-4 animate-fadeInUp" style="animation-delay: 300ms">
+                        <h2 class="text-2xl font-bold text-gray-900">
                             {{ t({ ru: 'Товары магазина', kz: 'Дүкен тауарлары' }) }}
                         </h2>
-                        <div class="results-badge">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border border-[rgba(44,95,93,0.2)] rounded-lg text-[15px] font-semibold text-[#2C5F5D]">
                             <Package :size="16" />
                             <span>{{ products.total }} {{ t({ ru: 'товаров', kz: 'тауар' }) }}</span>
                         </div>
                     </div>
 
                     <!-- Loading State -->
-                    <div v-if="isLoading" class="products-grid">
-                        <div v-for="i in 9" :key="i" class="skeleton-card">
-                            <Skeleton class="skeleton-image" />
-                            <Skeleton class="skeleton-title" />
-                            <Skeleton class="skeleton-price" />
+                    <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div v-for="i in 9" :key="i" class="flex flex-col gap-3">
+                            <Skeleton class="aspect-square w-full rounded-md" />
+                            <Skeleton class="h-4 w-3/4 rounded-sm" />
+                            <Skeleton class="h-4 w-1/2 rounded-sm" />
                         </div>
                     </div>
 
                     <!-- Products Grid -->
                     <div
                         v-else-if="products.data.length > 0"
-                        class="products-grid animate-fadeInUp"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fadeInUp"
                         style="animation-delay: 400ms"
                     >
                         <div
@@ -260,14 +245,14 @@ function filterByCategory(categoryId: number | null) {
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="empty-state">
-                        <div class="empty-icon">
+                    <div v-else class="flex flex-col items-center justify-center min-h-[400px] text-center px-4 py-12">
+                        <div class="flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] text-[#2C5F5D] mb-6">
                             <Package :size="64" />
                         </div>
-                        <h3 class="empty-title">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">
                             {{ t({ ru: 'В магазине пока нет товаров', kz: 'Дүкенде әлі тауарлар жоқ' }) }}
                         </h3>
-                        <p class="empty-subtitle">
+                        <p class="text-base text-gray-600 max-w-lg">
                             {{ t({
                                 ru: 'Проверьте позже или посмотрите другие магазины',
                                 kz: 'Кейінірек тексеріңіз немесе басқа дүкендерді қараңыз',
@@ -278,22 +263,28 @@ function filterByCategory(categoryId: number | null) {
                     <!-- Pagination -->
                     <div
                         v-if="products.data.length > 0 && totalPages > 1"
-                        class="pagination"
+                        class="flex items-center justify-center gap-2 mt-8"
                     >
                         <button
                             @click="goToPage(currentPage - 1)"
                             :disabled="!hasPrevPage || isLoading"
-                            class="pagination-btn"
+                            class="flex items-center justify-center w-10 h-10 bg-white border-2 border-gray-200 rounded-md text-gray-900 cursor-pointer transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ChevronLeft :size="16" />
                         </button>
 
-                        <div class="pagination-pages">
+                        <div class="flex gap-1">
                             <button
                                 v-for="page in totalPages"
                                 :key="page"
                                 @click="goToPage(page)"
-                                :class="['pagination-page', { 'active': page === currentPage }]"
+                                :class="[
+                                    'flex items-center justify-center min-w-[40px] h-10 px-3 border-2 rounded-md text-[15px] font-semibold cursor-pointer transition-all',
+                                    page === currentPage
+                                        ? 'bg-gradient-to-br from-[#2C5F5D] to-[#3A7D7A] border-[#2C5F5D] text-white shadow-[0_4px_12px_rgba(44,95,93,0.3)]'
+                                        : 'bg-white border-gray-200 text-gray-900 hover:border-[#3A7D7A] hover:text-[#2C5F5D]',
+                                    isLoading && 'opacity-50 cursor-not-allowed'
+                                ]"
                                 :disabled="isLoading"
                             >
                                 {{ page }}
@@ -303,7 +294,7 @@ function filterByCategory(categoryId: number | null) {
                         <button
                             @click="goToPage(currentPage + 1)"
                             :disabled="!hasNextPage || isLoading"
-                            class="pagination-btn"
+                            class="flex items-center justify-center w-10 h-10 bg-white border-2 border-gray-200 rounded-md text-gray-900 cursor-pointer transition-all hover:border-[#2C5F5D] hover:text-[#2C5F5D] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <ChevronRight :size="16" />
                         </button>
@@ -315,495 +306,26 @@ function filterByCategory(categoryId: number | null) {
 </template>
 
 <style scoped>
-/* Shop Page */
+/* Shop Page Background */
 .shop-page {
     background: var(--smo-bg);
     min-height: 100vh;
-    font-family: var(--font-body);
     padding-bottom: 4rem;
 }
 
-/* Breadcrumbs */
-.breadcrumb-nav {
-    margin-bottom: 2rem;
+/* Animation */
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out;
 }
 
-.breadcrumb-link {
-    font-family: var(--font-body);
-    color: var(--smo-text-secondary);
-    transition: color var(--transition-base);
-}
-
-.breadcrumb-link:hover {
-    color: var(--smo-primary);
-}
-
-.breadcrumb-current {
-    font-family: var(--font-body);
-    color: var(--smo-text-primary);
-    font-weight: 600;
-}
-
-/* Shop Header */
-.shop-header {
-    display: flex;
-    gap: 1.5rem;
-    padding: 2rem;
-    background: var(--smo-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-lg);
-    margin-bottom: 3rem;
-}
-
-.shop-icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-    border-radius: var(--radius-lg);
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    border: 2px solid rgba(44, 95, 93, 0.2);
-}
-
-.shop-icon {
-    color: var(--smo-primary);
-}
-
-.shop-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.shop-name {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.shop-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    color: var(--smo-text-secondary);
-}
-
-.meta-item svg {
-    color: var(--smo-primary);
-}
-
-.shop-address {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    color: var(--smo-text-secondary);
-}
-
-/* Search Section */
-.search-section {
-    margin-bottom: 1.5rem;
-}
-
-.search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
-    background: var(--smo-surface);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-base);
-}
-
-.search-input-wrapper:focus-within {
-    border-color: var(--smo-primary);
-    box-shadow: 0 0 0 2px rgba(44, 95, 93, 0.1);
-}
-
-.search-icon {
-    color: var(--smo-text-secondary);
-    flex-shrink: 0;
-}
-
-.search-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    color: var(--smo-text-primary);
-    outline: none;
-    padding: 0;
-}
-
-.search-input::placeholder {
-    color: var(--smo-text-muted);
-}
-
-.search-clear-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: none;
-    background: var(--smo-bg);
-    color: var(--smo-text-muted);
-    cursor: pointer;
-    transition: all var(--transition-base);
-    flex-shrink: 0;
-}
-
-.search-clear-btn:hover {
-    background: var(--smo-border);
-    color: var(--smo-text-primary);
-}
-
-/* Categories Section */
-.categories-section {
-    background: var(--smo-surface);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--smo-border);
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-}
-
-.categories-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--smo-border);
-}
-
-.categories-icon {
-    color: var(--smo-primary);
-}
-
-.categories-title {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.categories-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.category-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.category-link {
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: opacity var(--transition-base);
-    text-decoration: none;
-    display: block;
-}
-
-.category-link:hover {
-    opacity: 0.7;
-}
-
-/* All products link */
-.category-all {
-    color: #000;
-    font-weight: 700;
-}
-
-.category-all.active {
-    text-decoration: underline;
-}
-
-/* Parent categories - black bold text (non-clickable) */
-.category-parent {
-    color: #000;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-}
-
-/* Children container */
-.category-children {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-/* Children categories - blue normal underlined */
-.category-child {
-    color: #2563eb;
-    font-weight: 400;
-    text-decoration: underline;
-}
-
-.category-child.active {
-    font-weight: 700;
-}
-
-/* Products Section */
-.products-section {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.section-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.results-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    border: 1px solid rgba(44, 95, 93, 0.2);
-    border-radius: var(--radius-lg);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-primary);
-}
-
-/* Products Grid */
-.products-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-}
-
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 1280px) {
-    .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* Loading Skeleton */
-.skeleton-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.skeleton-image {
-    aspect-ratio: 1;
-    width: 100%;
-    border-radius: var(--radius-md);
-}
-
-.skeleton-title {
-    height: 1rem;
-    width: 75%;
-    border-radius: var(--radius-sm);
-}
-
-.skeleton-price {
-    height: 1rem;
-    width: 50%;
-    border-radius: var(--radius-sm);
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    text-align: center;
-    padding: 3rem 1rem;
-}
-
-.empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 128px;
-    height: 128px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    color: var(--smo-primary);
-    margin-bottom: 1.5rem;
-}
-
-.empty-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.empty-subtitle {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--smo-text-secondary);
-    max-width: 500px;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-}
-
-.pagination-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-primary);
-    background: var(--smo-bg);
-}
-
-.pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination-pages {
-    display: flex;
-    gap: 0.25rem;
-}
-
-.pagination-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 0.75rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-page:hover:not(:disabled) {
-    border-color: var(--smo-primary-light);
-    color: var(--smo-primary);
-}
-
-.pagination-page.active {
-    background: linear-gradient(135deg, var(--smo-primary) 0%, var(--smo-primary-light) 100%);
-    border-color: var(--smo-primary);
-    color: white;
-    box-shadow: 0 4px 12px rgba(44, 95, 93, 0.3);
-}
-
-.pagination-page:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-    .shop-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .shop-meta {
-        justify-content: center;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .results-badge {
-        justify-content: center;
-    }
-
-    .categories-section {
-        padding: 1rem;
-    }
-
-    .category-btn {
-        font-size: 0.8125rem;
-        padding: 0.5rem 0.75rem;
-        font-weight: 700;
-    }
-
-    .category-btn-child {
-        padding-left: 1rem;
-        font-size: 0.75rem;
-        font-weight: 400;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>

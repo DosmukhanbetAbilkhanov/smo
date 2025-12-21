@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import FilterSidebar from '@/components/catalog/FilterSidebar.vue';
 import ProductCard from '@/components/shop/ProductCard.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -33,19 +25,24 @@ const props = defineProps<Props>();
 const { t } = useLocale();
 
 const sortOptions = [
-    { value: 'latest', label: { ru: 'Новинки', kz: 'Жаңалықтар' } },
+    { value: 'newest', label: { ru: 'Новинки', kz: 'Жаңалықтар' } },
     { value: 'price_asc', label: { ru: 'Цена: по возрастанию', kz: 'Бағасы: өсу' } },
     { value: 'price_desc', label: { ru: 'Цена: по убыванию', kz: 'Бағасы: кему' } },
-    { value: 'popular', label: { ru: 'Популярные', kz: 'Танымал' } },
-];
+    { value: 'name', label: { ru: 'По названию', kz: 'Атауы бойынша' } },
+] as const;
 
-const currentSort = ref(props.filters.sort_by || 'latest');
+const currentSort = ref<ProductFilters['sort']>(props.filters.sort || 'newest');
 const isLoading = ref(false);
 
 const currentPage = computed(() => props.products.current_page);
 const totalPages = computed(() => props.products.last_page);
 const hasNextPage = computed(() => currentPage.value < totalPages.value);
 const hasPrevPage = computed(() => currentPage.value > 1);
+
+const breadcrumbItems = computed(() => [
+    { label: t({ ru: 'Главная', kz: 'Басты бет' }), href: '/' },
+    { label: t({ ru: 'Каталог товаров', kz: 'Тауарлар каталогы' }), isCurrentPage: true },
+]);
 
 function updateFilters(newFilters: Partial<ProductFilters>) {
     isLoading.value = true;
@@ -70,13 +67,14 @@ function clearFilters() {
         max_price: undefined,
         search: undefined,
         category_id: undefined,
-        sort_by: 'latest',
+        sort: 'newest',
     });
 }
 
 function updateSort(value: string) {
-    currentSort.value = value;
-    updateFilters({ sort_by: value });
+    const sortValue = value as ProductFilters['sort'];
+    currentSort.value = sortValue;
+    updateFilters({ sort: sortValue });
 }
 
 function goToPage(page: number) {
@@ -102,510 +100,145 @@ function goToPage(page: number) {
 
 <template>
     <ShopLayout>
-        <div class="-mx-4 products-page bg-pattern">
+        <!-- Breadcrumbs -->
+        <PageBreadcrumb :items="breadcrumbItems" variant="minimal" />
+
+        <div class="-mx-4 min-h-screen pb-16 bg-[var(--smo-bg)] font-[var(--font-body)]">
             <div class="px-4">
-                <!-- Breadcrumbs -->
-                <Breadcrumb class="breadcrumb-nav animate-fadeIn">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/" class="breadcrumb-link">
-                                {{ t({ ru: 'Главная', kz: 'Басты бет' }) }}
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage class="breadcrumb-current">
-                                {{ t({ ru: 'Каталог товаров', kz: 'Тауарлар каталогы' }) }}
-                            </BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
 
                 <!-- Page Header -->
-                <div class="page-header animate-fadeInUp">
-                    <div class="header-content">
+                <div class="animate-fadeInUp">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
                         <h1 class="page-title">
                             {{ t({ ru: 'Каталог товаров', kz: 'Тауарлар каталогы' }) }}
                         </h1>
-                        <div class="results-badge">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--smo-primary)] bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border border-[rgba(44,95,93,0.2)] rounded-[var(--radius-lg)] font-[var(--font-display)]">
                             <Package :size="16" />
                             <span>{{ products.total }} {{ t({ ru: 'товаров', kz: 'тауар' }) }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="catalog-grid">
-                    <!-- Filter Sidebar -->
-                    <aside class="filter-sidebar animate-fadeInUp" style="animation-delay: 100ms">
-                        <div class="filter-header">
-                            <SlidersHorizontal :size="20" class="filter-icon" />
-                            <h2 class="filter-title">
-                                {{ t({ ru: 'Фильтры', kz: 'Сүзгілер' }) }}
-                            </h2>
+                <!-- Products Main -->
+                <main class="flex flex-col gap-8">
+                    <!-- Sorting and Results Count -->
+                    <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-4 px-6 py-5 bg-[var(--smo-surface)] border border-[var(--smo-border)] rounded-[var(--radius-lg)] shadow-sm animate-fadeInUp" style="animation-delay: 200ms">
+                        <span class="text-sm font-medium text-[var(--smo-text-secondary)] font-[var(--font-body)]">
+                            {{ t({
+                                ru: `Показано ${products.from || 0}-${products.to || 0} из ${products.total}`,
+                                kz: `Көрсетілген ${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
+                            }) }}
+                        </span>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <button class="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 text-sm font-semibold text-[var(--smo-text-primary)] bg-[var(--smo-bg)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] font-[var(--font-display)] transition-all hover:border-[var(--smo-primary)] hover:bg-[var(--smo-surface)] cursor-pointer">
+                                    <SlidersHorizontal :size="16" />
+                                    {{ t({
+                                        ru: 'Сортировка',
+                                        kz: 'Сұрыптау',
+                                    }) }}:
+                                    {{ t(sortOptions.find(o => o.value === currentSort)?.label || sortOptions[0].label) }}
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" class="min-w-[200px]">
+                                <DropdownMenuItem
+                                    v-for="option in sortOptions"
+                                    :key="option.value"
+                                    @click="updateSort(option.value)"
+                                    :class="{ 'bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] text-[var(--smo-primary)] font-semibold': currentSort === option.value }"
+                                >
+                                    {{ t(option.label) }}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div v-for="i in 8" :key="i" class="flex flex-col gap-3">
+                            <Skeleton class="aspect-square w-full rounded-[var(--radius-md)]" />
+                            <Skeleton class="h-4 w-3/4 rounded-[var(--radius-sm)]" />
+                            <Skeleton class="h-4 w-1/2 rounded-[var(--radius-sm)]" />
                         </div>
-                        <FilterSidebar
-                            :filters="filters"
-                            @update:filters="updateFilters"
-                            @clear="clearFilters"
-                        />
-                    </aside>
+                    </div>
 
                     <!-- Products Grid -->
-                    <main class="products-main">
-                        <!-- Sorting and Results Count -->
-                        <div class="toolbar animate-fadeInUp" style="animation-delay: 200ms">
-                            <span class="results-count">
-                                {{ t({
-                                    ru: `Показано ${products.from || 0}-${products.to || 0} из ${products.total}`,
-                                    kz: `Көрсетілген ${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
-                                }) }}
-                            </span>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <button class="sort-button">
-                                        <SlidersHorizontal :size="16" />
-                                        {{ t({
-                                            ru: 'Сортировка',
-                                            kz: 'Сұрыптау',
-                                        }) }}:
-                                        {{ t(sortOptions.find(o => o.value === currentSort)?.label || sortOptions[0].label) }}
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" class="sort-menu">
-                                    <DropdownMenuItem
-                                        v-for="option in sortOptions"
-                                        :key="option.value"
-                                        @click="updateSort(option.value)"
-                                        :class="{ 'active-sort': currentSort === option.value }"
-                                    >
-                                        {{ t(option.label) }}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-
-                        <!-- Loading State -->
-                        <div v-if="isLoading" class="products-grid">
-                            <div v-for="i in 9" :key="i" class="skeleton-card">
-                                <Skeleton class="skeleton-image" />
-                                <Skeleton class="skeleton-title" />
-                                <Skeleton class="skeleton-price" />
-                            </div>
-                        </div>
-
-                        <!-- Products Grid -->
+                    <div
+                        v-else-if="products.data.length > 0"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                    >
                         <div
-                            v-else-if="products.data.length > 0"
-                            class="products-grid"
+                            v-for="(product, index) in products.data"
+                            :key="product.id"
+                            class="animate-fadeInUp"
+                            :style="{ animationDelay: `${index * 50}ms` }"
                         >
-                            <div
-                                v-for="(product, index) in products.data"
-                                :key="product.id"
-                                class="animate-fadeInUp"
-                                :style="{ animationDelay: `${index * 50}ms` }"
-                            >
-                                <ProductCard :product="product" />
-                            </div>
+                            <ProductCard :product="product" />
                         </div>
+                    </div>
 
-                        <!-- Empty State -->
-                        <div v-else class="empty-state">
-                            <div class="empty-icon">
-                                <Package :size="64" />
-                            </div>
-                            <h3 class="empty-title">
-                                {{ t({ ru: 'Товары не найдены', kz: 'Тауарлар табылмады' }) }}
-                            </h3>
-                            <p class="empty-subtitle">
-                                {{ t({
-                                    ru: 'Попробуйте изменить фильтры или параметры поиска',
-                                    kz: 'Сүзгілерді немесе іздеу параметрлерін өзгертіп көріңіз',
-                                }) }}
-                            </p>
-                            <Button @click="clearFilters" class="btn-secondary-modern">
-                                {{ t({ ru: 'Сбросить фильтры', kz: 'Сүзгілерді тазалау' }) }}
-                            </Button>
+                    <!-- Empty State -->
+                    <div v-else class="flex flex-col items-center justify-center min-h-[400px] text-center px-4 py-12">
+                        <div class="flex items-center justify-center w-32 h-32 mb-6 text-[var(--smo-primary)] bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] rounded-full">
+                            <Package :size="64" />
                         </div>
+                        <h3 class="mb-2 text-2xl font-bold text-[var(--smo-text-primary)] font-[var(--font-display)]">
+                            {{ t({ ru: 'Товары не найдены', kz: 'Тауарлар табылмады' }) }}
+                        </h3>
+                        <p class="mb-6 max-w-[500px] text-base text-[var(--smo-text-secondary)] font-[var(--font-body)]">
+                            {{ t({
+                                ru: 'Попробуйте изменить фильтры или параметры поиска',
+                                kz: 'Сүзгілерді немесе іздеу параметрлерін өзгертіп көріңіз',
+                            }) }}
+                        </p>
+                        <Button @click="clearFilters" class="btn-secondary-modern">
+                            {{ t({ ru: 'Сбросить фильтры', kz: 'Сүзгілерді тазалау' }) }}
+                        </Button>
+                    </div>
 
-                        <!-- Pagination -->
-                        <div
-                            v-if="products.data.length > 0 && totalPages > 1"
-                            class="pagination"
+                    <!-- Pagination -->
+                    <div
+                        v-if="products.data.length > 0 && totalPages > 1"
+                        class="flex items-center justify-center gap-2 mt-8"
+                    >
+                        <button
+                            @click="goToPage(currentPage - 1)"
+                            :disabled="!hasPrevPage || isLoading"
+                            class="flex items-center justify-center w-10 h-10 text-[var(--smo-text-primary)] bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-primary)] hover:bg-[var(--smo-bg)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            <button
-                                @click="goToPage(currentPage - 1)"
-                                :disabled="!hasPrevPage || isLoading"
-                                class="pagination-btn"
-                            >
-                                <ChevronLeft :size="16" />
-                            </button>
+                            <ChevronLeft :size="16" />
+                        </button>
 
-                            <div class="pagination-pages">
-                                <button
-                                    v-for="page in totalPages"
-                                    :key="page"
-                                    @click="goToPage(page)"
-                                    :class="['pagination-page', { 'active': page === currentPage }]"
-                                    :disabled="isLoading"
-                                >
-                                    {{ page }}
-                                </button>
-                            </div>
-
+                        <div class="flex gap-1">
                             <button
-                                @click="goToPage(currentPage + 1)"
-                                :disabled="!hasNextPage || isLoading"
-                                class="pagination-btn"
+                                v-for="page in totalPages"
+                                :key="page"
+                                @click="goToPage(page)"
+                                :class="[
+                                    'flex items-center justify-center min-w-[40px] h-10 px-3 text-sm font-semibold text-[var(--smo-text-primary)] bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] font-[var(--font-display)] transition-all cursor-pointer',
+                                    page === currentPage
+                                        ? 'bg-gradient-to-br from-[var(--smo-primary)] to-[var(--smo-primary-light)] border-[var(--smo-primary)]  shadow-[0_4px_12px_rgba(44,95,93,0.3)]'
+                                        : 'hover:border-[var(--smo-primary-light)] hover:text-[var(--smo-primary)]',
+                                    'disabled:opacity-50 disabled:cursor-not-allowed'
+                                ]"
+                                :disabled="isLoading"
                             >
-                                <ChevronRight :size="16" />
+                                {{ page }}
                             </button>
                         </div>
-                    </main>
-                </div>
+
+                        <button
+                            @click="goToPage(currentPage + 1)"
+                            :disabled="!hasNextPage || isLoading"
+                            class="flex items-center justify-center w-10 h-10 text-[var(--smo-text-primary)] bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-primary)] hover:bg-[var(--smo-bg)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        >
+                            <ChevronRight :size="16" />
+                        </button>
+                    </div>
+                </main>
             </div>
         </div>
     </ShopLayout>
 </template>
 
-<style scoped>
-/* Products Page */
-.products-page {
-    background: var(--smo-bg);
-    min-height: 100vh;
-    font-family: var(--font-body);
-    padding-bottom: 4rem;
-}
-
-/* Breadcrumbs */
-.breadcrumb-nav {
-    margin-bottom: 2rem;
-}
-
-.breadcrumb-link {
-    font-family: var(--font-body);
-    color: var(--smo-text-secondary);
-    transition: color var(--transition-base);
-}
-
-.breadcrumb-link:hover {
-    color: var(--smo-primary);
-}
-
-.breadcrumb-current {
-    font-family: var(--font-body);
-    color: var(--smo-text-primary);
-    font-weight: 600;
-}
-
-/* Page Header */
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.results-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    border: 1px solid rgba(44, 95, 93, 0.2);
-    border-radius: var(--radius-lg);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-primary);
-}
-
-/* Catalog Grid */
-.catalog-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-@media (min-width: 1024px) {
-    .catalog-grid {
-        grid-template-columns: 280px 1fr;
-        gap: 3rem;
-    }
-}
-
-/* Filter Sidebar */
-.filter-sidebar {
-    background: var(--smo-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-md);
-    padding: 1.5rem;
-}
-
-.filter-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--smo-border);
-}
-
-.filter-icon {
-    color: var(--smo-primary);
-}
-
-.filter-title {
-    font-family: var(--font-display);
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-/* Products Main */
-.products-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-/* Toolbar */
-.toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem;
-    background: var(--smo-surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--smo-border);
-    box-shadow: var(--shadow-sm);
-}
-
-.results-count {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    color: var(--smo-text-secondary);
-    font-weight: 500;
-}
-
-.sort-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
-    background: var(--smo-bg);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.sort-button:hover {
-    border-color: var(--smo-primary);
-    background: var(--smo-surface);
-}
-
-.sort-menu {
-    min-width: 200px;
-}
-
-.active-sort {
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    color: var(--smo-primary);
-    font-weight: 600;
-}
-
-/* Products Grid */
-.products-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Loading Skeleton */
-.skeleton-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.skeleton-image {
-    aspect-ratio: 1;
-    width: 100%;
-    border-radius: var(--radius-md);
-}
-
-.skeleton-title {
-    height: 1rem;
-    width: 75%;
-    border-radius: var(--radius-sm);
-}
-
-.skeleton-price {
-    height: 1rem;
-    width: 50%;
-    border-radius: var(--radius-sm);
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    text-align: center;
-    padding: 3rem 1rem;
-}
-
-.empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 128px;
-    height: 128px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,
-        rgba(44, 95, 93, 0.1) 0%,
-        rgba(44, 95, 93, 0.05) 100%);
-    color: var(--smo-primary);
-    margin-bottom: 1.5rem;
-}
-
-.empty-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.empty-subtitle {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--smo-text-secondary);
-    margin-bottom: 1.5rem;
-    max-width: 500px;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-}
-
-.pagination-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-primary);
-    background: var(--smo-bg);
-}
-
-.pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination-pages {
-    display: flex;
-    gap: 0.25rem;
-}
-
-.pagination-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 0.75rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-primary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-page:hover:not(:disabled) {
-    border-color: var(--smo-primary-light);
-    color: var(--smo-primary);
-}
-
-.pagination-page.active {
-    background: linear-gradient(135deg, var(--smo-primary) 0%, var(--smo-primary-light) 100%);
-    border-color: var(--smo-primary);
-    color: white;
-    box-shadow: 0 4px 12px rgba(44, 95, 93, 0.3);
-}
-
-.pagination-page:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-    .filter-sidebar {
-        order: 2;
-    }
-
-    .products-main {
-        order: 1;
-    }
-}
-
-@media (max-width: 640px) {
-    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .sort-button {
-        justify-content: center;
-    }
-}
-</style>

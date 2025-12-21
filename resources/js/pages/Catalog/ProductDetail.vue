@@ -2,14 +2,7 @@
 import ProductCard from '@/components/shop/ProductCard.vue';
 import PriceDisplay from '@/components/shop/PriceDisplay.vue';
 import QuantityControl from '@/components/shop/QuantityControl.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import { useCartStore } from '@/stores/cart';
@@ -53,6 +46,27 @@ const nomenclatureName = computed(() =>
 const nomenclatureDescription = computed(() =>
     props.product.nomenclature ? getLocalizedDescription(props.product.nomenclature) : null
 );
+
+const breadcrumbItems = computed(() => {
+    const items: Array<{ label?: string; href?: string; isCurrentPage?: boolean }> = [
+        { label: t({ ru: 'Главная', kz: 'Басты бет' }), href: '/' },
+        { label: t({ ru: 'Товары', kz: 'Тауарлар' }), href: '/products' },
+    ];
+
+    if (props.product.nomenclature?.category) {
+        items.push({
+            label: categoryName.value,
+            href: `/categories/${props.product.nomenclature.category.slug}`,
+        });
+    }
+
+    items.push({
+        label: productName.value,
+        isCurrentPage: true,
+    });
+
+    return items;
+});
 const unitName = computed(() => {
     const unit = props.product.nomenclature?.unit;
     if (!unit) return '';
@@ -102,38 +116,7 @@ async function handleAddToCart() {
     <ShopLayout>
         <div class="-mx-4 min-h-screen bg-concrete-50">
             <!-- Breadcrumbs -->
-            <div class="bg-white border-b border-concrete-200">
-                <div class="px-4 sm:px-6 py-4">
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/" class="text-concrete-600 hover:text-steel-700 transition-colors">
-                                    {{ t({ ru: 'Главная', kz: 'Басты бет' }) }}
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/products" class="text-concrete-600 hover:text-steel-700 transition-colors">
-                                    {{ t({ ru: 'Товары', kz: 'Тауарлар' }) }}
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator v-if="product.nomenclature?.category" />
-                            <BreadcrumbItem v-if="product.nomenclature?.category">
-                                <BreadcrumbLink
-                                    :href="`/categories/${product.nomenclature.category.slug}`"
-                                    class="text-concrete-600 hover:text-steel-700 transition-colors"
-                                >
-                                    {{ categoryName }}
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbPage class="text-steel-900 font-semibold">{{ productName }}</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                </div>
-            </div>
+            <PageBreadcrumb :items="breadcrumbItems" />
 
             <!-- Product Detail -->
             <div class="px-4 sm:px-6 py-8">

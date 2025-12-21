@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import CategoryCard from '@/components/shop/CategoryCard.vue';
 import ProductCard from '@/components/shop/ProductCard.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Category, PaginatedResponse, Product } from '@/types/api';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ChevronLeft, ChevronRight, FolderTree, Home, Package } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
     category: Category;
@@ -25,6 +19,12 @@ const { getLocalizedName, getLocalizedDescription, t } = useLocale();
 
 const categoryName = getLocalizedName(props.category);
 const categoryDescription = getLocalizedDescription(props.category);
+
+const breadcrumbItems = computed(() => [
+    { icon: Home, href: '/' },
+    { label: t({ ru: 'Категории', kz: 'Санаттар' }), href: '/categories' },
+    { label: categoryName, isCurrentPage: true },
+]);
 
 function goToPage(page: number) {
     router.get(
@@ -40,44 +40,16 @@ function goToPage(page: number) {
 
     <ShopLayout>
         <!-- Breadcrumb -->
-        <div class="-mx-4 breadcrumb-bar">
-            <div class="px-4 py-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as-child>
-                                <Link href="/">
-                                    <Home :size="16" />
-                                </Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as-child>
-                                <Link href="/categories">
-                                    {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
-                                </Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>
-                                {{ categoryName }}
-                            </BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
-        </div>
+        <PageBreadcrumb :items="breadcrumbItems" />
 
         <!-- Category Page -->
-        <div class="-mx-4 category-page bg-pattern">
+        <div class="-mx-4 min-h-screen bg-[var(--smo-bg)] bg-pattern">
             <!-- Category Header -->
-            <div class="category-header">
+            <div class="bg-gradient-to-br from-[rgba(44,95,93,0.05)] to-[rgba(44,95,93,0.02)] border-b border-[var(--smo-border)] py-12">
                 <div class="px-4">
-                    <div class="header-content animate-fadeInUp">
-                        <h1 class="category-title">{{ categoryName }}</h1>
-                        <p v-if="categoryDescription" class="category-description">
+                    <div class="max-w-[800px] animate-fadeInUp">
+                        <h1 class="font-[var(--font-display)] text-[2.5rem] font-extrabold text-[var(--smo-text-primary)] leading-tight tracking-tight mb-3">{{ categoryName }}</h1>
+                        <p v-if="categoryDescription" class="font-[var(--font-body)] text-lg text-[var(--smo-text-secondary)] leading-relaxed">
                             {{ categoryDescription }}
                         </p>
                     </div>
@@ -85,15 +57,15 @@ function goToPage(page: number) {
             </div>
 
             <!-- Subcategories Section -->
-            <div v-if="category.children && category.children.length > 0" class="subcategories-section">
+            <div v-if="category.children && category.children.length > 0" class="py-12 border-b border-[var(--smo-border)]">
                 <div class="px-4">
-                    <div class="section-header animate-fadeInUp">
-                        <FolderTree :size="24" class="section-icon" />
-                        <h2 class="section-title">
+                    <div class="flex items-center gap-3 mb-8 animate-fadeInUp">
+                        <FolderTree :size="24" class="text-[var(--smo-primary)]" />
+                        <h2 class="font-[var(--font-display)] text-[1.75rem] font-bold text-[var(--smo-text-primary)]">
                             {{ t({ ru: 'Подкатегории', kz: 'Санаттар' }) }}
                         </h2>
                     </div>
-                    <div class="subcategories-grid">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div
                             v-for="(child, index) in category.children"
                             :key="child.id"
@@ -107,22 +79,22 @@ function goToPage(page: number) {
             </div>
 
             <!-- Products Section -->
-            <div class="products-section">
+            <div class="py-12">
                 <div class="px-4">
-                    <div class="section-header animate-fadeInUp">
-                        <div class="header-left">
-                            <Package :size="24" class="section-icon" />
-                            <h2 class="section-title">
+                    <div class="flex items-center gap-3 mb-8 animate-fadeInUp">
+                        <div class="flex items-center gap-3 flex-1">
+                            <Package :size="24" class="text-[var(--smo-primary)]" />
+                            <h2 class="font-[var(--font-display)] text-[1.75rem] font-bold text-[var(--smo-text-primary)]">
                                 {{ t({ ru: 'Товары', kz: 'Өнімдер' }) }}
                             </h2>
                         </div>
-                        <div class="products-badge">
+                        <div class="inline-flex items-center px-4 py-2 bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border border-[rgba(44,95,93,0.2)] rounded-[var(--radius-md)] font-[var(--font-display)] text-sm font-semibold text-[var(--smo-primary)]">
                             <span>{{ products.total }} {{ t({ ru: 'товаров', kz: 'тауар' }) }}</span>
                         </div>
                     </div>
 
                     <!-- Products Grid -->
-                    <div v-if="products.data.length > 0" class="products-grid">
+                    <div v-if="products.data.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <div
                             v-for="(product, index) in products.data"
                             :key="product.id"
@@ -134,14 +106,14 @@ function goToPage(page: number) {
                     </div>
 
                     <!-- Empty State -->
-                    <div v-else class="empty-state animate-fadeInUp">
-                        <div class="empty-icon">
+                    <div v-else class="flex flex-col items-center justify-center min-h-[400px] px-12 py-12 bg-[var(--smo-surface)] border-2 border-dashed border-[var(--smo-border)] rounded-[var(--radius-lg)] text-center animate-fadeInUp">
+                        <div class="flex items-center justify-center w-[120px] h-[120px] mb-6 bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] rounded-full text-[var(--smo-primary)]">
                             <Package :size="64" />
                         </div>
-                        <h3 class="empty-title">
+                        <h3 class="font-[var(--font-display)] text-2xl font-bold text-[var(--smo-text-primary)] mb-2">
                             {{ t({ ru: 'Товары не найдены', kz: 'Өнімдер табылмады' }) }}
                         </h3>
-                        <p class="empty-text">
+                        <p class="font-[var(--font-body)] text-base text-[var(--smo-text-secondary)] max-w-[400px]">
                             {{
                                 t({
                                     ru: 'В этой категории пока нет товаров',
@@ -152,17 +124,17 @@ function goToPage(page: number) {
                     </div>
 
                     <!-- Pagination -->
-                    <div v-if="products.last_page > 1" class="pagination animate-fadeInUp">
+                    <div v-if="products.last_page > 1" class="flex items-center justify-center gap-4 mt-12 animate-fadeInUp">
                         <button
-                            class="pagination-btn"
+                            class="flex items-center gap-2 px-6 py-3 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] font-[var(--font-display)] text-[0.9375rem] font-semibold text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)] hover:bg-[var(--smo-bg)] hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                             :disabled="products.current_page === 1"
                             @click="goToPage(products.current_page - 1)"
                         >
                             <ChevronLeft :size="20" />
-                            <span>{{ t({ ru: 'Предыдущая', kz: 'Алдыңғы' }) }}</span>
+                            <span class="hidden sm:inline">{{ t({ ru: 'Предыдущая', kz: 'Алдыңғы' }) }}</span>
                         </button>
 
-                        <div class="pagination-info">
+                        <div class="font-[var(--font-body)] text-[0.9375rem] font-medium text-[var(--smo-text-secondary)] px-4 py-3">
                             {{
                                 t({
                                     ru: `Страница ${products.current_page} из ${products.last_page}`,
@@ -172,11 +144,11 @@ function goToPage(page: number) {
                         </div>
 
                         <button
-                            class="pagination-btn"
+                            class="flex items-center gap-2 px-6 py-3 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] font-[var(--font-display)] text-[0.9375rem] font-semibold text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)] hover:bg-[var(--smo-bg)] hover:-translate-y-0.5 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                             :disabled="products.current_page === products.last_page"
                             @click="goToPage(products.current_page + 1)"
                         >
-                            <span>{{ t({ ru: 'Следующая', kz: 'Келесі' }) }}</span>
+                            <span class="hidden sm:inline">{{ t({ ru: 'Следующая', kz: 'Келесі' }) }}</span>
                             <ChevronRight :size="20" />
                         </button>
                     </div>
@@ -185,238 +157,3 @@ function goToPage(page: number) {
         </div>
     </ShopLayout>
 </template>
-
-<style scoped>
-/* Breadcrumb Bar */
-.breadcrumb-bar {
-    background: var(--smo-surface);
-    border-bottom: 1px solid var(--smo-border);
-}
-
-/* Category Page */
-.category-page {
-    min-height: 100vh;
-    background: var(--smo-bg);
-}
-
-/* Category Header */
-.category-header {
-    background: linear-gradient(135deg, rgba(44, 95, 93, 0.05) 0%, rgba(44, 95, 93, 0.02) 100%);
-    border-bottom: 1px solid var(--smo-border);
-    padding: 3rem 0;
-}
-
-.header-content {
-    max-width: 800px;
-}
-
-.category-title {
-    font-family: var(--font-display);
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--smo-text-primary);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.75rem;
-}
-
-.category-description {
-    font-family: var(--font-body);
-    font-size: 1.125rem;
-    color: var(--smo-text-secondary);
-    line-height: 1.6;
-}
-
-/* Section Header */
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-}
-
-.section-icon {
-    color: var(--smo-primary);
-}
-
-.section-title {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-.products-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, rgba(44, 95, 93, 0.1) 0%, rgba(44, 95, 93, 0.05) 100%);
-    border: 1px solid rgba(44, 95, 93, 0.2);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--smo-primary);
-}
-
-/* Subcategories Section */
-.subcategories-section {
-    padding: 3rem 0;
-    border-bottom: 1px solid var(--smo-border);
-}
-
-.subcategories-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
-
-@media (min-width: 640px) {
-    .subcategories-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .subcategories-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* Products Section */
-.products-section {
-    padding: 3rem 0;
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 1280px) {
-    .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    padding: 3rem 1.5rem;
-    background: var(--smo-surface);
-    border: 2px dashed var(--smo-border);
-    border-radius: var(--radius-lg);
-    text-align: center;
-}
-
-.empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 120px;
-    height: 120px;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(44, 95, 93, 0.1) 0%, rgba(44, 95, 93, 0.05) 100%);
-    border-radius: 50%;
-    color: var(--smo-primary);
-}
-
-.empty-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.empty-text {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--smo-text-secondary);
-    max-width: 400px;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 3rem;
-}
-
-.pagination-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-text-primary);
-    background: var(--smo-bg);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.pagination-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.pagination-info {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--smo-text-secondary);
-    padding: 0.75rem 1rem;
-}
-
-@media (max-width: 640px) {
-    .category-title {
-        font-size: 2rem;
-    }
-
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .pagination-btn span {
-        display: none;
-    }
-}
-</style>

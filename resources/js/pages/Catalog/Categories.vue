@@ -1,18 +1,12 @@
 <script setup lang="ts">
 import CategoryCard from '@/components/shop/CategoryCard.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Category } from '@/types/api';
-import { Head, Link } from '@inertiajs/vue3';
-import { FolderOpen, Grid3x3, Home } from 'lucide-vue-next';
+import { Head } from '@inertiajs/vue3';
+import { FolderOpen, Home } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
     categories: Category[];
@@ -20,6 +14,11 @@ interface Props {
 
 defineProps<Props>();
 const { t } = useLocale();
+
+const breadcrumbItems = computed(() => [
+    { icon: Home, href: '/' },
+    { label: t({ ru: 'Категории', kz: 'Санаттар' }), isCurrentPage: true },
+]);
 </script>
 
 <template>
@@ -27,27 +26,7 @@ const { t } = useLocale();
 
     <ShopLayout>
         <!-- Breadcrumb -->
-        <div class="-mx-4 bg-[var(--smo-surface)]">
-            <div class="px-4 py-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink as-child>
-                                <Link href="/">
-                                    <Home :size="16" />
-                                </Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>
-                                {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
-                            </BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
-        </div>
+        <PageBreadcrumb :items="breadcrumbItems" />
 
         <!-- Categories Page -->
         <div class="-mx-4 min-h-screen bg-[var(--smo-bg)] bg-pattern">

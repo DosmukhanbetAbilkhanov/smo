@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import FilterSidebar from '@/components/catalog/FilterSidebar.vue';
 import ProductCard from '@/components/shop/ProductCard.vue';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import PageBreadcrumb from '@/components/PageBreadcrumb.vue';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,6 +42,11 @@ const currentPage = computed(() => props.products.current_page);
 const totalPages = computed(() => props.products.last_page);
 const hasNextPage = computed(() => currentPage.value < totalPages.value);
 const hasPrevPage = computed(() => currentPage.value > 1);
+
+const breadcrumbItems = computed(() => [
+    { icon: Home, href: '/' },
+    { label: t({ ru: 'Поиск', kz: 'Іздеу' }), isCurrentPage: true },
+]);
 
 watch(searchQuery, (newQuery) => {
     if (searchDebounce.value) {
@@ -141,56 +139,38 @@ function goToPage(page: number) {
 <template>
     <ShopLayout>
         <!-- Breadcrumb Bar -->
-        <div class="-mx-4 breadcrumb-bar">
-            <div class="px-4 py-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">
-                                <Home :size="16" />
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>
-                                {{ t({ ru: 'Поиск', kz: 'Іздеу' }) }}
-                            </BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
-        </div>
+        <PageBreadcrumb :items="breadcrumbItems" />
 
         <!-- Search Page -->
-        <div class="-mx-4 search-page bg-pattern">
+        <div class="-mx-4 min-h-screen bg-[var(--smo-bg)] bg-pattern">
             <div class="px-4">
                 <!-- Search Header -->
-                <div class="search-header animate-fadeInUp">
+                <div class="mb-8 animate-fadeInUp">
                     <h1 class="page-title">
                         {{ t({ ru: 'Поиск товаров', kz: 'Тауарларды іздеу' }) }}
                     </h1>
 
                     <!-- Search Input -->
-                    <div class="search-input-wrapper">
-                        <SearchIcon :size="20" class="search-icon" />
+                    <div class="relative max-w-[700px] my-6">
+                        <SearchIcon :size="20" class="absolute top-1/2 left-4 -translate-y-1/2 text-[var(--smo-text-muted)] pointer-events-none" />
                         <Input
                             v-model="searchQuery"
                             type="search"
                             :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
-                            class="search-input"
+                            class="h-14 pl-12 pr-12 font-[var(--font-body)] text-base border-2 border-[var(--smo-border)] rounded-[var(--radius-lg)] bg-[var(--smo-surface)] transition-all hover:border-[var(--smo-primary-light)] focus:outline-none focus:border-[var(--smo-primary)] focus:shadow-[0_0_0_3px_rgba(44,95,93,0.1)]"
                         />
                         <button
                             v-if="searchQuery"
                             @click="clearSearch"
-                            class="clear-btn"
+                            class="absolute top-1/2 right-3 -translate-y-1/2 flex items-center justify-center w-9 h-9 bg-transparent border-none rounded-[var(--radius-sm)] text-[var(--smo-text-muted)] cursor-pointer transition-all hover:bg-[var(--smo-bg)] hover:text-[var(--smo-text-primary)]"
                         >
                             <X :size="20" />
                         </button>
                     </div>
 
-                    <div v-if="query" class="search-info">
-                        <span class="search-query">"{{ query }}"</span>
-                        <span class="search-results">
+                    <div v-if="query" class="flex items-center gap-4 flex-wrap">
+                        <span class="font-[var(--font-display)] text-lg font-semibold text-[var(--smo-primary)]">"{{ query }}"</span>
+                        <span class="font-[var(--font-body)] text-[0.9375rem] text-[var(--smo-text-secondary)]">
                             {{ t({
                                 ru: `${products.total} товаров найдено`,
                                 kz: `${products.total} тауар табылды`,
@@ -200,12 +180,12 @@ function goToPage(page: number) {
                 </div>
 
                 <!-- Content Grid -->
-                <div class="catalog-grid">
+                <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
                     <!-- Filter Sidebar -->
-                    <aside class="filter-sidebar animate-fadeInUp" style="animation-delay: 100ms">
-                        <div class="filter-header">
-                            <SlidersHorizontal :size="20" class="filter-icon" />
-                            <h2 class="filter-title">
+                    <aside class="bg-[var(--smo-surface)] border border-[var(--smo-border)] rounded-[var(--radius-lg)] p-6 shadow-sm animate-fadeInUp" style="animation-delay: 100ms">
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--smo-border)]">
+                            <SlidersHorizontal :size="20" class="text-[var(--smo-primary)]" />
+                            <h2 class="font-[var(--font-display)] text-lg font-bold text-[var(--smo-text-primary)]">
                                 {{ t({ ru: 'Фильтры', kz: 'Сүзгілер' }) }}
                             </h2>
                         </div>
@@ -217,11 +197,11 @@ function goToPage(page: number) {
                     </aside>
 
                     <!-- Results Section -->
-                    <main class="products-main">
+                    <main class="flex flex-col gap-6">
                         <!-- Toolbar -->
-                        <div v-if="query && products.total > 0" class="products-toolbar animate-fadeInUp" style="animation-delay: 200ms">
-                            <div class="toolbar-info">
-                                <span class="results-count">
+                        <div v-if="query && products.total > 0" class="flex items-center justify-between px-6 py-4 bg-[var(--smo-surface)] border border-[var(--smo-border)] rounded-[var(--radius-md)] shadow-sm animate-fadeInUp" style="animation-delay: 200ms">
+                            <div class="flex items-center gap-4">
+                                <span class="font-[var(--font-body)] text-[0.9375rem] font-medium text-[var(--smo-text-secondary)]">
                                     {{ t({
                                         ru: `${products.from || 0}-${products.to || 0} из ${products.total}`,
                                         kz: `${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
@@ -231,7 +211,7 @@ function goToPage(page: number) {
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger as-child>
-                                    <button class="sort-button">
+                                    <button class="flex items-center gap-2 px-4 py-2 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-sm)] font-[var(--font-display)] text-sm font-semibold text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)]">
                                         <ArrowUpDown :size="18" />
                                         <span>{{ t(sortOptions.find(o => o.value === currentSort)?.label || sortOptions[0].label) }}</span>
                                     </button>
@@ -250,18 +230,18 @@ function goToPage(page: number) {
                         </div>
 
                         <!-- Loading State -->
-                        <div v-if="isLoading" class="products-grid">
-                            <div v-for="i in 9" :key="i" class="loading-card">
-                                <Skeleton class="skeleton-image" />
-                                <Skeleton class="skeleton-title" />
-                                <Skeleton class="skeleton-price" />
+                        <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-for="i in 9" :key="i" class="flex flex-col gap-3">
+                                <Skeleton class="aspect-square w-full rounded-[var(--radius-md)]" />
+                                <Skeleton class="h-4 w-3/4 rounded-[var(--radius-sm)]" />
+                                <Skeleton class="h-4 w-1/2 rounded-[var(--radius-sm)]" />
                             </div>
                         </div>
 
                         <!-- Products Grid -->
                         <div
                             v-else-if="query && products.data.length > 0"
-                            class="products-grid"
+                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                         >
                             <div
                                 v-for="(product, index) in products.data"
@@ -274,14 +254,14 @@ function goToPage(page: number) {
                         </div>
 
                         <!-- Empty State - No Query -->
-                        <div v-else-if="!query" class="empty-state animate-fadeInUp">
-                            <div class="empty-icon">
+                        <div v-else-if="!query" class="flex flex-col items-center justify-center min-h-[400px] px-12 py-12 bg-[var(--smo-surface)] border-2 border-dashed border-[var(--smo-border)] rounded-[var(--radius-lg)] text-center animate-fadeInUp">
+                            <div class="flex items-center justify-center w-[120px] h-[120px] mb-6 bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] rounded-full text-[var(--smo-primary)]">
                                 <SearchIcon :size="64" />
                             </div>
-                            <h3 class="empty-title">
+                            <h3 class="font-[var(--font-display)] text-2xl font-bold text-[var(--smo-text-primary)] mb-2">
                                 {{ t({ ru: 'Начните поиск', kz: 'Іздеуді бастаңыз' }) }}
                             </h3>
-                            <p class="empty-text">
+                            <p class="font-[var(--font-body)] text-base text-[var(--smo-text-secondary)] max-w-[400px] mb-6">
                                 {{ t({
                                     ru: 'Введите запрос в поисковую строку выше',
                                     kz: 'Жоғарыдағы іздеу жолына сұрау енгізіңіз',
@@ -290,20 +270,20 @@ function goToPage(page: number) {
                         </div>
 
                         <!-- Empty State - No Results -->
-                        <div v-else class="empty-state animate-fadeInUp">
-                            <div class="empty-icon empty-icon-warning">
+                        <div v-else class="flex flex-col items-center justify-center min-h-[400px] px-12 py-12 bg-[var(--smo-surface)] border-2 border-dashed border-[var(--smo-border)] rounded-[var(--radius-lg)] text-center animate-fadeInUp">
+                            <div class="flex items-center justify-center w-[120px] h-[120px] mb-6 bg-gradient-to-br from-[rgba(217,119,87,0.1)] to-[rgba(217,119,87,0.05)] rounded-full text-[var(--smo-accent)]">
                                 <SearchIcon :size="64" />
                             </div>
-                            <h3 class="empty-title">
+                            <h3 class="font-[var(--font-display)] text-2xl font-bold text-[var(--smo-text-primary)] mb-2">
                                 {{ t({ ru: 'Ничего не найдено', kz: 'Ештеңе табылмады' }) }}
                             </h3>
-                            <p class="empty-text">
+                            <p class="font-[var(--font-body)] text-base text-[var(--smo-text-secondary)] max-w-[400px] mb-6">
                                 {{ t({
                                     ru: 'Попробуйте изменить запрос или фильтры',
                                     kz: 'Сұрауды немесе сүзгілерді өзгертіп көріңіз',
                                 }) }}
                             </p>
-                            <div class="empty-actions">
+                            <div class="flex gap-3 flex-wrap">
                                 <button @click="clearSearch" class="btn-secondary-modern">
                                     {{ t({ ru: 'Очистить поиск', kz: 'Іздеуді тазалау' }) }}
                                 </button>
@@ -316,23 +296,26 @@ function goToPage(page: number) {
                         <!-- Pagination -->
                         <div
                             v-if="query && products.data.length > 0 && totalPages > 1"
-                            class="pagination animate-fadeInUp"
+                            class="flex items-center justify-center gap-3 mt-8 animate-fadeInUp"
                         >
                             <button
                                 @click="goToPage(currentPage - 1)"
                                 :disabled="!hasPrevPage || isLoading"
-                                class="pagination-btn"
+                                class="flex items-center justify-center w-10 h-10 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-sm)] text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)] hover:-translate-y-0.5 hover:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 <ChevronLeft :size="20" />
                             </button>
 
-                            <div class="pagination-pages">
+                            <div class="flex gap-2">
                                 <button
                                     v-for="page in totalPages"
                                     :key="page"
                                     @click="goToPage(page)"
                                     :disabled="isLoading"
-                                    :class="['pagination-page', { active: page === currentPage }]"
+                                    :class="[
+                                        'flex items-center justify-center min-w-[40px] h-10 px-3 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-sm)] font-[var(--font-display)] text-[0.9375rem] font-semibold text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)] hover:-translate-y-0.5 hover:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed',
+                                        page === currentPage ? 'bg-[var(--smo-primary)] border-[var(--smo-primary)] text-white' : ''
+                                    ]"
                                 >
                                     {{ page }}
                                 </button>
@@ -341,7 +324,7 @@ function goToPage(page: number) {
                             <button
                                 @click="goToPage(currentPage + 1)"
                                 :disabled="!hasNextPage || isLoading"
-                                class="pagination-btn"
+                                class="flex items-center justify-center w-10 h-10 bg-[var(--smo-surface)] border-2 border-[var(--smo-border)] rounded-[var(--radius-sm)] text-[var(--smo-text-secondary)] cursor-pointer transition-all hover:border-[var(--smo-primary)] hover:text-[var(--smo-text-primary)] hover:-translate-y-0.5 hover:shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                                 <ChevronRight :size="20" />
                             </button>
@@ -352,383 +335,3 @@ function goToPage(page: number) {
         </div>
     </ShopLayout>
 </template>
-
-<style scoped>
-/* Breadcrumb Bar */
-.breadcrumb-bar {
-    background: var(--smo-surface);
-    border-bottom: 1px solid var(--smo-border);
-}
-
-/* Search Page */
-.search-page {
-    min-height: 100vh;
-    background: var(--smo-bg);
-}
-
-/* Search Header */
-.search-header {
-    margin-bottom: 2rem;
-}
-
-.search-input-wrapper {
-    position: relative;
-    max-width: 700px;
-    margin: 1.5rem 0;
-}
-
-.search-icon {
-    position: absolute;
-    top: 50%;
-    left: 1rem;
-    transform: translateY(-50%);
-    color: var(--smo-text-muted);
-    pointer-events: none;
-}
-
-.search-input {
-    height: 56px;
-    padding-left: 3rem;
-    padding-right: 3rem;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-lg);
-    background: var(--smo-surface);
-    transition: all var(--transition-base);
-}
-
-.search-input:hover {
-    border-color: var(--smo-primary-light);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--smo-primary);
-    box-shadow: 0 0 0 3px rgba(44, 95, 93, 0.1);
-}
-
-.clear-btn {
-    position: absolute;
-    top: 50%;
-    right: 0.75rem;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-sm);
-    color: var(--smo-text-muted);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.clear-btn:hover {
-    background: var(--smo-bg);
-    color: var(--smo-text-primary);
-}
-
-.search-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.search-query {
-    font-family: var(--font-display);
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--smo-primary);
-}
-
-.search-results {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    color: var(--smo-text-secondary);
-}
-
-/* Catalog Grid */
-.catalog-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-@media (min-width: 1024px) {
-    .catalog-grid {
-        grid-template-columns: 280px 1fr;
-    }
-}
-
-/* Filter Sidebar */
-.filter-sidebar {
-    background: var(--smo-surface);
-    border: 1px solid var(--smo-border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.filter-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--smo-border);
-}
-
-.filter-icon {
-    color: var(--smo-primary);
-}
-
-.filter-title {
-    font-family: var(--font-display);
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-}
-
-/* Products Main */
-.products-main {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Products Toolbar */
-.products-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    background: var(--smo-surface);
-    border: 1px solid var(--smo-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-}
-
-.toolbar-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.results-count {
-    font-family: var(--font-body);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--smo-text-secondary);
-}
-
-.sort-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-display);
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--smo-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.sort-button:hover {
-    border-color: var(--smo-primary);
-    color: var(--smo-text-primary);
-}
-
-/* Products Grid */
-.products-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Loading Card */
-.loading-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.skeleton-image {
-    aspect-ratio: 1;
-    width: 100%;
-    border-radius: var(--radius-md);
-}
-
-.skeleton-title {
-    height: 1rem;
-    width: 75%;
-    border-radius: var(--radius-sm);
-}
-
-.skeleton-price {
-    height: 1rem;
-    width: 50%;
-    border-radius: var(--radius-sm);
-}
-
-/* Empty State */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    padding: 3rem 1.5rem;
-    background: var(--smo-surface);
-    border: 2px dashed var(--smo-border);
-    border-radius: var(--radius-lg);
-    text-align: center;
-}
-
-.empty-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 120px;
-    height: 120px;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(44, 95, 93, 0.1) 0%, rgba(44, 95, 93, 0.05) 100%);
-    border-radius: 50%;
-    color: var(--smo-primary);
-}
-
-.empty-icon-warning {
-    background: linear-gradient(135deg, rgba(217, 119, 87, 0.1) 0%, rgba(217, 119, 87, 0.05) 100%);
-    color: var(--smo-accent);
-}
-
-.empty-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--smo-text-primary);
-    margin-bottom: 0.5rem;
-}
-
-.empty-text {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--smo-text-secondary);
-    max-width: 400px;
-    margin-bottom: 1.5rem;
-}
-
-.empty-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-top: 2rem;
-}
-
-.pagination-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-sm);
-    color: var(--smo-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-btn:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-text-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.pagination-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.pagination-pages {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.pagination-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 0.75rem;
-    background: var(--smo-surface);
-    border: 2px solid var(--smo-border);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-display);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: var(--smo-text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-base);
-}
-
-.pagination-page:hover:not(:disabled) {
-    border-color: var(--smo-primary);
-    color: var(--smo-text-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.pagination-page.active {
-    background: var(--smo-primary);
-    border-color: var(--smo-primary);
-    color: white;
-}
-
-.pagination-page:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-@media (max-width: 640px) {
-    .products-toolbar {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .sort-button {
-        width: 100%;
-        justify-content: center;
-    }
-}
-</style>
