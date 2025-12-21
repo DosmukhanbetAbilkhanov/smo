@@ -109,7 +109,7 @@ function goToPage(page: number) {
                 <!-- Page Header -->
                 <div class="animate-fadeInUp">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-                        <h1 class="page-title">
+                        <h1 class="text-lg font-semibold">
                             {{ t({ ru: 'Каталог товаров', kz: 'Тауарлар каталогы' }) }}
                         </h1>
                         <div class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--smo-primary)] bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border border-[rgba(44,95,93,0.2)] rounded-[var(--radius-lg)] font-[var(--font-display)]">
@@ -122,17 +122,11 @@ function goToPage(page: number) {
                 <!-- Products Main -->
                 <main class="flex flex-col gap-8">
                     <!-- Sorting and Results Count -->
-                    <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-4 px-6 py-5 bg-[var(--smo-surface)] border border-[var(--smo-border)] rounded-[var(--radius-lg)] shadow-sm animate-fadeInUp" style="animation-delay: 200ms">
-                        <span class="text-sm font-medium text-[var(--smo-text-secondary)] font-[var(--font-body)]">
-                            {{ t({
-                                ru: `Показано ${products.from || 0}-${products.to || 0} из ${products.total}`,
-                                kz: `Көрсетілген ${products.from || 0}-${products.to || 0} ${products.total} ішінде`,
-                            }) }}
-                        </span>
-
+                    <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between">
+                        
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
-                                <button class="flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 text-sm font-semibold text-[var(--smo-text-primary)] bg-[var(--smo-bg)] border-2 border-[var(--smo-border)] rounded-[var(--radius-md)] font-[var(--font-display)] transition-all hover:border-[var(--smo-primary)] hover:bg-[var(--smo-surface)] cursor-pointer">
+                                <button class="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 text-xs text-gray-600 bg-[var(--smo-bg)] border rounded-[var(--radius-md)] transition-all hover:border-gray-300 hover:bg-[var(--smo-surface)] cursor-pointer">
                                     <SlidersHorizontal :size="16" />
                                     {{ t({
                                         ru: 'Сортировка',

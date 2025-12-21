@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import CitySelector from '@/components/CitySelector.vue';
 import { useCartStore } from '@/stores/cart';
-import { Link, usePage } from '@inertiajs/vue3';
-import { Package, ShoppingCart, User } from 'lucide-vue-next';
+import { Link, usePage, router } from '@inertiajs/vue3';
+import { Package, ShoppingCart, User, Settings, LogOut, ShoppingBag } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import LocaleSwitcher from '../shop/LocaleSwitcher.vue';
 import CategoryMenu from './CategoryMenu.vue';
 import SearchBar from './SearchBar.vue';
 import { useLocale } from '@/composables/useLocale';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 const { t } = useLocale();
 const cartStore = useCartStore();
@@ -62,6 +69,11 @@ watch(isAuthenticated, (newValue) => {
         cartStore.reset();
     }
 });
+
+// Logout handler
+const handleLogout = () => {
+    router.post('/logout');
+};
 </script>
 
 <template>
@@ -109,14 +121,48 @@ watch(isAuthenticated, (newValue) => {
                     <CitySelector />
                     <LocaleSwitcher />
 
-                    <!-- Profile Button (When Authenticated) -->
-                    <Link
-                        v-if="isAuthenticated"
-                        href="/dashboard"
-                        class="flex items-center justify-center w-11 h-11 bg-white border-2 border-concrete-200 rounded-lg text-steel-600 no-underline transition-all duration-200 hover:border-steel-700 hover:text-steel-700 hover:-translate-y-0.5 hover:shadow-industrial-md"
-                    >
-                        <User :size="18" :stroke-width="2" />
-                    </Link>
+                    <!-- Profile Dropdown (When Authenticated) -->
+                    <DropdownMenu v-if="isAuthenticated">
+                        <DropdownMenuTrigger as-child>
+                            <button
+                                class="flex items-center justify-center w-11 h-11 bg-white border-2 border-concrete-200 rounded-lg text-steel-600 no-underline transition-all duration-200 hover:border-steel-700 hover:text-steel-700 hover:-translate-y-0.5 hover:shadow-industrial-md focus:outline-none focus:ring-2 focus:ring-steel-500 focus:ring-offset-2"
+                            >
+                                <User :size="18" :stroke-width="2" />
+                            </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" class="w-48">
+                            <DropdownMenuItem as-child>
+                                <Link
+                                    href="/orders"
+                                    class="flex items-center gap-2 cursor-pointer w-full"
+                                >
+                                    <ShoppingBag :size="16" />
+                                    <span>{{ t({ ru: 'Заказы', kz: 'Тапсырыстар' }) }}</span>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem as-child>
+                                <Link
+                                    href="/settings/profile"
+                                    class="flex items-center gap-2 cursor-pointer w-full"
+                                >
+                                    <Settings :size="16" />
+                                    <span>{{ t({ ru: 'Профиль', kz: 'Профиль' }) }}</span>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuItem
+                                @click="handleLogout"
+                                class="flex items-center gap-2 cursor-pointer text-red-600"
+                            >
+                                <LogOut :size="16" />
+                                <span>{{ t({ ru: 'Выйти', kz: 'Шығу' }) }}</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <!-- Cart Button -->
                     <Link
