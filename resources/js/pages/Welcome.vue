@@ -100,7 +100,7 @@ defineProps<Props>();
         </section>
 
         <!-- Popular Products -->
-        <section class="-mx-4 border-t border-concrete-200 bg-concrete-50 py-16">
+        <section class="-mx-4 border-t border-concrete-200 py-16">
             <div class="px-4 sm:px-6">
                 <div class="mb-10">
                     <h2 class="font-display text-3xl font-bold text-steel-900 border-l-4 border-rust-500 pl-4 mb-3">
