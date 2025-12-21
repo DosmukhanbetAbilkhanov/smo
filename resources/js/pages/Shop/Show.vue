@@ -8,7 +8,7 @@ import { useLocale } from '@/composables/useLocale';
 import ShopLayout from '@/layouts/ShopLayout.vue';
 import type { Category, PaginatedProducts, Shop } from '@/types/api';
 import { router } from '@inertiajs/vue3';
-import { ChevronLeft, ChevronRight, Grid, MapPin, Package, Search, Store, X } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight, Grid, MapPin, Package, Search, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 interface Props {
@@ -126,40 +126,31 @@ function filterByCategory(categoryId: number | null) {
             <div class="px-4">
 
                 <!-- Shop Header -->
-                <div class="flex gap-3 p-4 bg-white rounded-lg border border-gray-200 shadow-lg mb-6 animate-fadeInUp">
-                    <div class="flex items-center justify-center w-16 h-16 flex-shrink-0 rounded-lg bg-gradient-to-br from-[rgba(44,95,93,0.1)] to-[rgba(44,95,93,0.05)] border-2 border-[rgba(44,95,93,0.2)]">
-                        <Store :size="24" class="text-[#2C5F5D]" />
-                    </div>
-                    <div class="flex-1 flex flex-col gap-2">
-                        <h1 class="text-2xl font-bold text-gray-900">{{ shop.name }}</h1>
+                <div class="flex gap-3  py-2 bg-white rounded-lg mb-2">
+                        <h1 class="font-bold text-gray-900">{{ shop.name }}</h1>
                         <div class="flex flex-wrap gap-4">
-                            <div v-if="shop.city" class="flex items-center gap-2 text-sm text-gray-600">
-                                <MapPin :size="16" class="text-[#2C5F5D]" />
+                            <div v-if="shop.city" class="flex items-center gap-2 text-sm text-slate-400">
+                                <MapPin :size="12"/>
                                 <span>{{ shop.city.name_ru }}</span>
                             </div>
-                            <div class="flex items-center gap-2 text-sm text-gray-600">
-                                <Package :size="16" class="text-[#2C5F5D]" />
-                                <span>{{ products.total }} {{ t({ ru: 'товаров', kz: 'тауар' }) }}</span>
-                            </div>
+                         
                         </div>
-                        <p v-if="shop.address" class="text-sm text-gray-600">{{ shop.address }}</p>
-                    </div>
                 </div>
 
                 <!-- Search Section -->
-                <div class="mb-6 animate-fadeInUp" style="animation-delay: 100ms">
-                    <div class="relative flex items-center gap-2 px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm transition-all focus-within:border-[#2C5F5D] focus-within:shadow-[0_0_0_2px_rgba(44,95,93,0.1)]">
-                        <Search :size="16" class="text-gray-500 flex-shrink-0" />
+                <div class="mb-6">
+                    <div class="relative">
+                        <Search :size="16" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                         <Input
                             v-model="localSearchQuery"
                             type="text"
                             :placeholder="t({ ru: 'Поиск товаров...', kz: 'Тауарларды іздеу...' })"
-                            class="flex-1 border-0 bg-transparent text-sm text-gray-900 outline-none p-0 placeholder:text-gray-400"
+                            class="w-full pl-10 pr-10 py-2.5 text-sm placeholder:text-gray-400"
                         />
                         <button
                             v-if="localSearchQuery"
                             @click="clearSearch"
-                            class="flex items-center justify-center w-7 h-7 rounded border-0 bg-gray-100 text-gray-400 cursor-pointer transition-all hover:bg-gray-200 hover:text-gray-900 flex-shrink-0"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-7 h-7 rounded border-0 bg-gray-100 text-gray-400 cursor-pointer transition-all hover:bg-gray-200 hover:text-gray-900"
                         >
                             <X :size="16" />
                         </button>
@@ -172,12 +163,6 @@ function filterByCategory(categoryId: number | null) {
                     class="bg-white rounded-md border border-gray-200 p-5 mb-6 animate-fadeInUp"
                     style="animation-delay: 200ms"
                 >
-                    <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
-                        <Grid :size="20" class="text-[#2C5F5D]" />
-                        <h2 class="text-base font-bold text-gray-900">
-                            {{ t({ ru: 'Категории', kz: 'Санаттар' }) }}
-                        </h2>
-                    </div>
                     <div class="flex flex-wrap gap-6">
                         <div class="flex flex-col gap-1">
                             <a

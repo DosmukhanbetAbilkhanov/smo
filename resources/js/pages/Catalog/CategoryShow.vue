@@ -45,32 +45,22 @@ function goToPage(page: number) {
         <!-- Category Page -->
         <div class="-mx-4 min-h-screen bg-[var(--smo-bg)] bg-pattern">
             <!-- Category Header -->
-            <div class="bg-gradient-to-br from-[rgba(44,95,93,0.05)] to-[rgba(44,95,93,0.02)] border-b border-[var(--smo-border)] py-12">
-                <div class="px-4">
-                    <div class="max-w-[800px] animate-fadeInUp">
-                        <h1 class="font-[var(--font-display)] text-[2.5rem] font-extrabold text-[var(--smo-text-primary)] leading-tight tracking-tight mb-3">{{ categoryName }}</h1>
-                        <p v-if="categoryDescription" class="font-[var(--font-body)] text-lg text-[var(--smo-text-secondary)] leading-relaxed">
-                            {{ categoryDescription }}
-                        </p>
-                    </div>
-                </div>
+            <div class="px-4 py-4">
+                <h1 class="text-lg font-bold">{{ categoryName }}</h1>
             </div>
 
             <!-- Subcategories Section -->
-            <div v-if="category.children && category.children.length > 0" class="py-12 border-b border-[var(--smo-border)]">
+            <div v-if="category.children && category.children.length > 0" class="py-4">
                 <div class="px-4">
-                    <div class="flex items-center gap-3 mb-8 animate-fadeInUp">
-                        <FolderTree :size="24" class="text-[var(--smo-primary)]" />
-                        <h2 class="font-[var(--font-display)] text-[1.75rem] font-bold text-[var(--smo-text-primary)]">
+                    <div class="flex items-center gap-2 mb-4">
+                        <h2 class="text-normal font-semibold text-slate-400">
                             {{ t({ ru: 'Подкатегории', kz: 'Санаттар' }) }}
                         </h2>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="flex space-x-2">
                         <div
                             v-for="(child, index) in category.children"
                             :key="child.id"
-                            class="animate-fadeInUp"
-                            :style="{ animationDelay: `${index * 50}ms` }"
                         >
                             <CategoryCard :category="child" />
                         </div>
@@ -79,12 +69,11 @@ function goToPage(page: number) {
             </div>
 
             <!-- Products Section -->
-            <div class="py-12">
+            <div class="pt-4 pb-12">
                 <div class="px-4">
                     <div class="flex items-center gap-3 mb-8 animate-fadeInUp">
                         <div class="flex items-center gap-3 flex-1">
-                            <Package :size="24" class="text-[var(--smo-primary)]" />
-                            <h2 class="font-[var(--font-display)] text-[1.75rem] font-bold text-[var(--smo-text-primary)]">
+                            <h2 class="font-bold text-lg">
                                 {{ t({ ru: 'Товары', kz: 'Өнімдер' }) }}
                             </h2>
                         </div>

@@ -27,12 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <div
-        :class="[
-            '-mx-4',
-            variant === 'default' ? 'bg-[var(--smo-surface)] border-b border-[var(--smo-border)]' : ''
-        ]"
-    >
+    <div>
         <div class="px-4 py-4">
             <Breadcrumb>
                 <BreadcrumbList>
