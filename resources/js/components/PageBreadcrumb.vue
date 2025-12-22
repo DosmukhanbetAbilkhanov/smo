@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
     <div>
-        <div class="px-4 py-4">
+        <div class="py-4">
             <Breadcrumb>
                 <BreadcrumbList>
                     <template v-for="(item, index) in items" :key="index">
