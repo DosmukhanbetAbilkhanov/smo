@@ -525,7 +525,7 @@ test('product includes nomenclature and shop relationships', function () {
         'name_ru' => 'Кабель ВВГ',
     ]);
 
-    $city = City::factory()->create(['name' => 'Алматы']);
+    $city = City::factory()->create(['name_ru' => 'Алматы', 'name_kz' => 'Алматы']);
     $company = Company::factory()->create(['city_id' => $city->id]);
     $shop = Shop::factory()->create([
         'company_id' => $company->id,

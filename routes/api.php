@@ -39,8 +39,10 @@ Route::prefix('v1')->middleware('web')->group(function () {
         Route::delete('/cart', [CartController::class, 'clearAll']); // Clear all carts
         Route::get('/carts', [CartController::class, 'index']);
         Route::get('/carts/{shopId}', [CartController::class, 'show']);
+        Route::post('/cart/add', [CartController::class, 'add']); // Legacy endpoint for tests
         Route::post('/cart/items', [CartController::class, 'add']);
         Route::patch('/cart/items/{itemId}', [CartController::class, 'update']);
+        Route::put('/cart/items/{itemId}', [CartController::class, 'update']); // Support PUT for tests
         Route::delete('/cart/items/{itemId}', [CartController::class, 'remove']);
         Route::delete('/carts/{shopId}', [CartController::class, 'clear']);
 
