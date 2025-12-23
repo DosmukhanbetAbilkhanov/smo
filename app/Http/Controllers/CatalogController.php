@@ -105,34 +105,6 @@ class CatalogController extends Controller
     }
 
     /**
-     * Search products by query.
-     */
-    public function search(Request $request): Response
-    {
-        $searchQuery = $request->input('q', '');
-
-        // Inject city_id if not present
-        if (! $request->has('city_id')) {
-            $request->merge(['city_id' => $this->getSelectedCityId($request)]);
-        }
-
-        $queryBuilder = ProductQueryBuilder::make()
-            ->applySearch($searchQuery)
-            ->applyFilters($request)
-            ->applySort($request);
-
-        $products = $queryBuilder->paginate(24);
-
-        $filters = ProductQueryBuilder::getFiltersFromRequest($request);
-
-        return Inertia::render('Catalog/Search', [
-            'products' => $products,
-            'filters' => $filters,
-            'query' => $searchQuery,
-        ]);
-    }
-
-    /**
      * Get the selected city ID from the request
      */
     protected function getSelectedCityId(Request $request): ?int

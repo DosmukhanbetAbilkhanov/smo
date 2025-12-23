@@ -32,10 +32,9 @@ Route::get('/clear-city', function () {
 Route::get('/categories', [CatalogController::class, 'categories'])->name('categories.index');
 Route::get('/categories/{slug}', [CatalogController::class, 'show'])->name('categories.show');
 
-// Products & Search
+// Products
 Route::get('/products', [CatalogController::class, 'products'])->name('products.index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/search', [CatalogController::class, 'search'])->name('search');
 
 // Shops
 Route::get('/shops/{id}', [ShopController::class, 'show'])->name('shops.show');
