@@ -71,9 +71,9 @@ const handleSubmit = () => {
   router.post('/login', formData, {
     preserveScroll: true,
     onSuccess: () => {
-      emit('update:open', false)
-      // Reload the page to update auth state
-      router.reload()
+      // Force a full page reload to ensure CSRF token is refreshed
+      // This prevents 419 errors when trying to use API endpoints after login
+      window.location.reload()
     },
     onError: (errorResponse) => {
       const errorMessages: string[] = []
